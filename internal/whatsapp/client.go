@@ -15,6 +15,7 @@ import (
 
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/proto/waE2E"
+	"go.mau.fi/whatsmeow/store"
 	"go.mau.fi/whatsmeow/store/sqlstore"
 	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
@@ -52,6 +53,9 @@ func NewClient(ctx context.Context, sessionDBPath string, verifier *identity.Ver
 	if err := os.MkdirAll(dir, 0700); err != nil {
 		return nil, fmt.Errorf("failed to create directory %s: %w", dir, err)
 	}
+
+	// Set clean client OS information
+	store.SetOSInfo("SparkWA Lite", [3]uint32{1, 0, 0})
 
 	var waLogLevel string
 	switch logLevel {
@@ -103,6 +107,11 @@ func (c *Client) IsLoggedIn() bool {
 	return c.client.Store.ID != nil
 }
 
+// IsConnected checks whether the client has an active connection to WhatsApp.
+func (c *Client) IsConnected() bool {
+	return c.client.IsConnected()
+}
+
 // DeviceJID returns the bot's paired JID or empty string.
 func (c *Client) DeviceJID() string {
 	if c.client.Store.ID == nil {
@@ -118,7 +127,13 @@ func (c *Client) LoginQR(ctx context.Context) error {
 
 	if c.client.Store.ID != nil {
 		fmt.Printf("✓ Already paired to WhatsApp device: %s\n", c.client.Store.ID.String())
-		return c.client.Connect()
+		if !c.client.IsConnected() {
+			if err := c.client.Connect(); err != nil {
+				return err
+			}
+		}
+		c.running = true
+		return nil
 	}
 
 	qrChan, err := c.client.GetQRChannel(ctx)
@@ -138,14 +153,15 @@ func (c *Client) LoginQR(ctx context.Context) error {
 	fmt.Println("3. Scan the QR code displayed below in your SSH terminal:")
 	fmt.Println("================================================================================")
 
+	var pairSuccess bool
 	for evt := range qrChan {
 		switch evt.Event {
 		case "code":
 			fmt.Println("\nScan this QR code:")
 			qrterminal.GenerateHalfBlock(evt.Code, qrterminal.L, os.Stdout)
 		case "success":
-			fmt.Println("\n✓ WhatsApp device pairing successful!")
-			return nil
+			fmt.Println("\n✓ WhatsApp device pairing successful! Finalizing session registration...")
+			pairSuccess = true
 		case "timeout":
 			return errors.New("pairing QR code timed out. Re-run 'sparkwa login'")
 		default:
@@ -153,6 +169,17 @@ func (c *Client) LoginQR(ctx context.Context) error {
 		}
 	}
 
+	if !pairSuccess && c.client.Store.ID == nil {
+		return errors.New("pairing process ended without establishing session")
+	}
+
+	// Allow whatsmeow prekey exchange and device store commit to complete cleanly
+	time.Sleep(2 * time.Second)
+
+	if c.client.Store.ID != nil {
+		fmt.Printf("✓ Device registration verified: %s\n", c.client.Store.ID.String())
+	}
+	c.running = true
 	return nil
 }
 
@@ -161,7 +188,7 @@ func (c *Client) Connect() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if c.running {
+	if c.running && c.client.IsConnected() {
 		return nil
 	}
 
@@ -178,7 +205,7 @@ func (c *Client) Disconnect() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if !c.running {
+	if !c.running && !c.client.IsConnected() {
 		return
 	}
 

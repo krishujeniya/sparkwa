@@ -177,6 +177,9 @@ func runLogin(ctx context.Context, cfg *config.Config) {
 		log.Fatalf("WhatsApp login failed: %v", err)
 	}
 
+	fmt.Println("Waiting 3s for session registration to finalize on WhatsApp...")
+	time.Sleep(3 * time.Second)
+
 	fmt.Println("✓ WhatsApp pairing complete. Session saved in SQLite database.")
 }
 
@@ -356,10 +359,6 @@ func runDaemon(ctx context.Context, cfg *config.Config) {
 	}
 	defer waClient.Close()
 
-	if !waClient.IsLoggedIn() {
-		log.Fatalf("[Main] WhatsApp is not paired. Please run 'sparkwa login' first to scan QR code.")
-	}
-
 	// 4. Initialize Gmail client and poller
 	oauthCfg, err := gmail.LoadOAuth2Config(cfg.GmailCredentialsPath, cfg.OAuthLocalPort)
 	if err != nil {
@@ -384,8 +383,16 @@ func runDaemon(ctx context.Context, cfg *config.Config) {
 		eng.HandleInboundWhatsApp(ctx, msgID, senderPhone, text)
 	})
 
-	if err := waClient.Connect(); err != nil {
-		log.Fatalf("[Main] WhatsApp connect failed: %v", err)
+	// Connect or pair if first time running
+	if !waClient.IsLoggedIn() {
+		log.Println("[Main] WhatsApp session not paired. Starting terminal QR code pairing...")
+		if err := waClient.LoginQR(ctx); err != nil {
+			log.Fatalf("[Main] WhatsApp pairing failed: %v", err)
+		}
+	} else {
+		if err := waClient.Connect(); err != nil {
+			log.Fatalf("[Main] WhatsApp connect failed: %v", err)
+		}
 	}
 	defer waClient.Disconnect()
 
