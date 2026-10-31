@@ -40,7 +40,7 @@ func Open(ctx context.Context, dbPath string) (*Store, error) {
 		}
 	}
 
-	dsn := fmt.Sprintf("file:%s?_pragma=busy_timeout(5000)&_pragma=journal_mode(WAL)&_pragma=foreign_keys(ON)", dbPath)
+	dsn := fmt.Sprintf("file:%s?_busy_timeout=30000&_journal_mode=WAL&_foreign_keys=on&_synchronous=NORMAL", dbPath)
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open sqlite database: %w", err)

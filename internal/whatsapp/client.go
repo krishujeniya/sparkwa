@@ -2,6 +2,7 @@ package whatsapp
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"os"
@@ -70,11 +71,20 @@ func NewClient(ctx context.Context, sessionDBPath string, verifier *identity.Ver
 	}
 
 	logger := waLog.Stdout("WhatsMeow", waLogLevel, true)
-	dsn := fmt.Sprintf("file:%s?_pragma=busy_timeout(5000)&_pragma=journal_mode(WAL)&_pragma=foreign_keys(ON)", sessionDBPath)
+	dsn := fmt.Sprintf("file:%s?_busy_timeout=30000&_journal_mode=WAL&_foreign_keys=on&_synchronous=NORMAL", sessionDBPath)
 
-	container, err := sqlstore.New(ctx, "sqlite", dsn, logger)
+	rawDB, err := sql.Open("sqlite", dsn)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open whatsmeow session store: %w", err)
+		return nil, fmt.Errorf("failed to open whatsmeow sqlite database: %w", err)
+	}
+
+	rawDB.SetMaxOpenConns(1)
+	rawDB.SetMaxIdleConns(1)
+
+	container := sqlstore.NewWithDB(rawDB, "sqlite", logger)
+	if err := container.Upgrade(ctx); err != nil {
+		_ = rawDB.Close()
+		return nil, fmt.Errorf("failed to upgrade whatsmeow session store: %w", err)
 	}
 
 	deviceStore, err := container.GetFirstDevice(ctx)
