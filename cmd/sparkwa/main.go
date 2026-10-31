@@ -1,0 +1,405 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"runtime"
+	"strings"
+	"syscall"
+	"time"
+
+	"github.com/sparkwa/sparkwa-lite/internal/config"
+	"github.com/sparkwa/sparkwa-lite/internal/gmail"
+	"github.com/sparkwa/sparkwa-lite/internal/health"
+	"github.com/sparkwa/sparkwa-lite/internal/identity"
+	"github.com/sparkwa/sparkwa-lite/internal/spark"
+	"github.com/sparkwa/sparkwa-lite/internal/store"
+	"github.com/sparkwa/sparkwa-lite/internal/whatsapp"
+	"github.com/sparkwa/sparkwa-lite/internal/worker"
+)
+
+var (
+	Version   = "v1.0.0"
+	GitCommit = "HEAD"
+	BuildDate = "unknown"
+)
+
+func main() {
+	if len(os.Args) < 2 {
+		printUsage()
+		os.Exit(1)
+	}
+
+	cmd := os.Args[1]
+	args := os.Args[2:]
+
+	var configPath string
+	fs := flag.NewFlagSet(cmd, flag.ExitOnError)
+	fs.StringVar(&configPath, "config", "", "Path to configuration file")
+	_ = fs.Parse(args)
+
+	cfg, err := config.Load(configPath)
+	if err != nil {
+		log.Fatalf("Error loading config: %v", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	switch cmd {
+	case "version", "--version", "-v":
+		fmt.Printf("SparkWA Lite %s (%s) %s/%s built %s\n", Version, GitCommit, runtime.GOOS, runtime.GOARCH, BuildDate)
+
+	case "init":
+		runInit(cfg)
+
+	case "login":
+		runLogin(ctx, cfg)
+
+	case "gmail-auth":
+		runGmailAuth(ctx, cfg)
+
+	case "doctor":
+		runDoctor(ctx, cfg)
+
+	case "status":
+		runStatus(ctx, cfg)
+
+	case "test-gmail":
+		runTestGmail(ctx, cfg)
+
+	case "run":
+		runDaemon(ctx, cfg)
+
+	case "help", "--help", "-h":
+		printUsage()
+
+	default:
+		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", cmd)
+		printUsage()
+		os.Exit(1)
+	}
+}
+
+func printUsage() {
+	fmt.Printf(`SparkWA Lite %s — Ultra-lightweight WhatsApp to Gemini Spark Bridge
+
+Usage:
+  sparkwa <command> [flags]
+
+Commands:
+  run          Start the background bridge service (daemon mode)
+  login        Pair WhatsApp Number 1 via terminal QR code
+  gmail-auth   Authenticate with Google Gmail API (OAuth 2.0 helper)
+  doctor       Run comprehensive health & capability diagnostics
+  status       Inspect current bridge status and recent tasks
+  test-gmail   Send a test verification message to the Spark Gmail inbox
+  init         Initialize config and data directories with safe permissions
+  version      Print application version and build details
+
+Flags:
+  --config     Explicit path to configuration file (default: /etc/sparkwa-lite/config.env or ./config.env)
+
+Documentation:
+  https://github.com/sparkwa/sparkwa-lite/tree/main/docs
+`, Version)
+}
+
+func runInit(cfg *config.Config) {
+	fmt.Println("Initializing SparkWA Lite environment...")
+
+	// 1. Create data directory
+	if err := os.MkdirAll(cfg.DataDir, 0700); err != nil {
+		log.Fatalf("Failed to create data directory %s: %v", cfg.DataDir, err)
+	}
+	fmt.Printf("✓ Data directory ready: %s (mode 0700)\n", cfg.DataDir)
+
+	// 2. Create sample config if none exists
+	targetConfig := cfg.ConfigPath
+	if targetConfig == "" {
+		if os.Geteuid() == 0 {
+			_ = os.MkdirAll("/etc/sparkwa-lite", 0755)
+			targetConfig = "/etc/sparkwa-lite/config.env"
+		} else {
+			targetConfig = "./config.env"
+		}
+	}
+
+	if _, err := os.Stat(targetConfig); os.IsNotExist(err) {
+		template := `# SparkWA Lite Configuration File
+# WhatsApp Settings
+BOT_PHONE_NUMBER="+1234567890"         # Number 1 (bot account)
+AUTHORIZED_PHONE_NUMBER="+1987654321"  # Number 2 (your personal number, only permitted sender)
+
+# Gmail Settings
+BRIDGE_GMAIL_ADDRESS="bridge-bot@gmail.com"  # Mailbox used by the bridge
+SPARK_GMAIL_ADDRESS="your-spark-account@gmail.com"  # Google account connected to Gemini Spark
+
+# Runtime Paths & Polling
+DATA_DIR="/var/lib/sparkwa-lite"
+GMAIL_POLL_INTERVAL="45s"
+TASK_TIMEOUT="15m"
+LOG_LEVEL="info"
+`
+		if err := os.WriteFile(targetConfig, []byte(template), 0600); err != nil {
+			log.Fatalf("Failed to write config template to %s: %v", targetConfig, err)
+		}
+		fmt.Printf("✓ Created initial config file: %s (mode 0600)\n", targetConfig)
+		fmt.Println("  Edit this file to specify your phone numbers and Gmail addresses.")
+	} else {
+		fmt.Printf("✓ Existing config found at: %s\n", targetConfig)
+	}
+}
+
+func runLogin(ctx context.Context, cfg *config.Config) {
+	fmt.Println("Initializing WhatsApp pairing client...")
+
+	verifier, err := identity.NewVerifier(
+		cfg.AuthorizedPhoneNumber,
+		cfg.BotPhoneNumber,
+		nil,
+	)
+	if err != nil {
+		log.Fatalf("Identity initialization error: %v", err)
+	}
+
+	waClient, err := whatsapp.NewClient(ctx, cfg.WhatsAppDBPath, verifier, cfg.LogLevel)
+	if err != nil {
+		log.Fatalf("Failed to open WhatsApp session database: %v", err)
+	}
+	defer waClient.Close()
+
+	if err := waClient.LoginQR(ctx); err != nil {
+		log.Fatalf("WhatsApp login failed: %v", err)
+	}
+
+	fmt.Println("✓ WhatsApp pairing complete. Session saved in SQLite database.")
+}
+
+func runGmailAuth(ctx context.Context, cfg *config.Config) {
+	if _, err := os.Stat(cfg.GmailCredentialsPath); os.IsNotExist(err) {
+		fmt.Printf("Error: Google OAuth credentials file not found at:\n  %s\n\n", cfg.GmailCredentialsPath)
+		fmt.Println("Please download your OAuth Client ID credentials JSON from the Google Cloud Console")
+		fmt.Println("and save it to the path above. See docs/GMAIL_OAUTH_SETUP.md for full instructions.")
+		os.Exit(1)
+	}
+
+	oauthCfg, err := gmail.LoadOAuth2Config(cfg.GmailCredentialsPath, cfg.OAuthLocalPort)
+	if err != nil {
+		log.Fatalf("Failed to load OAuth configuration: %v", err)
+	}
+
+	err = gmail.RunHeadlessOAuthHelper(ctx, oauthCfg, cfg.GmailTokenPath, cfg.OAuthLocalPort, os.Stdin, os.Stdout)
+	if err != nil {
+		log.Fatalf("OAuth authentication failed: %v", err)
+	}
+
+	// Test newly saved token
+	gClient, err := gmail.NewClient(ctx, oauthCfg, cfg.GmailTokenPath)
+	if err != nil {
+		log.Fatalf("Failed to initialize Gmail client with new token: %v", err)
+	}
+
+	email, err := gClient.VerifyConnectivity(ctx, cfg.BridgeGmailAddress)
+	if err != nil {
+		fmt.Printf("⚠️ Warning: Connectivity check failed: %v\n", err)
+	} else {
+		fmt.Printf("✓ Successfully verified Gmail API connection for: %s\n", email)
+	}
+}
+
+func runDoctor(ctx context.Context, cfg *config.Config) {
+	s, err := store.Open(ctx, cfg.DBPath)
+	if err != nil {
+		log.Printf("Note: Could not open database (%v)", err)
+	}
+	defer func() {
+		if s != nil {
+			_ = s.Close()
+		}
+	}()
+
+	var waClient *whatsapp.Client
+	if verifier, err := identity.NewVerifier(cfg.AuthorizedPhoneNumber, cfg.BotPhoneNumber, nil); err == nil {
+		waClient, _ = whatsapp.NewClient(ctx, cfg.WhatsAppDBPath, verifier, cfg.LogLevel)
+		if waClient != nil {
+			defer waClient.Close()
+		}
+	}
+
+	var gClient *gmail.Client
+	if oauthCfg, err := gmail.LoadOAuth2Config(cfg.GmailCredentialsPath, cfg.OAuthLocalPort); err == nil {
+		gClient, _ = gmail.NewClient(ctx, oauthCfg, cfg.GmailTokenPath)
+	}
+
+	cm := spark.NewCapabilityManager(s, cfg)
+	doc := health.NewDoctor(cfg, s, waClient, gClient, cm)
+
+	results := doc.RunDiagnostics(ctx)
+	allPass := health.PrintReport(results, os.Stdout)
+
+	if !allPass {
+		os.Exit(1)
+	}
+}
+
+func runStatus(ctx context.Context, cfg *config.Config) {
+	s, err := store.Open(ctx, cfg.DBPath)
+	if err != nil {
+		log.Fatalf("Cannot open database at %s: %v", cfg.DBPath, err)
+	}
+	defer s.Close()
+
+	cm := spark.NewCapabilityManager(s, cfg)
+	report, err := cm.Evaluate(ctx)
+	if err != nil {
+		log.Fatalf("Error evaluating capability: %v", err)
+	}
+
+	active, _ := s.GetActiveTasks(ctx)
+	recent, _ := s.ListRecentTasks(ctx, 5)
+
+	fmt.Println("================================================================================")
+	fmt.Println("                        SPARKWA LITE STATUS REPORT")
+	fmt.Println("================================================================================")
+	fmt.Printf("Capability State : %s\n", report.State)
+	fmt.Printf("Description      : %s\n", report.Description)
+	fmt.Printf("Can Submit       : %v | Can Receive: %v\n", report.CanSubmit, report.CanReceive)
+	fmt.Printf("Next Steps       : %s\n", report.NextSteps)
+	fmt.Println("--------------------------------------------------------------------------------")
+	fmt.Printf("Active Queue     : %d task(s) currently awaiting Spark response\n", len(active))
+	fmt.Printf("Recent Tasks     : %d recorded\n", len(recent))
+
+	if len(recent) > 0 {
+		fmt.Println("\nRecent Tasks:")
+		for _, t := range recent {
+			fmt.Printf(" • [%s] %s (%s) : %s\n", t.State, t.ID[:8], t.CreatedAt.Format("15:04:05"), strings.ReplaceAll(t.Command, "\n", " "))
+		}
+	}
+	fmt.Println("================================================================================")
+}
+
+func runTestGmail(ctx context.Context, cfg *config.Config) {
+	if err := cfg.Validate(); err != nil {
+		log.Fatalf("Config validation failed: %v", err)
+	}
+
+	oauthCfg, err := gmail.LoadOAuth2Config(cfg.GmailCredentialsPath, cfg.OAuthLocalPort)
+	if err != nil {
+		log.Fatalf("Failed to load OAuth config: %v", err)
+	}
+
+	gClient, err := gmail.NewClient(ctx, oauthCfg, cfg.GmailTokenPath)
+	if err != nil {
+		log.Fatalf("Failed to initialize Gmail client: %v", err)
+	}
+
+	email, err := gClient.VerifyConnectivity(ctx, cfg.BridgeGmailAddress)
+	if err != nil {
+		log.Fatalf("Gmail connectivity check failed: %v", err)
+	}
+	fmt.Printf("✓ Gmail API profile connected: %s\n", email)
+
+	// Send a test read-only diagnostic ping to the Spark mailbox
+	testID := fmt.Sprintf("test-%d", time.Now().Unix())
+	subject := fmt.Sprintf("[SPARKWA:%s] SparkWA Diagnostics Ping", testID)
+	body := fmt.Sprintf(
+		"BEGIN SPARKWA COMMAND\n"+
+			"Request ID: %s\n"+
+			"Authorized sender: %s\n"+
+			"Timestamp: %s\n"+
+			"Command: READ_ONLY_DIAGNOSTIC_PING — Please respond with 'Diagnostics verified'.\n"+
+			"END SPARKWA COMMAND\n",
+		testID,
+		cfg.AuthorizedPhoneNumber,
+		time.Now().UTC().Format(time.RFC3339),
+	)
+
+	fmt.Printf("Sending test command to Spark inbox: %s ...\n", cfg.SparkGmailAddress)
+	msgID, threadID, err := gClient.SendCommand(ctx, cfg.BridgeGmailAddress, cfg.SparkGmailAddress, subject, body, testID, cfg.AuthorizedPhoneNumber)
+	if err != nil {
+		log.Fatalf("Failed to send test command: %v", err)
+	}
+
+	fmt.Printf("✓ Command successfully sent!\n  Gmail Message ID: %s\n  Gmail Thread ID: %s\n", msgID, threadID)
+	fmt.Println("Check your Spark-connected inbox to confirm the Gmail trigger fired.")
+}
+
+func runDaemon(ctx context.Context, cfg *config.Config) {
+	if err := cfg.Validate(); err != nil {
+		log.Fatalf("Configuration validation failed:\n%v", err)
+	}
+
+	log.Printf("[Main] Starting SparkWA Lite %s (%s)...", Version, GitCommit)
+
+	// 1. Open SQLite database
+	s, err := store.Open(ctx, cfg.DBPath)
+	if err != nil {
+		log.Fatalf("[Main] Failed to open database at %s: %v", cfg.DBPath, err)
+	}
+	defer s.Close()
+
+	// 2. Initialize identity verifier
+	verifier, err := identity.NewVerifier(cfg.AuthorizedPhoneNumber, cfg.BotPhoneNumber, nil)
+	if err != nil {
+		log.Fatalf("[Main] Identity verifier setup failed: %v", err)
+	}
+
+	// 3. Initialize WhatsApp client
+	waClient, err := whatsapp.NewClient(ctx, cfg.WhatsAppDBPath, verifier, cfg.LogLevel)
+	if err != nil {
+		log.Fatalf("[Main] WhatsApp client setup failed: %v", err)
+	}
+	defer waClient.Close()
+
+	if !waClient.IsLoggedIn() {
+		log.Fatalf("[Main] WhatsApp is not paired. Please run 'sparkwa login' first to scan QR code.")
+	}
+
+	// 4. Initialize Gmail client and poller
+	oauthCfg, err := gmail.LoadOAuth2Config(cfg.GmailCredentialsPath, cfg.OAuthLocalPort)
+	if err != nil {
+		log.Fatalf("[Main] Failed to load Gmail OAuth credentials: %v", err)
+	}
+
+	gClient, err := gmail.NewClient(ctx, oauthCfg, cfg.GmailTokenPath)
+	if err != nil {
+		log.Fatalf("[Main] Failed to initialize Gmail client: %v", err)
+	}
+
+	gPoller := gmail.NewPoller(gClient, s, cfg.SparkGmailAddress, cfg.BridgeGmailAddress, cfg.SparkResponseMode)
+
+	// 5. Capability Manager
+	capManager := spark.NewCapabilityManager(s, cfg)
+
+	// 6. Initialize and start worker engine
+	eng := worker.NewEngine(cfg, s, gClient, gPoller, waClient, capManager)
+
+	// Hook incoming WhatsApp messages to worker
+	waClient.SetMessageHandler(func(ctx context.Context, msgID, senderPhone, text string) {
+		eng.HandleInboundWhatsApp(ctx, msgID, senderPhone, text)
+	})
+
+	if err := waClient.Connect(); err != nil {
+		log.Fatalf("[Main] WhatsApp connect failed: %v", err)
+	}
+	defer waClient.Disconnect()
+
+	if err := eng.Start(ctx); err != nil {
+		log.Fatalf("[Main] Worker start failed: %v", err)
+	}
+	defer eng.Stop()
+
+	log.Printf("[Main] SparkWA Lite is running headlessly. Authorized user: %s", cfg.AuthorizedPhoneNumber)
+
+	// Wait for shutdown signals
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	sig := <-sigChan
+	log.Printf("[Main] Received signal %s, initiating graceful shutdown...", sig)
+}

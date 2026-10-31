@@ -1,0 +1,44 @@
+[Unit]
+Description=SparkWA Lite — Headless WhatsApp to Gemini Spark Bridge
+Documentation=https://github.com/sparkwa/sparkwa-lite/tree/main/docs
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sparkwa
+Group=sparkwa
+WorkingDirectory=/var/lib/sparkwa-lite
+
+# Execution command
+ExecStart=/usr/local/bin/sparkwa run --config /etc/sparkwa-lite/config.env
+
+# Restart on failure or disconnect
+Restart=always
+RestartSec=10s
+
+# Resource and file limits
+LimitNOFILE=65536
+
+# Security & Sandboxing (Defense in depth)
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/sparkwa-lite
+ReadOnlyPaths=/etc/sparkwa-lite
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+
+# Environment
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sparkwa
+
+[Install]
+WantedBy=multi-user.target

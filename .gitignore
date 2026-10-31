@@ -1,0 +1,32 @@
+# Binaries and build artifacts
+bin/
+dist/
+*.exe
+*.test
+*.out
+
+# Secrets, credentials and configuration
+.env
+config.env
+credentials.json
+token.json
+client_secret*.json
+
+# SQLite databases and state
+data/
+*.db
+*.db-wal
+*.db-shm
+*.db.bak
+
+# Backups
+*.tar.gz
+*.zip
+*.bak
+
+# OS and IDE caches
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
