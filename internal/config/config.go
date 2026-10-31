@@ -229,15 +229,24 @@ func loadEnvFile(path string) error {
 		}
 		key := strings.TrimSpace(parts[0])
 		val := strings.TrimSpace(parts[1])
-		// Strip surrounding quotes
-		if (strings.HasPrefix(val, "\"") && strings.HasSuffix(val, "\"")) ||
-			(strings.HasPrefix(val, "'") && strings.HasSuffix(val, "'")) {
-			val = val[1 : len(val)-1]
+
+		// Parse quoted values and ignore any trailing comments
+		if strings.HasPrefix(val, "\"") {
+			if endIdx := strings.Index(val[1:], "\""); endIdx != -1 {
+				val = val[1 : endIdx+1]
+			}
+		} else if strings.HasPrefix(val, "'") {
+			if endIdx := strings.Index(val[1:], "'"); endIdx != -1 {
+				val = val[1 : endIdx+1]
+			}
+		} else {
+			// Unquoted: strip trailing comment
+			if idx := strings.Index(val, "#"); idx != -1 {
+				val = strings.TrimSpace(val[:idx])
+			}
 		}
-		// Don't overwrite existing environment variables
-		if os.Getenv(key) == "" {
-			_ = os.Setenv(key, val)
-		}
+
+		_ = os.Setenv(key, val)
 	}
 	return scanner.Err()
 }
