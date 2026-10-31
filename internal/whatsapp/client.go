@@ -95,6 +95,10 @@ func NewClient(ctx context.Context, sessionDBPath string, verifier *identity.Ver
 
 	waClient := whatsmeow.NewClient(deviceStore, logger)
 
+	if verifier != nil && waClient.Store != nil && waClient.Store.LIDs != nil {
+		verifier.SetLIDResolver(waClient.Store.LIDs)
+	}
+
 	c := &Client{
 		client:    waClient,
 		container: container,
@@ -247,10 +251,13 @@ func (c *Client) SendTextMessage(ctx context.Context, recipientPhone, text strin
 			Conversation: proto.String(chunk),
 		}
 
+		c.logInfo("Sending WhatsApp reply to %s...", recipientPhone)
 		_, err := c.client.SendMessage(ctx, recipientJID, msg)
 		if err != nil {
+			c.logError("Failed to send WhatsApp message to %s: %v", recipientPhone, err)
 			return fmt.Errorf("failed to send message chunk %d/%d: %w", i+1, len(chunks), err)
 		}
+		c.logInfo("Sent WhatsApp reply to %s successfully.", recipientPhone)
 
 		// Small delay between chunks to prevent message inversion on WhatsApp network
 		if len(chunks) > 1 && i < len(chunks)-1 {
@@ -271,11 +278,11 @@ func (c *Client) handleEvent(evt any) {
 	case *events.Message:
 		c.handleIncomingMessage(v)
 	case *events.LoggedOut:
-		c.logger.Errorf("WhatsApp session logged out or revoked: %s", v.Reason)
+		c.logError("WhatsApp session logged out or revoked: %s", v.Reason)
 	case *events.Connected:
-		c.logger.Infof("Connected to WhatsApp multi-device gateway.")
+		c.logInfo("Connected to WhatsApp multi-device gateway.")
 	case *events.Disconnected:
-		c.logger.Warnf("Disconnected from WhatsApp. Automatic reconnection in progress...")
+		c.logWarn("Disconnected from WhatsApp. Automatic reconnection in progress...")
 	}
 }
 
@@ -294,9 +301,9 @@ func (c *Client) handleIncomingMessage(evt *events.Message) {
 	}
 
 	// 2. Authorize sender (strictly Number 2 only)
-	senderPhone, err := c.verifier.Authorize(ctx, evt.Info.Sender)
+	senderPhone, err := c.verifier.AuthorizeSender(ctx, evt.Info.Sender, evt.Info.SenderAlt)
 	if err != nil {
-		// Silently ignore unauthorized senders
+		c.logDebug("Ignored message from unauthorized or unresolvable sender: sender=%s, alt=%s: %v", evt.Info.Sender, evt.Info.SenderAlt, err)
 		return
 	}
 
@@ -307,9 +314,35 @@ func (c *Client) handleIncomingMessage(evt *events.Message) {
 		return
 	}
 
+	c.logInfo("Received verified incoming message from %s (id: %s): %q", senderPhone, evt.Info.ID, text)
+
 	// 4. Pass to worker handler
 	if c.handler != nil {
 		c.handler(ctx, evt.Info.ID, senderPhone, strings.TrimSpace(text))
+	}
+}
+
+func (c *Client) logInfo(msg string, args ...any) {
+	if c.logger != nil {
+		c.logger.Infof(msg, args...)
+	}
+}
+
+func (c *Client) logWarn(msg string, args ...any) {
+	if c.logger != nil {
+		c.logger.Warnf(msg, args...)
+	}
+}
+
+func (c *Client) logError(msg string, args ...any) {
+	if c.logger != nil {
+		c.logger.Errorf(msg, args...)
+	}
+}
+
+func (c *Client) logDebug(msg string, args ...any) {
+	if c.logger != nil {
+		c.logger.Debugf(msg, args...)
 	}
 }
 

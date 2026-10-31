@@ -105,6 +105,7 @@ func (e *Engine) HandleInboundWhatsApp(ctx context.Context, msgID, senderPhone, 
 	_ = e.store.MarkMessageProcessed(ctx, msgID, "whatsapp")
 
 	trimmed := strings.TrimSpace(text)
+	log.Printf("[Worker] Inbound message accepted from %s (msgID: %s): %q", senderPhone, msgID, trimmed)
 
 	// Check for Slash Commands
 	if strings.HasPrefix(trimmed, "/") {
@@ -274,6 +275,8 @@ func (e *Engine) submitTaskToGmail(ctx context.Context, task *store.Task) {
 
 	_ = e.store.UpdateGmailIdentifiers(ctx, task.ID, msgID, threadID)
 	_ = e.store.UpdateTaskState(ctx, task.ID, store.StateAwaitingSpark, "", "")
+
+	log.Printf("[Worker] Forwarded task %s to Gemini Spark via Gmail (%s -> %s, MsgID: %s)", task.ID, e.config.BridgeGmailAddress, e.config.SparkGmailAddress, msgID)
 
 	// Send submission acknowledgment back to WhatsApp Number 2
 	ackMsg := message.FormatSubmissionAck(task.ID, task.Command)

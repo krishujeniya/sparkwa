@@ -48,6 +48,11 @@ func NewVerifier(authorizedNumber, botNumber string, resolver LIDResolver) (*Ver
 	}, nil
 }
 
+// SetLIDResolver sets or updates the LID resolver (e.g. from whatsmeow's SQLite store).
+func (v *Verifier) SetLIDResolver(resolver LIDResolver) {
+	v.resolver = resolver
+}
+
 // CheckMessageFilter checks whether an incoming message should be processed or silently ignored.
 // It enforces:
 // 1. Not a group message
@@ -99,19 +104,54 @@ func (v *Verifier) ResolveSenderNumber(ctx context.Context, sender types.JID) (s
 	return "", fmt.Errorf("unsupported JID server %q: %s", sender.Server, sender.String())
 }
 
+// AuthorizeSender checks whether sender or senderAlt resolves to the authorized user Number 2.
+// It prioritizes direct phone numbers and uses the LIDResolver for hidden identifiers.
+func (v *Verifier) AuthorizeSender(ctx context.Context, sender, senderAlt types.JID) (string, error) {
+	var lastErr error
+
+	// Try senderAlt first if it provides a direct phone number (common in multi-device messages)
+	if senderAlt.Server == types.DefaultUserServer {
+		num, err := v.ResolveSenderNumber(ctx, senderAlt)
+		if err == nil && CompareE164(num, v.authorizedNumberE164) {
+			return num, nil
+		}
+		if err != nil {
+			lastErr = err
+		}
+	}
+
+	// Try primary sender
+	if !sender.IsEmpty() {
+		num, err := v.ResolveSenderNumber(ctx, sender)
+		if err == nil && CompareE164(num, v.authorizedNumberE164) {
+			return num, nil
+		}
+		if err != nil {
+			lastErr = err
+		}
+	}
+
+	// Try senderAlt if it wasn't DefaultUserServer
+	if !senderAlt.IsEmpty() && senderAlt.Server != types.DefaultUserServer {
+		num, err := v.ResolveSenderNumber(ctx, senderAlt)
+		if err == nil && CompareE164(num, v.authorizedNumberE164) {
+			return num, nil
+		}
+		if err != nil {
+			lastErr = err
+		}
+	}
+
+	if lastErr != nil {
+		return "", lastErr
+	}
+	return "", ErrUnauthorizedSender
+}
+
 // Authorize checks whether the sender's phone number exactly matches Number 2 (authorized user).
 // Returns the normalized phone number on success, or ErrUnauthorizedSender.
 func (v *Verifier) Authorize(ctx context.Context, sender types.JID) (string, error) {
-	senderNum, err := v.ResolveSenderNumber(ctx, sender)
-	if err != nil {
-		return "", err
-	}
-
-	if senderNum != v.authorizedNumberE164 {
-		return "", fmt.Errorf("%w: sender %s does not match allowed number", ErrUnauthorizedSender, maskPhone(senderNum))
-	}
-
-	return senderNum, nil
+	return v.AuthorizeSender(ctx, sender, types.EmptyJID)
 }
 
 // AuthorizedNumber returns the normalized authorized E.164 number.
