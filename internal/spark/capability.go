@@ -3,6 +3,7 @@ package spark
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/sparkwa/sparkwa-lite/internal/config"
 	"github.com/sparkwa/sparkwa-lite/internal/store"
@@ -34,6 +35,11 @@ func (cm *CapabilityManager) GetCurrentState(ctx context.Context) (config.Capabi
 		return config.CapNotConfigured, err
 	}
 	if val == "" {
+		if cm.config != nil && cm.config.GmailTokenPath != "" {
+			if _, err := os.Stat(cm.config.GmailTokenPath); err == nil {
+				return config.CapSparkTriggerConfigured, nil
+			}
+		}
 		return config.CapNotConfigured, nil
 	}
 	return config.CapabilityState(val), nil
