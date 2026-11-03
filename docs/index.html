@@ -1021,7 +1021,7 @@
             <div class="arch-actions">
               <div class="arch-toggle" role="tablist" aria-label="Diagram display mode">
                 <button class="arch-toggle-btn active" id="btnArchVisual" onclick="toggleArchView('visual')" role="tab" aria-selected="true" aria-controls="archVisual">VISUAL FLOW</button>
-                <button class="arch-toggle-btn" id="btnArchAscii" onclick="toggleArchView('ascii')" role="tab" aria-selected="false" aria-controls="archAscii">UNICODE BOX ART</button>
+                <button class="arch-toggle-btn" id="btnArchAscii" onclick="toggleArchView('ascii')" role="tab" aria-selected="false" aria-controls="archAscii">3D ISOMETRIC ART</button>
               </div>
             </div>
           </div>
@@ -1149,55 +1149,65 @@
           <!-- ASCII Box Art View -->
           <div class="arch-flow-ascii-wrapper" id="archAscii" style="display: none;" role="tabpanel" aria-labelledby="btnArchAscii">
             <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
-              <button class="btn-copy" onclick="copySnippet('asciiDiagramCode', this)" aria-label="Copy Unicode Box Art Diagram">
-                <span>COPY ASCII DIAGRAM</span>
+              <button class="btn-copy" onclick="copySnippet('asciiDiagramCode', this)" aria-label="Copy 3D Isometric Architecture Diagram">
+                <span>COPY 3D DIAGRAM</span>
               </button>
             </div>
-            <pre class="arch-flow-ascii" id="asciiDiagramCode">  ╔════════════════════════════════════════════════════════════════════════════╗
-  ║                      NODE [2] : AUTHORIZED SENDER                          ║
-  ║                   Your Personal WhatsApp (Number 2)                        ║
-  ╚══════════════════════════════════════╦═════════════════════════════════════╝
-                                         │
-                                         │ (1) Send text message or command
-                                         ▼
-  ╔════════════════════════════════════════════════════════════════════════════╗
-  ║                        NODE [1] : WHATSAPP BOT                             ║
-  ║                   Dedicated WhatsApp SIM (Number 1)                        ║
-  ╚══════════════════════════════════════╦═════════════════════════════════════╝
-                                         │
-                                         │ (2) Read by SparkWA on your server
-                                         ▼
-  ╔════════════════════════════════════════════════════════════════════════════╗
-  ║                    NODE [E] : SPARKWA LOCAL ENGINE                         ║
-  ║  ────────────────────────────────────────────────────────────────────────  ║
-  ║  • Verifies sender matches Number 2 (silent drop for strangers)            ║
-  ║  • Saves task to local SQLite database (/var/lib/sparkwa)                  ║
-  ║  • Formats email protocol RFC-2822: [SPARKWA:TASK_ID]                      ║
-  ║  • Sends email via official Google Gmail API (OAuth 2.0)                   ║
-  ╚══════════════════════════════════════╦═════════════════════════════════════╝
-                                         │
-                                         │ (3) Outbound email via Gmail API
-                                         ▼
-  ╔════════════════════════════════════════════════════════════════════════════╗
-  ║             NODE [S] : GOOGLE WORKSPACE &amp; GEMINI SPARK                     ║
-  ║  ────────────────────────────────────────────────────────────────────────  ║
-  ║   Bridge Gmail ──────────────────────► Spark Gmail Inbox                   ║
-  ║                                                │                           ║
-  ║                                                │ (4) Event trigger         ║
-  ║                                                ▼                           ║
-  ║                                       Gemini Spark Agent                   ║
-  ║                                       (Runs task using Google tools)       ║
-  ║                                                │                           ║
-  ║                                                │ (5) Email reply or draft  ║
-  ║   Bridge Gmail ◄───────────────────────────────┘                           ║
-  ╚══════════════════════════════════════╦═════════════════════════════════════╝
-                                         │
-                                         │ (6) Discovered by SparkWA poller
-                                         ▼
-  ╔════════════════════════════════════════════════════════════════════════════╗
-  ║                      NODE [2] : AUTHORIZED SENDER                          ║
-  ║                   Spark's answer delivered to chat                         ║
-  ╚════════════════════════════════════════════════════════════════════════════╝</pre>
+            <pre class="arch-flow-ascii" id="asciiDiagramCode">      .─────────────────────────────────────────────────────────────.
+     /                                                             /│
+    ┌─────────────────────────────────────────────────────────────┐ │
+    │                NODE [2] : AUTHORIZED SENDER                 │ │
+    │              Your Personal WhatsApp (Number 2)              │ │
+    └─────────────────────────────────────────────────────────────┘/
+                                   │
+                                   │ (1) Send text message or command
+                                   ▼
+      .─────────────────────────────────────────────────────────────.
+     /                                                             /│
+    ┌─────────────────────────────────────────────────────────────┐ │
+    │                  NODE [1] : WHATSAPP BOT                    │ │
+    │             Dedicated WhatsApp SIM (Number 1)               │ │
+    └─────────────────────────────────────────────────────────────┘/
+                                   │
+                                   │ (2) Read by SparkWA on your server
+                                   ▼
+      .─────────────────────────────────────────────────────────────.
+     /                                                             /│
+    ┌─────────────────────────────────────────────────────────────┐ │
+    │               NODE [E] : SPARKWA LOCAL ENGINE               │ │
+    ├─────────────────────────────────────────────────────────────┤ │
+    │  • Verifies sender matches Number 2 (silent drop strangers) │ │
+    │  • Saves task to local SQLite database (/var/lib/sparkwa)   │ │
+    │  • Formats email protocol RFC-2822: [SPARKWA:TASK_ID]       │ │
+    │  • Sends email via official Google Gmail API (OAuth 2.0)    │ │
+    └─────────────────────────────────────────────────────────────┘/
+                                   │
+                                   │ (3) Outbound email via Gmail API
+                                   ▼
+      .─────────────────────────────────────────────────────────────.
+     /                                                             /│
+    ┌─────────────────────────────────────────────────────────────┐ │
+    │          NODE [S] : GOOGLE WORKSPACE &amp; GEMINI SPARK         │ │
+    ├─────────────────────────────────────────────────────────────┤ │
+    │   Bridge Gmail ─────────────────────► Spark Gmail Inbox     │ │
+    │                                             │               │ │
+    │                                             │ (4) Trigger   │ │
+    │                                             ▼               │ │
+    │                                    Gemini Spark Agent       │ │
+    │                                    (Drive, Docs, Calendar)  │ │
+    │                                             │               │ │
+    │                                             │ (5) Reply     │ │
+    │   Bridge Gmail ◄────────────────────────────┘               │ │
+    └─────────────────────────────────────────────────────────────┘/
+                                   │
+                                   │ (6) Discovered by SparkWA poller
+                                   ▼
+      .─────────────────────────────────────────────────────────────.
+     /                                                             /│
+    ┌─────────────────────────────────────────────────────────────┐ │
+    │                NODE [2] : AUTHORIZED SENDER                 │ │
+    │              Spark's answer delivered to chat               │ │
+    └─────────────────────────────────────────────────────────────┘/</pre>
           </div>
         </div>
       </div>
