@@ -125,6 +125,41 @@ Request ID: req-freeform
 	}
 }
 
+func TestParseResponseRejectsCommandEcho(t *testing.T) {
+	cmdEcho := `
+BEGIN SPARKWA COMMAND
+Request ID: 256c0c48-5a6e-43ac-9ccf-1decd9b65008
+Authorized sender: +918530483089
+Timestamp: 2026-11-03T04:01:36Z
+Command: Hi
+END SPARKWA COMMAND
+`
+	_, err := ParseResponse("256c0c48-5a6e-43ac-9ccf-1decd9b65008", cmdEcho)
+	if err == nil {
+		t.Fatalf("expected ParseResponse to reject pure command echo, but it accepted it as success")
+	}
+}
+
+func TestParseResponseCleansQuotedEmail(t *testing.T) {
+	emailBody := `Hello! How can I help you today?
+
+On Tue, Nov 3, 2026 at 9:31 AM aidrago0021@gmail.com wrote:
+> BEGIN SPARKWA COMMAND
+> Request ID: 256c0c48
+> Authorized sender: +918530483089
+> Timestamp: 2026-11-03T04:01:36Z
+> Command: Hi
+> END SPARKWA COMMAND
+`
+	resp, err := ParseResponse("256c0c48", emailBody)
+	if err != nil {
+		t.Fatalf("ParseResponse failed: %v", err)
+	}
+	if resp.ResultText != "Hello! How can I help you today?" {
+		t.Errorf("expected clean result, got: %q", resp.ResultText)
+	}
+}
+
 func TestParseResponseMismatchedID(t *testing.T) {
 	body := `
 Request ID: other-id

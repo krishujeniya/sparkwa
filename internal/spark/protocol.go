@@ -11,6 +11,7 @@ import (
 var (
 	ErrInvalidRequestID = errors.New("invalid or missing request ID")
 	ErrEmptyCommand     = errors.New("command cannot be empty")
+	ErrNoResponseFound  = errors.New("message contains command envelope or quote without a response")
 )
 
 // Command represents an outgoing prompt / task dispatched to Gemini Spark via Gmail.
@@ -100,6 +101,38 @@ func ExtractRequestIDFromSubject(subject string) string {
 	return ""
 }
 
+// CleanReplyText removes command envelope markers, email quote blocks, and quote intros.
+func CleanReplyText(text string) string {
+	// 1. Remove BEGIN SPARKWA COMMAND ... END SPARKWA COMMAND block if present
+	cmdStart := strings.Index(text, "BEGIN SPARKWA COMMAND")
+	cmdEnd := strings.Index(text, "END SPARKWA COMMAND")
+	if cmdStart != -1 && cmdEnd != -1 && cmdEnd >= cmdStart {
+		text = text[:cmdStart] + text[cmdEnd+len("END SPARKWA COMMAND"):]
+	} else if cmdStart != -1 {
+		text = text[:cmdStart]
+	}
+
+	// 2. Process line by line to strip email reply headers and quotes
+	lines := strings.Split(text, "\n")
+	var keptLines []string
+	quoteHeaderRegex := regexp.MustCompile(`(?i)^(on\s+.+wrote:|-+\s*original message\s*-+|from:\s+.+|_{5,})`)
+
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		// Stop at standard email quote header (e.g. "On Tue, Nov 3... wrote:")
+		if quoteHeaderRegex.MatchString(trimmed) {
+			break
+		}
+		// Skip quoted lines starting with '>'
+		if strings.HasPrefix(trimmed, ">") {
+			continue
+		}
+		keptLines = append(keptLines, line)
+	}
+
+	return strings.TrimSpace(strings.Join(keptLines, "\n"))
+}
+
 // ParseResponse parses an email body or draft content to match it against an expected request.
 func ParseResponse(expectedReqID, bodyText string) (*Response, error) {
 	cleanBody := strings.TrimSpace(bodyText)
@@ -134,6 +167,12 @@ func ParseResponse(expectedReqID, bodyText string) (*Response, error) {
 				res.ResultText = strings.TrimSpace(block)
 			}
 
+			// Clean any residual email quote if Spark echoed quotes inside Result
+			cleanedResult := CleanReplyText(res.ResultText)
+			if cleanedResult != "" {
+				res.ResultText = cleanedResult
+			}
+
 			// If status is approval required
 			if res.Status == StatusApprovalRequired {
 				res.ApprovalPrompt = res.ResultText
@@ -144,7 +183,11 @@ func ParseResponse(expectedReqID, bodyText string) (*Response, error) {
 	}
 
 	// 2. Fallback: Spark replied as a standard email in the thread
-	// Verify whether the body contains the request ID or if caller validated thread
+	cleanedBody := CleanReplyText(cleanBody)
+	if cleanedBody == "" {
+		return nil, ErrNoResponseFound
+	}
+
 	extractedID := ""
 	reqMatch := blockReqID.FindStringSubmatch(cleanBody)
 	if len(reqMatch) == 2 {
@@ -160,16 +203,16 @@ func ParseResponse(expectedReqID, bodyText string) (*Response, error) {
 	res := &Response{
 		RequestID:    extractedID,
 		Status:       StatusSuccess,
-		ResultText:   cleanBody,
+		ResultText:   cleanedBody,
 		IsStructured: false,
 	}
 
 	// Detect whether Spark is asking for approval before executing an action
-	lower := strings.ToLower(cleanBody)
+	lower := strings.ToLower(cleanedBody)
 	for _, phrase := range approvalPhrases {
 		if strings.Contains(lower, phrase) {
 			res.Status = StatusApprovalRequired
-			res.ApprovalPrompt = cleanBody
+			res.ApprovalPrompt = cleanedBody
 			break
 		}
 	}

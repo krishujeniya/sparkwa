@@ -71,9 +71,23 @@ func (p *Poller) PollReplies(ctx context.Context) ([]*DiscoveredReply, error) {
 	return results, nil
 }
 
+func containsLabel(labels []string, target string) bool {
+	for _, l := range labels {
+		if strings.EqualFold(l, target) {
+			return true
+		}
+	}
+	return false
+}
+
 func (p *Poller) pollMessages(ctx context.Context) ([]*DiscoveredReply, error) {
-	// Query messages matching SPARKWA subject tag
-	query := "subject:SPARKWA"
+	// Query messages matching SPARKWA subject tag, filtering out sent emails
+	var query string
+	if p.sparkEmail != "" && !strings.EqualFold(p.sparkEmail, p.bridgeEmail) {
+		query = fmt.Sprintf("from:%s subject:SPARKWA", p.sparkEmail)
+	} else {
+		query = "-from:me subject:SPARKWA"
+	}
 	listCall := p.client.service.Users.Messages.List("me").Q(query).MaxResults(20)
 
 	resp, err := listCall.Context(ctx).Do()
@@ -95,17 +109,27 @@ func (p *Poller) pollMessages(ctx context.Context) ([]*DiscoveredReply, error) {
 			continue
 		}
 
+		// Never ingest outbound sent messages as replies
+		if containsLabel(fullMsg.LabelIds, "SENT") && !containsLabel(fullMsg.LabelIds, "INBOX") {
+			continue
+		}
+
 		reply, err := p.extractReplyFromMessage(fullMsg, false)
 		if err != nil {
 			continue
 		}
 
 		// Security: Verify that the email was actually sent by the Spark Gmail account
-		// (or bridge if Spark authored via shared account)
 		fromLower := strings.ToLower(reply.From)
-		if !strings.Contains(fromLower, p.sparkEmail) && !strings.Contains(fromLower, p.bridgeEmail) {
-			// Untrusted sender: ignore message to prevent spoofed command injection
-			continue
+		if !strings.EqualFold(p.sparkEmail, p.bridgeEmail) {
+			if !strings.Contains(fromLower, p.sparkEmail) {
+				// Untrusted sender: ignore message to prevent spoofed command injection
+				continue
+			}
+		} else {
+			if containsLabel(fullMsg.LabelIds, "SENT") {
+				continue
+			}
 		}
 
 		replies = append(replies, reply)

@@ -19,7 +19,7 @@ func FormatSubmissionAck(taskID, command string) string {
 		"*SparkWA* [SUBMITTED]\n\n"+
 			"*ID:* `%s`\n"+
 			"*Task:* %s\n\n"+
-			"_Forwarded to Gemini Spark via Gmail monitor. Waiting for agent processing._",
+			"_Forwarded to Gemini Spark. Processing..._",
 		taskID,
 		shortCmd,
 	)

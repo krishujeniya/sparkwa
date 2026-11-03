@@ -213,7 +213,9 @@ func (e *Engine) enqueueCommandTask(ctx context.Context, waMsgID, senderPhone, c
 		return
 	}
 
-	taskID := uuid.New().String()
+	// Generate clean 8-character hex ID (e.g. 256c0c48)
+	rawUUID := strings.ReplaceAll(uuid.New().String(), "-", "")
+	taskID := rawUUID[:8]
 	task := &store.Task{
 		ID:          taskID,
 		SenderPhone: senderPhone,
@@ -274,6 +276,8 @@ func (e *Engine) submitTaskToGmail(ctx context.Context, task *store.Task) {
 	}
 
 	_ = e.store.UpdateGmailIdentifiers(ctx, task.ID, msgID, threadID)
+	// Mark outbound email processed immediately so poller never ingests its own sent messages
+	_ = e.store.MarkMessageProcessed(ctx, msgID, "gmail")
 	_ = e.store.UpdateTaskState(ctx, task.ID, store.StateAwaitingSpark, "", "")
 
 	log.Printf("[Worker] Forwarded task %s to Gemini Spark via Gmail (%s -> %s, MsgID: %s)", task.ID, e.config.BridgeGmailAddress, e.config.SparkGmailAddress, msgID)
