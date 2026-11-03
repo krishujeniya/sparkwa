@@ -322,7 +322,7 @@ Your settings, paired WhatsApp session, and task history are saved automatically
 
 ## Documentation Index
 
-- 🌐 **[Live Single-Page Documentation Site](https://krishujeniya.github.io/sparkwa/)** — Complete interactive guide with one-click copy commands and system prompt.
+- **[Live Single-Page Documentation Site](https://krishujeniya.github.io/sparkwa/)** — Complete interactive guide with one-click copy commands and system prompt.
 - [docs/SPARK_SETUP.md](docs/SPARK_SETUP.md) — Step-by-step instructions to configure your Gemini Spark schedule and prompt.
 - [docs/GMAIL_OAUTH_SETUP.md](docs/GMAIL_OAUTH_SETUP.md) — Creating Google Cloud OAuth credentials and connecting Gmail.
 - [docs/VPS_INSTALL.md](docs/VPS_INSTALL.md) — Full manual installation and deployment guide for Ubuntu servers.

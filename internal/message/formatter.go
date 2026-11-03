@@ -24,7 +24,7 @@ func FormatCompletion(taskID, resultText string) string {
 // FormatApprovalNeeded formats an explicit agent action approval prompt without robotic wrappers.
 func FormatApprovalNeeded(taskID, promptText string) string {
 	return fmt.Sprintf(
-		"⚠️ Gemini Spark requires your approval:\n\n"+
+		"[APPROVAL REQUIRED] Gemini Spark requires your approval:\n\n"+
 			"%s\n\n"+
 			"_Reply with your confirmation or instruction to proceed._",
 		strings.TrimSpace(promptText),
@@ -33,23 +33,23 @@ func FormatApprovalNeeded(taskID, promptText string) string {
 
 // FormatFailure formats a failed task notification without robotic wrappers.
 func FormatFailure(taskID, errorMsg string) string {
-	return fmt.Sprintf("❌ %s", strings.TrimSpace(errorMsg))
+	return fmt.Sprintf("[ERROR] %s", strings.TrimSpace(errorMsg))
 }
 
 // FormatStatusReport formats the system status message for /status with masked privacy.
 func FormatStatusReport(waConnected bool, botPhone string, authPhone string, gmailConnected bool, bridgeEmail string, sparkEmail string, capState config.CapabilityState, activeJobs int) string {
-	waStatus := "❌ Disconnected"
+	waStatus := "[DISCONNECTED]"
 	if waConnected {
-		waStatus = fmt.Sprintf("✅ Connected (%s)", identity.MaskPhone(botPhone))
+		waStatus = fmt.Sprintf("[CONNECTED] (%s)", identity.MaskPhone(botPhone))
 	}
 
-	gmailStatus := "❌ Disconnected"
+	gmailStatus := "[DISCONNECTED]"
 	if gmailConnected {
-		gmailStatus = fmt.Sprintf("✅ Active (%s ➔ %s)", identity.MaskEmail(bridgeEmail), identity.MaskEmail(sparkEmail))
+		gmailStatus = fmt.Sprintf("[ACTIVE] (%s ➔ %s)", identity.MaskEmail(bridgeEmail), identity.MaskEmail(sparkEmail))
 	}
 
 	return fmt.Sprintf(
-		"📊 *SparkWA Status*\n\n"+
+		"*SparkWA Status*\n\n"+
 			"• *WhatsApp:* %s\n"+
 			"• *Authorized User:* %s\n"+
 			"• *Gmail Bridge:* %s\n"+
@@ -69,25 +69,25 @@ func FormatStatusReport(waConnected bool, botPhone string, authPhone string, gma
 // FormatJobList formats the list of recent tasks for /jobs.
 func FormatJobList(tasks []*store.Task) string {
 	if len(tasks) == 0 {
-		return "📋 *SparkWA Jobs*\n\nNo recent tasks recorded in the database."
+		return "*SparkWA Jobs*\n\nNo recent tasks recorded in the database."
 	}
 
 	var sb strings.Builder
-	sb.WriteString("📋 *Recent SparkWA Jobs:*\n\n")
+	sb.WriteString("*Recent SparkWA Jobs:*\n\n")
 
 	for _, t := range tasks {
-		statusIcon := "⏳"
+		statusTag := "[PENDING]"
 		switch t.State {
 		case store.StateCompleted:
-			statusIcon = "✅"
+			statusTag = "[DONE]"
 		case store.StateFailed, store.StateExpired:
-			statusIcon = "❌"
+			statusTag = "[FAIL]"
 		case store.StateCancelled:
-			statusIcon = "🚫"
+			statusTag = "[CANC]"
 		case store.StateApprovalRequired:
-			statusIcon = "⚠️"
+			statusTag = "[APPR]"
 		case store.StateSubmitted, store.StateAwaitingSpark:
-			statusIcon = "▶"
+			statusTag = "[RUN]"
 		}
 
 		shortCmd := t.Command
@@ -97,7 +97,7 @@ func FormatJobList(tasks []*store.Task) string {
 		shortCmd = strings.ReplaceAll(shortCmd, "\n", " ")
 
 		sb.WriteString(fmt.Sprintf("%s `%s` [%s]\n   %s\n",
-			statusIcon,
+			statusTag,
 			t.ID[:8], // short ID for readability
 			string(t.State),
 			shortCmd,
@@ -111,7 +111,7 @@ func FormatJobList(tasks []*store.Task) string {
 // FormatJobDetail formats the detailed view of a single task for /job ID.
 func FormatJobDetail(t *store.Task) string {
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("🔍 *Task Detail:* `%s`\n\n", t.ID))
+	sb.WriteString(fmt.Sprintf("*Task Detail:* `%s`\n\n", t.ID))
 	sb.WriteString(fmt.Sprintf("• *State:* `%s`\n", t.State))
 	sb.WriteString(fmt.Sprintf("• *Created:* %s\n", t.CreatedAt.Format(time.RFC3339)))
 	if t.SubmittedAt != nil {

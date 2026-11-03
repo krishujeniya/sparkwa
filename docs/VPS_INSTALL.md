@@ -179,7 +179,7 @@ From phone **Number 2**, send a WhatsApp message to phone **Number 1**:
 
 The bot will reply within seconds:
 ```text
-🏓 *Pong!*
+*Pong!*
 
 SparkWA is responsive.
 Timestamp: 2026-10-31T18:00:00Z UTC

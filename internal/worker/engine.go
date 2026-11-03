@@ -127,7 +127,7 @@ func (e *Engine) handleSlashCommand(ctx context.Context, senderPhone, commandTex
 		_ = e.waSender.SendTextMessage(ctx, senderPhone, message.FormatHelp())
 
 	case "/ping":
-		reply := fmt.Sprintf("🏓 *Pong!*\n\nSparkWA is responsive.\nTimestamp: %s UTC", time.Now().UTC().Format(time.RFC3339))
+		reply := fmt.Sprintf("*Pong!*\n\nSparkWA is responsive.\nTimestamp: %s UTC", time.Now().UTC().Format(time.RFC3339))
 		_ = e.waSender.SendTextMessage(ctx, senderPhone, reply)
 
 	case "/status":
@@ -159,7 +159,7 @@ func (e *Engine) handleSlashCommand(ctx context.Context, senderPhone, commandTex
 	case "/jobs":
 		recent, err := e.store.ListRecentTasks(ctx, 5)
 		if err != nil {
-			_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("❌ Error listing tasks: %v", err))
+			_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("[ERROR] Error listing tasks: %v", err))
 			return
 		}
 		_ = e.waSender.SendTextMessage(ctx, senderPhone, message.FormatJobList(recent))
@@ -173,7 +173,7 @@ func (e *Engine) handleSlashCommand(ctx context.Context, senderPhone, commandTex
 		// Match by exact ID or ID prefix
 		t, err := e.findTaskByIDOrPrefix(ctx, jobID)
 		if err != nil {
-			_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("❌ Task not found: `%s`", jobID))
+			_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("[ERROR] Task not found: `%s`", jobID))
 			return
 		}
 		_ = e.waSender.SendTextMessage(ctx, senderPhone, message.FormatJobDetail(t))
@@ -186,14 +186,14 @@ func (e *Engine) handleSlashCommand(ctx context.Context, senderPhone, commandTex
 		jobID := parts[1]
 		t, err := e.findTaskByIDOrPrefix(ctx, jobID)
 		if err != nil {
-			_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("❌ Task not found: `%s`", jobID))
+			_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("[ERROR] Task not found: `%s`", jobID))
 			return
 		}
 		if err := e.store.CancelTask(ctx, t.ID); err != nil {
-			_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("❌ Could not cancel `%s`: %v", t.ID, err))
+			_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("[ERROR] Could not cancel `%s`: %v", t.ID, err))
 			return
 		}
-		_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("🚫 Task `%s` has been cancelled.", t.ID))
+		_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("[CANCELLED] Task `%s` has been cancelled.", t.ID))
 
 	default:
 		_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("Unknown command `%s`. Send `/help` for available commands.", cmd))
@@ -203,14 +203,14 @@ func (e *Engine) handleSlashCommand(ctx context.Context, senderPhone, commandTex
 func (e *Engine) enqueueCommandTask(ctx context.Context, waMsgID, senderPhone, commandText string) {
 	// Length check
 	if len(commandText) > e.config.MaxMessageLength {
-		_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("❌ Message exceeds maximum allowed length (%d characters).", e.config.MaxMessageLength))
+		_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("[ERROR] Message exceeds maximum allowed length (%d characters).", e.config.MaxMessageLength))
 		return
 	}
 
 	// Concurrency check
 	activeTasks, err := e.store.GetActiveTasks(ctx)
 	if err == nil && len(activeTasks) >= e.config.MaxConcurrentJobs {
-		_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("⏳ System queue is busy (%d active jobs). Please wait for ongoing tasks to finish.", len(activeTasks)))
+		_ = e.waSender.SendTextMessage(ctx, senderPhone, fmt.Sprintf("[BUSY] System queue is busy (%d active jobs). Please wait for ongoing tasks to finish.", len(activeTasks)))
 		return
 	}
 
@@ -228,7 +228,7 @@ func (e *Engine) enqueueCommandTask(ctx context.Context, waMsgID, senderPhone, c
 
 	if err := e.store.CreateTask(ctx, task); err != nil {
 		log.Printf("[Worker] Failed to persist task %s: %v", taskID, err)
-		_ = e.waSender.SendTextMessage(ctx, senderPhone, "❌ Failed to create task in local database.")
+		_ = e.waSender.SendTextMessage(ctx, senderPhone, "[ERROR] Failed to create task in local database.")
 		return
 	}
 

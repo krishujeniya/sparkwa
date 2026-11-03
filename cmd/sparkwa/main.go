@@ -136,7 +136,7 @@ Flags:
   --config     Explicit path to configuration file (default: /etc/sparkwa/config.env or ./config.env)
 
 Documentation:
-  https://github.com/sparkwa/sparkwa/tree/main/docs
+  https://krishujeniya.github.io/sparkwa/
 `)
 }
 
@@ -240,7 +240,7 @@ func runGmailAuth(ctx context.Context, cfg *config.Config) {
 
 	email, err := gClient.VerifyConnectivity(ctx, cfg.BridgeGmailAddress)
 	if err != nil {
-		fmt.Printf("⚠️ Warning: Connectivity check failed: %v\n", err)
+		fmt.Printf("[WARN] Connectivity check failed: %v\n", err)
 	} else {
 		fmt.Printf("✓ Successfully verified Gmail API connection for: %s\n", identity.MaskEmail(email))
 	}

@@ -214,7 +214,7 @@ func (a *App) runGmailOAuth(ctx context.Context, reader *bufio.Reader) {
 	if err == nil {
 		email, err := gClient.VerifyConnectivity(ctx, a.Config.BridgeGmailAddress)
 		if err != nil {
-			fmt.Fprintf(a.Out, "⚠️ Warning: Connectivity check failed: %v\n", err)
+			fmt.Fprintf(a.Out, "  [WARN] Connectivity check failed: %v\n", err)
 		} else {
 			fmt.Fprintf(a.Out, "\n✓ Successfully verified Gmail API connection for: %s\n", Bold(email))
 		}

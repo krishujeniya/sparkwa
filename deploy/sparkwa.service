@@ -1,6 +1,6 @@
 [Unit]
 Description=SparkWA — Headless WhatsApp to Gemini Spark Bridge
-Documentation=https://github.com/sparkwa/sparkwa/tree/main/docs
+Documentation=https://krishujeniya.github.io/sparkwa/
 After=network.target network-online.target
 Wants=network-online.target
 
