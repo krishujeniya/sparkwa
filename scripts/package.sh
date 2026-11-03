@@ -75,7 +75,7 @@ Version: $CLEAN_VERSION
 Section: utils
 Priority: optional
 Architecture: $ARCH
-Maintainer: Krish Ujeniya <social.krishujeniya@gmail.com>
+Maintainer: SparkWA Project <support@sparkwa.dev>
 Description: Headless WhatsApp to Google Gemini Spark Bridge
  SparkWA connects WhatsApp to Google Gemini Spark through an event-driven
  Gmail trigger schedule, providing autonomous background task execution.

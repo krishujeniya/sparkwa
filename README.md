@@ -157,25 +157,28 @@ You can choose any action by pressing a single number key (`1` through `8`), or 
 
 ---
 
-## Installation Options
+## Fast 1-Line Installation (Recommended)
 
-SparkWA can be installed using your preferred package manager or installer:
-
-### Option 1: Ubuntu / Debian (`apt`)
-
-Configure the SparkWA repository once, then install directly via `apt`:
+Run this single command on your Ubuntu, Debian, or Linux server. It automatically installs SparkWA and immediately launches the interactive dashboard:
 
 ```bash
-# 1. Setup SparkWA repository
 curl -fsSL https://raw.githubusercontent.com/krishujeniya/sparkwa/main/scripts/setup-apt.sh | sudo bash
-
-# 2. Install SparkWA directly
-sudo apt install -y sparkwa
 ```
 
-Or install the standalone `.deb` package directly:
+Once installed, you can reopen the control dashboard anytime simply by typing:
 
 ```bash
+sparkwa
+```
+
+---
+
+## Alternative Installation Options
+
+### Option 1: Debian Package (`apt`)
+
+```bash
+# Download and install the latest official .deb package
 curl -LO https://github.com/krishujeniya/sparkwa/releases/latest/download/sparkwa_1.0.0_amd64.deb
 sudo apt install ./sparkwa_1.0.0_amd64.deb
 ```
@@ -186,34 +189,19 @@ sudo apt install ./sparkwa_1.0.0_amd64.deb
 Install via Homebrew:
 
 ```bash
-# Tap repository and install
 brew tap krishujeniya/sparkwa
 brew install sparkwa
 ```
 
-### Option 3: One-Line Auto Installer (Linux / VPS)
-
-Run the automated installer directly from your terminal:
+### Option 3: Standalone Binary Release (`tar.gz`)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/krishujeniya/sparkwa/main/scripts/install.sh | sudo bash
-```
-
-### Option 4: Standalone Binary Release (`tar.gz`)
-
-Download and extract the prebuilt binary archive:
-
-```bash
-# Download release archive for linux/amd64 (or arm64)
 curl -LO https://github.com/krishujeniya/sparkwa/releases/latest/download/sparkwa-v1.0.0-linux-amd64.tar.gz
-
-# Extract and run installer
 tar -xzf sparkwa-v1.0.0-linux-amd64.tar.gz
-cd sparkwa
-sudo ./scripts/install.sh
+cd sparkwa && sudo ./scripts/install.sh
 ```
 
-### Option 5: Build from Source (Go 1.24+)
+### Option 4: Build from Source (Go 1.24+)
 
 ```bash
 git clone https://github.com/krishujeniya/sparkwa.git

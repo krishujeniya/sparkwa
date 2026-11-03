@@ -1,25 +1,18 @@
 #!/usr/bin/env bash
-# SparkWA — APT Repository Setup Script
-# Enables 'apt install sparkwa' on Ubuntu and Debian systems.
-# Author: Krish Ujeniya
+# SparkWA — Automated Installer & Runner
 set -euo pipefail
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-BLUE='\033[0;34m'
+BOLD='\033[1m'
 NC='\033[0m'
 
-echo -e "${BLUE}================================================================================${NC}"
-echo -e "${BLUE}              SPARKWA APT REPOSITORY SETUP — By Krish Ujeniya                   ${NC}"
-echo -e "${BLUE}================================================================================${NC}"
+echo -e "${BOLD}================================================================================${NC}"
+echo -e "${BOLD}                     SPARKWA AUTOMATED INSTALLER & RUNNER                       ${NC}"
+echo -e "${BOLD}================================================================================${NC}"
 
 if [ "$(id -u)" -ne 0 ]; then
     echo -e "${RED}Error: This script must be run as root (or via sudo).${NC}" >&2
-    exit 1
-fi
-
-if ! command -v apt-get >/dev/null 2>&1; then
-    echo -e "${RED}Error: apt package manager not found. This script is for Debian/Ubuntu systems.${NC}" >&2
     exit 1
 fi
 
@@ -37,51 +30,74 @@ case "$ARCH" in
         ;;
 esac
 
-echo -e "Setting up SparkWA repository for ${GREEN}${TARGET_ARCH}${NC}..."
-
-REPO_DIR="/var/lib/sparkwa/apt-repo"
-mkdir -p "$REPO_DIR"
+echo -e "Installing SparkWA for ${GREEN}${TARGET_ARCH}${NC}..."
 
 VERSION="1.0.0"
 DEB_NAME="sparkwa_${VERSION}_${TARGET_ARCH}.deb"
 DEB_URL="https://github.com/krishujeniya/sparkwa/releases/download/v${VERSION}/${DEB_NAME}"
+TAR_URL="https://github.com/krishujeniya/sparkwa/releases/download/v${VERSION}/sparkwa-v${VERSION}-linux-${TARGET_ARCH}.tar.gz"
 
-# If release is already built locally in dist, use it; otherwise fetch from GitHub
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || echo "")"
-LOCAL_DIST="$SCRIPT_DIR/../dist/$DEB_NAME"
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
 
-if [ -f "$LOCAL_DIST" ]; then
-    echo -e "Using package: ${GREEN}${LOCAL_DIST}${NC}"
-    cp "$LOCAL_DIST" "$REPO_DIR/$DEB_NAME"
-else
-    echo -e "Fetching package from: ${GREEN}${DEB_URL}${NC}"
-    if command -v curl >/dev/null 2>&1; then
-        curl -fsSL "$DEB_URL" -o "$REPO_DIR/$DEB_NAME" || true
+INSTALLED=0
+
+# Method A: Install official Debian package via apt
+if command -v apt-get >/dev/null 2>&1; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || echo "")"
+    LOCAL_DEB="$SCRIPT_DIR/../dist/$DEB_NAME"
+
+    if [ -f "$LOCAL_DEB" ]; then
+        cp "$LOCAL_DEB" "$TMP_DIR/$DEB_NAME"
+    elif command -v curl >/dev/null 2>&1; then
+        curl -fsSL "$DEB_URL" -o "$TMP_DIR/$DEB_NAME" 2>/dev/null || true
     elif command -v wget >/dev/null 2>&1; then
-        wget -q "$DEB_URL" -O "$REPO_DIR/$DEB_NAME" || true
+        wget -q "$DEB_URL" -O "$TMP_DIR/$DEB_NAME" 2>/dev/null || true
     fi
-fi
 
-# Index repository if package exists
-if [ -f "$REPO_DIR/$DEB_NAME" ]; then
-    if ! command -v dpkg-scanpackages >/dev/null 2>&1; then
+    if [ -f "$TMP_DIR/$DEB_NAME" ]; then
+        echo -e "Installing package via apt..."
         apt-get update -qq >/dev/null 2>&1 || true
-        apt-get install -y -qq dpkg-dev >/dev/null 2>&1 || true
-    fi
-    if command -v dpkg-scanpackages >/dev/null 2>&1; then
-        (cd "$REPO_DIR" && dpkg-scanpackages . /dev/null 2>/dev/null | gzip -9c > Packages.gz)
+        apt-get install -y -qq "$TMP_DIR/$DEB_NAME" >/dev/null 2>&1 || dpkg -i "$TMP_DIR/$DEB_NAME"
+        INSTALLED=1
     fi
 fi
 
-# Configure APT source list
-SOURCES_LIST="/etc/apt/sources.list.d/sparkwa.list"
-echo "deb [trusted=yes] file:$REPO_DIR ./" > "$SOURCES_LIST"
+# Method B: Standalone Binary Fallback
+if [ "$INSTALLED" -ne 1 ]; then
+    echo -e "Downloading binary release..."
+    if command -v curl >/dev/null 2>&1; then
+        curl -fsSL "$TAR_URL" -o "$TMP_DIR/sparkwa.tar.gz"
+    elif command -v wget >/dev/null 2>&1; then
+        wget -q "$TAR_URL" -O "$TMP_DIR/sparkwa.tar.gz"
+    fi
 
-echo -e "Updating package index..."
-apt-get update -o Dir::Etc::sourcelist="$SOURCES_LIST" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0" -qq 2>/dev/null || apt-get update -qq
+    tar -xzf "$TMP_DIR/sparkwa.tar.gz" -C "$TMP_DIR"
+    install -m 0755 "$TMP_DIR/sparkwa/sparkwa" /usr/local/bin/sparkwa
 
-echo -e "${GREEN}✓ SparkWA APT repository configured successfully.${NC}"
+    # Setup user & paths
+    if ! id "sparkwa" >/dev/null 2>&1; then
+        useradd --system --no-create-home --user-group --shell /usr/sbin/nologin sparkwa || true
+    fi
+    mkdir -p /etc/sparkwa /var/lib/sparkwa
+    chown -R sparkwa:sparkwa /var/lib/sparkwa
+    chmod 0700 /var/lib/sparkwa
+
+    if [ -f "$TMP_DIR/sparkwa/deploy/sparkwa.service" ]; then
+        cp "$TMP_DIR/sparkwa/deploy/sparkwa.service" /etc/systemd/system/
+        systemctl daemon-reload || true
+    fi
+    INSTALLED=1
+fi
+
+echo -e "${GREEN}✓ SparkWA successfully installed.${NC}"
 echo -e ""
-echo -e "You can now install SparkWA anytime by running:"
-echo -e "  ${GREEN}sudo apt install -y sparkwa${NC}"
-echo -e "${BLUE}================================================================================${NC}"
+echo -e "Launching interactive control dashboard..."
+sleep 1
+
+# Launch directly attached to controlling terminal
+if [ -e /dev/tty ]; then
+    exec /usr/local/bin/sparkwa </dev/tty >/dev/tty 2>&1
+else
+    exec /usr/local/bin/sparkwa
+fi
