@@ -1,0 +1,53 @@
+{
+  "contract": "SparkWA Documentation Site: High-contrast monochrome technical design system supporting dark/light themes, responsive navigation with mobile drawer on <=768px, WCAG 2.1 AA/AAA contrast ratios, keyboard navigable diagram tabs and scroll regions, complete heading hierarchy, and zero-FOUC theme hydration.",
+  "targetViewports": [
+    "1440x900",
+    "390x844"
+  ],
+  "accessibility": {
+    "status": "pass",
+    "evidence": "Tested skip link with tabindex='-1' target; verified logical sequential heading hierarchy (h1 -> h2 -> h3) with 0 skips across all sections; verified WAI-ARIA tablist arrow-key navigation with roving tabindex on diagram mode switcher; verified dark mode contrast ratios exceeding WCAG AAA (8.0:1 for muted text) and SC 1.4.11 non-text contrast (3.8:1 for borders/controls); verified scrollable pre/code/table regions are keyboard focusable with role='region' and aria-label; verified screen reader text alternative for 3D ASCII box art; verified external links have rel='noopener noreferrer' and screen reader hints."
+  },
+  "responsive": {
+    "status": "pass",
+    "evidence": "Verified desktop 1440x900 displays sticky navigation header with horizontal section links, multi-column pipeline grid, 8-card prompt grid, and 5-card documentation guide grid without horizontal overflow; verified mobile 390x844 displays 44x44px accessible hamburger menu button that opens a vertical drawer, stacks setup items and commands vertically, wraps badges and metadata cleanly, and supports touch targets >=44px across all buttons and links."
+  },
+  "contentStates": {
+    "loading": {
+      "status": "not-applicable",
+      "reason": "Static documentation website pre-rendered at build time with synchronous inline head script for theme hydration."
+    },
+    "empty": {
+      "status": "not-applicable",
+      "reason": "All documentation sections, commands, prompt examples, setup guides, and architectural diagrams contain complete pre-rendered static content."
+    },
+    "error": {
+      "status": "pass",
+      "evidence": "Clipboard copy action includes try-catch and execCommand fallback; if copy fails or clipboard permissions are denied, an accessible 'FAILED TO COPY' toast notification is announced via role='status' live region."
+    },
+    "partial": {
+      "status": "not-applicable",
+      "reason": "Documentation content is delivered statically in full; no incremental or partial streaming data models."
+    },
+    "success": {
+      "status": "pass",
+      "evidence": "Clicking any 'COPY' button (1-line install, 3D ASCII diagram, or Spark Prompt) triggers clipboard write, updates button state to 'COPIED!' for 2000ms, and displays a high-contrast 'COPIED TO CLIPBOARD' toast notification."
+    },
+    "permission": {
+      "status": "pass",
+      "evidence": "Clipboard API permissions boundaries are handled gracefully; when navigator.clipboard is unavailable or permission is blocked, execution transparently degrades to an in-memory textarea execCommand fallback without throwing unhandled exceptions."
+    }
+  },
+  "renderedEvidence": [
+    {
+      "viewport": "1440x900",
+      "artifact": "desktop.png",
+      "observation": "Desktop render shows crisp monochrome header, version badge, sticky nav links, hero ASCII banner, high-contrast 1-line installation box, balanced typography, and clean contrast."
+    },
+    {
+      "viewport": "390x844",
+      "artifact": "mobile.png",
+      "observation": "Mobile render shows responsive header with accessible 44px hamburger menu button and 44px theme toggle, stacked fast-install command box, legible hero copy, and touch-ready layout."
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://krishujeniya.github.io/sparkwa/sitemap.xml
