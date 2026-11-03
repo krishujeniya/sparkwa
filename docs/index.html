@@ -239,7 +239,7 @@
 
     .hero-logo-wrapper {
       width: 100%;
-      max-width: 100%;
+      max-width: 800px;
       margin-bottom: 32px;
       overflow: hidden !important;
       display: flex;
@@ -247,24 +247,15 @@
       min-width: 0;
     }
 
-    .hero-logo-svg {
+    .hero-logo-img {
       width: 100%;
       height: auto;
       max-width: 100%;
       display: block;
-      border-radius: 14px;
+      border-radius: 16px;
       border: 1px solid var(--border-bright);
-      background: var(--code-bg);
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    .hero-logo-bg {
-      fill: var(--code-bg);
-    }
-
-    .hero-logo-text {
-      fill: var(--fg);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+      object-fit: contain;
     }
 
     .hero-title {
@@ -1453,22 +1444,7 @@
     <div class="hero">
       <div class="container">
         <div class="hero-logo-wrapper" id="heroLogoWrapper">
-          <svg viewBox="0 0 760 210" class="hero-logo-svg" role="img" aria-label="SparkWA Banner — The Headless WhatsApp to Gemini Spark Bridge">
-            <rect width="760" height="210" rx="14" class="hero-logo-bg"/>
-            <g class="hero-logo-text" font-family="'SF Mono', SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, monospace" font-size="12" xml:space="preserve">
-              <text x="18" y="26">╔════════════════════════════════════════════════════════════════════════════════╗</text>
-              <text x="18" y="42">║  ███████╗██████╗  █████╗ ██████╗ ██╗  ██╗   ██╗    ██╗ █████╗                  ║</text>
-              <text x="18" y="58">║  ██╔════╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝   ██║    ██║██╔══██╗                 ║</text>
-              <text x="18" y="74">║  ███████╗██████╔╝███████║██████╔╝█████╔╝    ██║ █╗ ██║███████║                  ║</text>
-              <text x="18" y="90">║  ╚════██║██╔═══╝ ██╔══██║██╔══██╗██╔═██╗    ██║███╗██║██╔══██║                 ║</text>
-              <text x="18" y="106">║  ███████║██║     ██║  ██║██║  ██║██║  ██╗   ╚███╔███╔╝██║  ██║                 ║</text>
-              <text x="18" y="122">║  ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝    ╚══╝╚══╝ ╚═╝  ╚═╝                 ║</text>
-              <text x="18" y="138">║                                                                                ║</text>
-              <text x="18" y="154">║  THE HEADLESS WHATSAPP TO GEMINI SPARK BRIDGE                                  ║</text>
-              <text x="18" y="170">║  Pure Go • Single Native Binary • Zero Dependencies • By Krish Ujeniya         ║</text>
-              <text x="18" y="186">╚════════════════════════════════════════════════════════════════════════════════╝</text>
-            </g>
-          </svg>
+          <img src="assets/sparkwa-banner.png" alt="SparkWA — The Headless WhatsApp to Google Gemini Spark Bridge" class="hero-logo-img" width="800" height="220" fetchpriority="high">
         </div>
 
         <h1 class="hero-title">The Headless WhatsApp Bridge for Google Gemini Spark</h1>

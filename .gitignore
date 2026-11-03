@@ -13,9 +13,10 @@ build/
 *.dylib
 *.test
 *.out
-sparkwa
-sparkwa-*
+/sparkwa
+/sparkwa-*
 !sparkwa.service
+!docs/assets/**
 
 # --- Packaging & Distribution ---
 *.deb
