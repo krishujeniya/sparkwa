@@ -66,8 +66,8 @@ func setupTestEngine(t *testing.T) (*Engine, *store.Store, *mockWASender) {
 		SparkGmailAddress:     "spark@example.com",
 		MaxConcurrentJobs:     5,
 		MaxMessageLength:      4000,
-		GmailPollInterval:    10 * time.Second,
-		TaskTimeout:          15 * time.Minute,
+		GmailPollInterval:     10 * time.Second,
+		TaskTimeout:           15 * time.Minute,
 	}
 
 	wa := &mockWASender{loggedIn: true}

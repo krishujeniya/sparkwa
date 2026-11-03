@@ -195,4 +195,39 @@ func TestMaskingPrivacy(t *testing.T) {
 	if strings.Contains(maskedEmail, "erator.brid") {
 		t.Errorf("masked email leaked middle username: %s", maskedEmail)
 	}
+
+	// Edge cases
+	if m := MaskPhone(""); m != "Unconfigured" {
+		t.Errorf("expected Unconfigured for empty phone, got %q", m)
+	}
+	if m := MaskPhone("123"); m != "•••" {
+		t.Errorf("unexpected short phone mask: %q", m)
+	}
+	if m := MaskEmail(""); m != "Unconfigured" {
+		t.Errorf("expected Unconfigured for empty email, got %q", m)
+	}
+	if m := MaskEmail("bob@example.com"); !strings.Contains(m, "b••@example.com") {
+		t.Errorf("unexpected short user mask: %q", m)
+	}
+	if m := MaskEmail("invalidemail"); !strings.Contains(m, "••••@invalidemail") {
+		t.Errorf("unexpected invalid email mask: %q", m)
+	}
+}
+
+func TestVerifierCreationErrors(t *testing.T) {
+	_, err := NewVerifier("invalid", "+1234567890", nil)
+	if err == nil {
+		t.Errorf("expected error for invalid authorized number")
+	}
+
+	_, err = NewVerifier("+1987654321", "invalid", nil)
+	if err == nil {
+		t.Errorf("expected error for invalid bot number")
+	}
+
+	v, err := NewVerifier("+1987654321", "+1234567890", nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	v.SetLIDResolver(nil)
 }

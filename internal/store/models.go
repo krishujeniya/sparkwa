@@ -84,4 +84,3 @@ func (t *Task) FlowTag() string {
 		return "1 -> E"
 	}
 }
-

@@ -35,11 +35,11 @@ type CheckResult struct {
 
 // Doctor aggregates diagnostics across all subsystems.
 type Doctor struct {
-	config     *config.Config
-	store      *store.Store
-	waClient   *whatsapp.Client
+	config      *config.Config
+	store       *store.Store
+	waClient    *whatsapp.Client
 	gmailClient *gmail.Client
-	capManager *spark.CapabilityManager
+	capManager  *spark.CapabilityManager
 }
 
 // NewDoctor creates a new diagnostic runner.

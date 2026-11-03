@@ -70,19 +70,19 @@ const (
 
 // Response represents a parsed reply received from Spark via email or draft.
 type Response struct {
-	RequestID        string
-	Status           ResponseStatus
-	ResultText       string
-	ApprovalPrompt   string
-	IsStructured     bool
-	SourceMessageID  string
-	SourceThreadID   string
+	RequestID       string
+	Status          ResponseStatus
+	ResultText      string
+	ApprovalPrompt  string
+	IsStructured    bool
+	SourceMessageID string
+	SourceThreadID  string
 }
 
 var (
-	reqIDRegex     = regexp.MustCompile(`\[SPARKWA:([a-zA-Z0-9_-]+)\]`)
-	blockReqID     = regexp.MustCompile(`(?i)Request ID:\s*([a-zA-Z0-9_-]+)`)
-	blockStatus    = regexp.MustCompile(`(?i)Status:\s*(SUCCESS|APPROVAL_REQUIRED|FAILED)`)
+	reqIDRegex      = regexp.MustCompile(`\[SPARKWA:([a-zA-Z0-9_-]+)\]`)
+	blockReqID      = regexp.MustCompile(`(?i)Request ID:\s*([a-zA-Z0-9_-]+)`)
+	blockStatus     = regexp.MustCompile(`(?i)Status:\s*(SUCCESS|APPROVAL_REQUIRED|FAILED)`)
 	approvalPhrases = []string{
 		"do you want me to",
 		"please confirm if",

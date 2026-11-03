@@ -15,12 +15,12 @@ import (
 type CapabilityState string
 
 const (
-	CapNotConfigured           CapabilityState = "NOT_CONFIGURED"
-	CapGmailConnected          CapabilityState = "GMAIL_CONNECTED"
-	CapSparkTriggerConfigured  CapabilityState = "SPARK_TRIGGER_CONFIGURED"
-	CapResponsePathVerified    CapabilityState = "RESPONSE_PATH_VERIFIED"
-	CapSubmissionOnly          CapabilityState = "SUBMISSION_ONLY"
-	CapFullyVerified           CapabilityState = "FULLY_VERIFIED"
+	CapNotConfigured          CapabilityState = "NOT_CONFIGURED"
+	CapGmailConnected         CapabilityState = "GMAIL_CONNECTED"
+	CapSparkTriggerConfigured CapabilityState = "SPARK_TRIGGER_CONFIGURED"
+	CapResponsePathVerified   CapabilityState = "RESPONSE_PATH_VERIFIED"
+	CapSubmissionOnly         CapabilityState = "SUBMISSION_ONLY"
+	CapFullyVerified          CapabilityState = "FULLY_VERIFIED"
 )
 
 // Config holds all runtime configuration for SparkWA.

@@ -26,15 +26,15 @@ type WhatsAppSender interface {
 
 // Engine coordinates message reception, task persistence, Gmail dispatch, and response forwarding.
 type Engine struct {
-	config     *config.Config
-	store      *store.Store
+	config      *config.Config
+	store       *store.Store
 	gmailClient *gmail.Client
 	gmailPoller *gmail.Poller
-	waSender   WhatsAppSender
-	capManager *spark.CapabilityManager
-	mu         sync.Mutex
-	running    bool
-	stopChan   chan struct{}
+	waSender    WhatsAppSender
+	capManager  *spark.CapabilityManager
+	mu          sync.Mutex
+	running     bool
+	stopChan    chan struct{}
 }
 
 // NewEngine creates a new operational Engine instance.

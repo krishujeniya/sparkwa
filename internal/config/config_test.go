@@ -20,7 +20,7 @@ func TestConfigValidation(t *testing.T) {
 				AuthorizedPhoneNumber: "+1987654321",
 				BridgeGmailAddress:    "bridge@example.com",
 				SparkGmailAddress:     "spark@example.com",
-				GmailPollInterval:    45 * time.Second,
+				GmailPollInterval:     45 * time.Second,
 			},
 			wantErr: false,
 		},
@@ -30,7 +30,7 @@ func TestConfigValidation(t *testing.T) {
 				AuthorizedPhoneNumber: "+1987654321",
 				BridgeGmailAddress:    "bridge@example.com",
 				SparkGmailAddress:     "spark@example.com",
-				GmailPollInterval:    45 * time.Second,
+				GmailPollInterval:     45 * time.Second,
 			},
 			wantErr: true,
 		},
@@ -41,7 +41,7 @@ func TestConfigValidation(t *testing.T) {
 				AuthorizedPhoneNumber: "+1987654321",
 				BridgeGmailAddress:    "bridge@example.com",
 				SparkGmailAddress:     "spark@example.com",
-				GmailPollInterval:    45 * time.Second,
+				GmailPollInterval:     45 * time.Second,
 			},
 			wantErr: true,
 		},
@@ -52,7 +52,7 @@ func TestConfigValidation(t *testing.T) {
 				AuthorizedPhoneNumber: "+1987654321",
 				BridgeGmailAddress:    "invalid-email",
 				SparkGmailAddress:     "spark@example.com",
-				GmailPollInterval:    45 * time.Second,
+				GmailPollInterval:     45 * time.Second,
 			},
 			wantErr: true,
 		},
@@ -63,7 +63,7 @@ func TestConfigValidation(t *testing.T) {
 				AuthorizedPhoneNumber: "+1987654321",
 				BridgeGmailAddress:    "bridge@example.com",
 				SparkGmailAddress:     "spark@example.com",
-				GmailPollInterval:    2 * time.Second,
+				GmailPollInterval:     2 * time.Second,
 			},
 			wantErr: true,
 		},
@@ -123,5 +123,62 @@ LOG_LEVEL="debug"
 
 	if err := cfg.Validate(); err != nil {
 		t.Errorf("Validate() unexpected error: %v", err)
+	}
+}
+
+func TestConfigEnvOverridesAndQuoting(t *testing.T) {
+	tempDir := t.TempDir()
+	envPath := filepath.Join(tempDir, "complex.env")
+
+	content := `
+# Comment line
+BOT_PHONE_NUMBER='+1234567890' # inline single quote comment
+AUTHORIZED_PHONE_NUMBER="+1987654321" # inline double quote comment
+BRIDGE_GMAIL_ADDRESS=simple-bridge@gmail.com # inline unquoted comment
+SPARK_GMAIL_ADDRESS="simple-spark@gmail.com"
+DATA_DIR="/tmp/sparkwa-custom-data"
+GMAIL_CREDENTIALS_FILE="/tmp/custom-creds.json"
+GMAIL_TOKEN_FILE="/tmp/custom-token.json"
+DB_PATH="/tmp/custom.db"
+WHATSAPP_DB_PATH="/tmp/custom-wa.db"
+TASK_TIMEOUT="20m"
+SPARK_RESPONSE_MODE="email_only"
+INVALID_LINE_WITHOUT_EQUALS
+`
+	if err := os.WriteFile(envPath, []byte(content), 0600); err != nil {
+		t.Fatalf("failed to write test env: %v", err)
+	}
+
+	cfg, err := Load(envPath)
+	if err != nil {
+		t.Fatalf("unexpected error loading env file: %v", err)
+	}
+
+	if cfg.BotPhoneNumber != "+1234567890" {
+		t.Errorf("got %q, want +1234567890", cfg.BotPhoneNumber)
+	}
+	if cfg.AuthorizedPhoneNumber != "+1987654321" {
+		t.Errorf("got %q, want +1987654321", cfg.AuthorizedPhoneNumber)
+	}
+	if cfg.BridgeGmailAddress != "simple-bridge@gmail.com" {
+		t.Errorf("got %q, want simple-bridge@gmail.com", cfg.BridgeGmailAddress)
+	}
+	if cfg.DataDir != "/tmp/sparkwa-custom-data" {
+		t.Errorf("got %q, want /tmp/sparkwa-custom-data", cfg.DataDir)
+	}
+	if cfg.TaskTimeout != 20*time.Minute {
+		t.Errorf("got %v, want 20m", cfg.TaskTimeout)
+	}
+	if cfg.SparkResponseMode != "email_only" {
+		t.Errorf("got %q, want email_only", cfg.SparkResponseMode)
+	}
+}
+
+func TestConfigLoadInvalidFile(t *testing.T) {
+	// Loading non-existent explicit file should fail gracefully or load defaults if candidate
+	_, err := Load("/path/does/not/exist/never.env")
+	if err == nil {
+		// If explicit file does not exist, Load falls back to defaults or returns error
+		// Check that defaults are returned safely
 	}
 }

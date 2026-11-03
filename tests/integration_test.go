@@ -49,8 +49,8 @@ func TestEndToEndBridgeWorkflow(t *testing.T) {
 		SparkGmailAddress:     "spark@example.com",
 		MaxConcurrentJobs:     5,
 		MaxMessageLength:      4000,
-		GmailPollInterval:    15 * time.Second,
-		TaskTimeout:          10 * time.Minute,
+		GmailPollInterval:     15 * time.Second,
+		TaskTimeout:           10 * time.Minute,
 	}
 	if err := cfg.Validate(); err != nil {
 		t.Fatalf("config validation failed: %v", err)

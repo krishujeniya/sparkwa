@@ -8,11 +8,11 @@ import (
 )
 
 var (
-	ErrEmptyPhone     = errors.New("phone number cannot be empty")
-	ErrTooShort       = errors.New("phone number too short (minimum 7 digits)")
-	ErrTooLong        = errors.New("phone number too long (maximum 15 digits per ITU E.164)")
-	ErrInvalidFormat  = errors.New("invalid phone number format")
-	ErrNonDigitChars  = errors.New("phone number contains invalid non-numeric characters")
+	ErrEmptyPhone    = errors.New("phone number cannot be empty")
+	ErrTooShort      = errors.New("phone number too short (minimum 7 digits)")
+	ErrTooLong       = errors.New("phone number too long (maximum 15 digits per ITU E.164)")
+	ErrInvalidFormat = errors.New("invalid phone number format")
+	ErrNonDigitChars = errors.New("phone number contains invalid non-numeric characters")
 )
 
 // NormalizeE164 normalizes an incoming phone number into standard E.164 format: +<country_code><subscriber_number>.

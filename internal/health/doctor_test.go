@@ -32,7 +32,7 @@ func TestDoctorDiagnostics(t *testing.T) {
 		GmailCredentialsPath:  filepath.Join(tempDir, "credentials.json"),
 		GmailTokenPath:        filepath.Join(tempDir, "token.json"),
 		DBPath:                dbPath,
-		GmailPollInterval:    45 * time.Second,
+		GmailPollInterval:     45 * time.Second,
 	}
 
 	cm := spark.NewCapabilityManager(s, cfg)
