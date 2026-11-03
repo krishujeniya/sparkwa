@@ -160,6 +160,31 @@ On Tue, Nov 3, 2026 at 9:31 AM bridge@example.com wrote:
 	}
 }
 
+func BenchmarkFormatCommand(b *testing.B) {
+	cmd := &Command{
+		RequestID:        "256c0c48",
+		AuthorizedSender: "+19876543210",
+		Timestamp:        time.Now().UTC(),
+		Content:          "Please summarize the project meeting notes and email the action items.",
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _, _ = FormatCommand(cmd)
+	}
+}
+
+func BenchmarkParseResponse(b *testing.B) {
+	raw := `BEGIN SPARKWA RESPONSE
+Request ID: 256c0c48
+Status: SUCCESS
+Result: Task completed successfully. 3 action items identified.
+END SPARKWA RESPONSE`
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = ParseResponse("256c0c48", raw)
+	}
+}
+
 func TestParseResponseMismatchedID(t *testing.T) {
 	body := `
 Request ID: other-id

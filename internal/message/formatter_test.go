@@ -160,3 +160,41 @@ func TestFormatJobDetail(t *testing.T) {
 		t.Errorf("missing Gmail message ID: %s", detail)
 	}
 }
+
+func BenchmarkFormatStatusReport(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = FormatStatusReport(
+			true,
+			"+1234567890",
+			"+1987654321",
+			true,
+			"bridge@example.com",
+			"spark@example.com",
+			config.CapResponsePathVerified,
+			5,
+		)
+	}
+}
+
+func BenchmarkFormatJobDetail(b *testing.B) {
+	now := time.Now().UTC()
+	sub := now.Add(1 * time.Second)
+	comp := now.Add(5 * time.Second)
+	task := &store.Task{
+		ID:             "256c0c48",
+		State:          store.StateCompleted,
+		Command:        "List calendar events for today",
+		ResponseText:   "You have 3 meetings scheduled today.",
+		GmailMessageID: "msg-gmail-1234",
+		RetryCount:     1,
+		CreatedAt:      now,
+		SubmittedAt:    &sub,
+		CompletedAt:    &comp,
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = FormatJobDetail(task)
+	}
+}

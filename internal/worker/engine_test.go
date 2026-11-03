@@ -234,3 +234,105 @@ END SPARKWA RESPONSE`,
 		t.Errorf("expected task state APPROVAL_REQUIRED, got %s", updated.State)
 	}
 }
+
+func TestEngineEdgeCasesAndErrorHandling(t *testing.T) {
+	eng, s, wa := setupTestEngine(t)
+	ctx := context.Background()
+
+	// 1. Unknown slash command
+	eng.HandleInboundWhatsApp(ctx, "wa-unk", "+19876543210", "/unknown_cmd")
+	last := wa.lastMessage()
+	if !strings.Contains(last, "Unknown command") {
+		t.Errorf("expected unknown command reply, got %s", last)
+	}
+
+	// 2. /job without argument
+	eng.HandleInboundWhatsApp(ctx, "wa-j-noarg", "+19876543210", "/job")
+	last = wa.lastMessage()
+	if !strings.Contains(last, "Usage: `/job <task-id>`") {
+		t.Errorf("unexpected /job usage reply: %s", last)
+	}
+
+	// 3. /job with not found ID
+	eng.HandleInboundWhatsApp(ctx, "wa-j-404", "+19876543210", "/job non-existent-id")
+	last = wa.lastMessage()
+	if !strings.Contains(last, "Task not found") {
+		t.Errorf("unexpected not found reply: %s", last)
+	}
+
+	// 4. /cancel without argument
+	eng.HandleInboundWhatsApp(ctx, "wa-c-noarg", "+19876543210", "/cancel")
+	last = wa.lastMessage()
+	if !strings.Contains(last, "Usage: `/cancel <task-id>`") {
+		t.Errorf("unexpected /cancel usage reply: %s", last)
+	}
+
+	// 5. /cancel with not found ID
+	eng.HandleInboundWhatsApp(ctx, "wa-c-404", "+19876543210", "/cancel non-existent-id")
+	last = wa.lastMessage()
+	if !strings.Contains(last, "Task not found") {
+		t.Errorf("unexpected not found reply: %s", last)
+	}
+
+	// 6. Message exceeding max length
+	tooLongMsg := strings.Repeat("A", eng.config.MaxMessageLength+10)
+	eng.HandleInboundWhatsApp(ctx, "wa-toolong", "+19876543210", tooLongMsg)
+	last = wa.lastMessage()
+	if !strings.Contains(last, "Message exceeds maximum allowed length") {
+		t.Errorf("expected max length error, got: %s", last)
+	}
+
+	// 7. Queue full / concurrency limit
+	for i := 0; i < eng.config.MaxConcurrentJobs; i++ {
+		_ = s.CreateTask(ctx, &store.Task{
+			ID:          strings.Repeat("x", 4) + string(rune('a'+i)),
+			SenderPhone: "+19876543210",
+			WAMessageID: "fill-" + string(rune('a'+i)),
+			Command:     "concurrent task",
+			State:       store.StateQueued,
+		})
+	}
+	eng.HandleInboundWhatsApp(ctx, "wa-busy", "+19876543210", "Another command when busy")
+	last = wa.lastMessage()
+	if !strings.Contains(last, "System queue is busy") {
+		t.Errorf("expected system queue busy reply, got: %s", last)
+	}
+
+	// 8. Find task by prefix
+	tPrefix, err := eng.findTaskByIDOrPrefix(ctx, "xxxx")
+	if err != nil || tPrefix == nil {
+		t.Errorf("expected findTaskByIDOrPrefix to succeed, got %v", err)
+	}
+
+	// 9. Process reply for non-existent task
+	eng.processDiscoveredReply(ctx, &gmail.DiscoveredReply{
+		RequestID: "does-not-exist",
+		BodyText:  "some body",
+	})
+
+	// 10. Process failed reply from Spark
+	taskFailID := "fail-task-1"
+	_ = s.CreateTask(ctx, &store.Task{
+		ID:          taskFailID,
+		SenderPhone: "+19876543210",
+		WAMessageID: "wa-fail-1",
+		Command:     "Command that fails",
+		State:       store.StateAwaitingSpark,
+	})
+	eng.processDiscoveredReply(ctx, &gmail.DiscoveredReply{
+		RequestID:      taskFailID,
+		GmailMessageID: "g-fail-1",
+		BodyText: `BEGIN SPARKWA RESPONSE
+Request ID: ` + taskFailID + `
+Status: FAILED
+Result: Internal execution timeout in Spark sandbox.
+END SPARKWA RESPONSE`,
+	})
+	last = wa.lastMessage()
+	if !strings.Contains(last, "Internal execution timeout") {
+		t.Errorf("expected failure message sent to WhatsApp, got: %s", last)
+	}
+
+	// 11. Recover active tasks
+	eng.recoverActiveTasks(ctx)
+}

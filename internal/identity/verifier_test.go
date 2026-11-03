@@ -231,3 +231,27 @@ func TestVerifierCreationErrors(t *testing.T) {
 	}
 	v.SetLIDResolver(nil)
 }
+
+func BenchmarkNormalizeE164(b *testing.B) {
+	input := "+1 (555) 234-5678"
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = NormalizeE164(input)
+	}
+}
+
+func BenchmarkMaskPhone(b *testing.B) {
+	phone := "+15552345678"
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = MaskPhone(phone)
+	}
+}
+
+func BenchmarkMaskEmail(b *testing.B) {
+	email := "alice.engineering@company.com"
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = MaskEmail(email)
+	}
+}

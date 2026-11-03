@@ -214,3 +214,76 @@ func TestTaskFlowTag(t *testing.T) {
 		}
 	}
 }
+
+func TestStoreListRecentAndRetry(t *testing.T) {
+	s := setupTestStore(t)
+	ctx := context.Background()
+
+	// List on empty store
+	emptyList, err := s.ListRecentTasks(ctx, 10)
+	if err != nil {
+		t.Fatalf("ListRecentTasks on empty store failed: %v", err)
+	}
+	if len(emptyList) != 0 {
+		t.Fatalf("expected 0 tasks, got %d", len(emptyList))
+	}
+
+	task1 := &Task{ID: "t-1", SenderPhone: "+100", WAMessageID: "m1", Command: "c1", State: StateQueued}
+	task2 := &Task{ID: "t-2", SenderPhone: "+100", WAMessageID: "m2", Command: "c2", State: StateQueued}
+	_ = s.CreateTask(ctx, task1)
+	_ = s.CreateTask(ctx, task2)
+
+	recent, err := s.ListRecentTasks(ctx, 1)
+	if err != nil {
+		t.Fatalf("ListRecentTasks failed: %v", err)
+	}
+	if len(recent) != 1 {
+		t.Fatalf("expected 1 task with limit 1, got %d", len(recent))
+	}
+
+	// Test increment retry
+	if err := s.IncrementRetry(ctx, "t-1", "temporary network timeout"); err != nil {
+		t.Fatalf("IncrementRetry failed: %v", err)
+	}
+	t1, err := s.GetTask(ctx, "t-1")
+	if err != nil {
+		t.Fatalf("GetTask failed: %v", err)
+	}
+	if t1.RetryCount != 1 || t1.ErrorMessage != "temporary network timeout" {
+		t.Errorf("unexpected retry state: count=%d, err=%s", t1.RetryCount, t1.ErrorMessage)
+	}
+
+	// Test non-existent task lookups
+	_, err = s.GetTask(ctx, "non-existent-id")
+	if err != ErrTaskNotFound {
+		t.Errorf("expected ErrTaskNotFound, got %v", err)
+	}
+
+	err = s.UpdateTaskState(ctx, "non-existent-id", StateCompleted, "", "")
+	if err != ErrTaskNotFound {
+		t.Errorf("expected ErrTaskNotFound on update, got %v", err)
+	}
+}
+
+func BenchmarkStoreTaskCreation(b *testing.B) {
+	tempDir := b.TempDir()
+	dbPath := filepath.Join(tempDir, "bench_sparkwa.db")
+	s, err := Open(context.Background(), dbPath)
+	if err != nil {
+		b.Fatalf("failed to open bench store: %v", err)
+	}
+	defer s.Close()
+	ctx := context.Background()
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		t := &Task{
+			ID:          filepath.Base(tempDir) + string(rune(i)),
+			SenderPhone: "+19876543210",
+			WAMessageID: "wa-" + string(rune(i)),
+			Command:     "Benchmark test command",
+			State:       StateQueued,
+		}
+		_ = s.CreateTask(ctx, t)
+	}
+}
