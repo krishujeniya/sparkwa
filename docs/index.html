@@ -181,13 +181,16 @@
     .logo-brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       text-decoration: none;
       color: var(--fg);
       font-family: var(--font-mono);
       font-weight: 700;
-      font-size: 1.15rem;
+      font-size: clamp(1rem, 4vw, 1.18rem);
       letter-spacing: -0.5px;
+      flex-shrink: 0;
+      min-width: 0;
+      white-space: nowrap;
     }
 
     nav.nav-links {
@@ -234,17 +237,34 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .hero-ascii {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      line-height: 1.15;
-      white-space: pre;
-      overflow-x: auto;
-      padding: 16px;
-      background: var(--code-bg);
-      border: 1px solid var(--border);
+    .hero-logo-wrapper {
+      width: 100%;
+      max-width: 100%;
       margin-bottom: 32px;
-      user-select: all;
+      overflow: hidden !important;
+      display: flex;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .hero-logo-svg {
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+      display: block;
+      border-radius: 14px;
+      border: 1px solid var(--border-bright);
+      background: var(--code-bg);
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-logo-bg {
+      fill: var(--code-bg);
+    }
+
+    .hero-logo-text {
+      fill: var(--fg);
     }
 
     .hero-title {
@@ -858,7 +878,6 @@
     }
 
     /* Focus indicators for scrollable regions */
-    .hero-ascii:focus-visible,
     .command-text:focus-visible,
     .prompt-content:focus-visible,
     .table-wrapper:focus-visible,
@@ -1324,12 +1343,7 @@
         justify-content: center;
         border-top: 1px solid var(--border);
       }
-      .hero-ascii {
-        font-size: 0.52rem;
-        line-height: 1.1;
-        padding: 12px;
-        max-width: 100%;
-      }
+
       .prompt-grid {
         grid-template-columns: 1fr;
       }
@@ -1361,10 +1375,7 @@
         font-size: 1.05rem;
         line-height: 1.45;
       }
-      .hero-ascii {
-        font-size: 0.44rem;
-        padding: 8px;
-      }
+
       .fast-install {
         padding: 16px;
       }
@@ -1441,17 +1452,24 @@
     <!-- Hero -->
     <div class="hero">
       <div class="container">
-        <div class="hero-ascii" role="region" aria-label="SparkWA ASCII banner" tabindex="0">╔════════════════════════════════════════════════════════════════════════════════╗
-║  ███████╗██████╗  █████╗ ██████╗ ██╗  ██╗   ██╗    ██╗ █████╗                  ║
-║  ██╔════╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝   ██║    ██║██╔══██╗                 ║
-║  ███████╗██████╔╝███████║██████╔╝█████╔╝    ██║ █╗ ██║███████║                  ║
-║  ╚════██║██╔═══╝ ██╔══██║██╔══██╗██╔═██╗    ██║███╗██║██╔══██║                 ║
-║  ███████║██║     ██║  ██║██║  ██║██║  ██╗   ╚███╔███╔╝██║  ██║                 ║
-║  ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝    ╚══╝╚══╝ ╚═╝  ╚═╝                 ║
-║                                                                                ║
-║  THE HEADLESS WHATSAPP TO GEMINI SPARK BRIDGE                                  ║
-║  Pure Go • Single Native Binary • Zero Dependencies • By Krish Ujeniya         ║
-╚════════════════════════════════════════════════════════════════════════════════╝</div>
+        <div class="hero-logo-wrapper" id="heroLogoWrapper">
+          <svg viewBox="0 0 760 210" class="hero-logo-svg" role="img" aria-label="SparkWA Banner — The Headless WhatsApp to Gemini Spark Bridge">
+            <rect width="760" height="210" rx="14" class="hero-logo-bg"/>
+            <g class="hero-logo-text" font-family="'SF Mono', SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, monospace" font-size="12" xml:space="preserve">
+              <text x="18" y="26">╔════════════════════════════════════════════════════════════════════════════════╗</text>
+              <text x="18" y="42">║  ███████╗██████╗  █████╗ ██████╗ ██╗  ██╗   ██╗    ██╗ █████╗                  ║</text>
+              <text x="18" y="58">║  ██╔════╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝   ██║    ██║██╔══██╗                 ║</text>
+              <text x="18" y="74">║  ███████╗██████╔╝███████║██████╔╝█████╔╝    ██║ █╗ ██║███████║                  ║</text>
+              <text x="18" y="90">║  ╚════██║██╔═══╝ ██╔══██║██╔══██╗██╔═██╗    ██║███╗██║██╔══██║                 ║</text>
+              <text x="18" y="106">║  ███████║██║     ██║  ██║██║  ██║██║  ██╗   ╚███╔███╔╝██║  ██║                 ║</text>
+              <text x="18" y="122">║  ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝    ╚══╝╚══╝ ╚═╝  ╚═╝                 ║</text>
+              <text x="18" y="138">║                                                                                ║</text>
+              <text x="18" y="154">║  THE HEADLESS WHATSAPP TO GEMINI SPARK BRIDGE                                  ║</text>
+              <text x="18" y="170">║  Pure Go • Single Native Binary • Zero Dependencies • By Krish Ujeniya         ║</text>
+              <text x="18" y="186">╚════════════════════════════════════════════════════════════════════════════════╝</text>
+            </g>
+          </svg>
+        </div>
 
         <h1 class="hero-title">The Headless WhatsApp Bridge for Google Gemini Spark</h1>
         <p class="hero-subtitle">
