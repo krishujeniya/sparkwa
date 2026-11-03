@@ -79,40 +79,51 @@ SparkWA links two phone numbers and two Gmail accounts:
 ### Message Flow Diagram
 
 ```text
-Your Personal WhatsApp (Number 2)
-       │
-       │ (1) Send text message or command
-       ▼
-Dedicated WhatsApp Bot (Number 1)
-       │
-       │ (2) Read by SparkWA on your server
-       ▼
-┌─────────────────────────────────────────────────────────────┐
-│                          SPARKWA                            │
-│  • Verifies sender matches Number 2                         │
-│  • Saves task to local SQLite database                      │
-│  • Formats email: [SPARKWA:TASK_ID]                         │
-│  • Sends email via official Google Gmail API                │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               │ (3) Outbound email via Gmail API
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      GOOGLE WORKSPACE                       │
-│  Bridge Gmail ──────────► Spark Gmail Inbox                 │
-│                                  │                          │
-│                                  │ (4) Event trigger        │
-│                                  ▼                          │
-│                         Gemini Spark Agent                  │
-│                         (Runs task using Google tools)      │
-│                                  │                          │
-│                                  │ (5) Email reply or draft │
-│  Bridge Gmail ◄──────────────────┘                          │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               │ (6) Discovered by SparkWA poller
-                               ▼
-Your Personal WhatsApp (Number 2) ◄─── Spark's answer delivered to chat
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                      NODE [2] : AUTHORIZED SENDER                          ║
+  ║                   Your Personal WhatsApp (Number 2)                        ║
+  ╚══════════════════════════════════════╦═════════════════════════════════════╝
+                                         │
+                                         │ (1) Send text message or command
+                                         ▼
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        NODE [1] : WHATSAPP BOT                             ║
+  ║                   Dedicated WhatsApp SIM (Number 1)                        ║
+  ╚══════════════════════════════════════╦═════════════════════════════════════╝
+                                         │
+                                         │ (2) Read by SparkWA on your server
+                                         ▼
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                    NODE [E] : SPARKWA LOCAL ENGINE                         ║
+  ║  ────────────────────────────────────────────────────────────────────────  ║
+  ║  • Verifies sender matches Number 2 (silent drop for strangers)            ║
+  ║  • Saves task to local SQLite database (/var/lib/sparkwa)                  ║
+  ║  • Formats email protocol RFC-2822: [SPARKWA:TASK_ID]                      ║
+  ║  • Sends email via official Google Gmail API (OAuth 2.0)                   ║
+  ╚══════════════════════════════════════╦═════════════════════════════════════╝
+                                         │
+                                         │ (3) Outbound email via Gmail API
+                                         ▼
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║             NODE [S] : GOOGLE WORKSPACE & GEMINI SPARK                     ║
+  ║  ────────────────────────────────────────────────────────────────────────  ║
+  ║   Bridge Gmail ──────────────────────► Spark Gmail Inbox                   ║
+  ║                                                │                           ║
+  ║                                                │ (4) Event trigger         ║
+  ║                                                ▼                           ║
+  ║                                       Gemini Spark Agent                   ║
+  ║                                       (Runs task using Google tools)       ║
+  ║                                                │                           ║
+  ║                                                │ (5) Email reply or draft  ║
+  ║   Bridge Gmail ◄───────────────────────────────┘                           ║
+  ╚══════════════════════════════════════╦═════════════════════════════════════╝
+                                         │
+                                         │ (6) Discovered by SparkWA poller
+                                         ▼
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                      NODE [2] : AUTHORIZED SENDER                          ║
+  ║                   Spark's answer delivered to chat                         ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
