@@ -18,6 +18,7 @@
 *By Krish Ujeniya*
 
 [![Go Version](https://img.shields.io/badge/Go-1.23%2B-black.svg?style=for-the-badge&logo=go)](https://golang.org)
+[![Documentation](https://img.shields.io/badge/Docs-krishujeniya.github.io%2Fsparkwa-black.svg?style=for-the-badge)](https://krishujeniya.github.io/sparkwa/)
 [![Platform](https://img.shields.io/badge/Platform-Ubuntu%20%2F%20Debian%20%2F%20macOS-black.svg?style=for-the-badge&logo=linux)]()
 [![Memory Usage](https://img.shields.io/badge/RAM-~30%20MB-black.svg?style=for-the-badge)]()
 [![Interface](https://img.shields.io/badge/Interface-Black%20%26%20White%20TUI-black.svg?style=for-the-badge)]()
@@ -321,8 +322,7 @@ Your settings, paired WhatsApp session, and task history are saved automatically
 
 ## Documentation Index
 
-Detailed guides are located in the [`docs/`](docs/) folder:
-
+- 🌐 **[Live Single-Page Documentation Site](https://krishujeniya.github.io/sparkwa/)** — Complete interactive guide with one-click copy commands and system prompt.
 - [docs/SPARK_SETUP.md](docs/SPARK_SETUP.md) — Step-by-step instructions to configure your Gemini Spark schedule and prompt.
 - [docs/GMAIL_OAUTH_SETUP.md](docs/GMAIL_OAUTH_SETUP.md) — Creating Google Cloud OAuth credentials and connecting Gmail.
 - [docs/VPS_INSTALL.md](docs/VPS_INSTALL.md) — Full manual installation and deployment guide for Ubuntu servers.

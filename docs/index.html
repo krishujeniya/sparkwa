@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SparkWA — Headless WhatsApp to Google Gemini Spark Bridge | Documentation</title>
+  <meta name="description" content="Official documentation for SparkWA: a lightweight, single-binary bridge connecting WhatsApp to Google Gemini Spark via Gmail. Pure Go, 30MB RAM, zero dependencies. By Krish Ujeniya.">
+  <meta name="author" content="Krish Ujeniya">
+  <meta name="theme-color" content="#000000">
+
+  <!-- Open Graph / SEO -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="SparkWA — Headless WhatsApp to Google Gemini Spark Bridge">
+  <meta property="og:description" content="Connect your personal WhatsApp directly to your Google Gemini Spark autonomous agent. Single native binary, fail-closed security, ~30 MB memory. By Krish Ujeniya.">
+  <meta property="og:url" content="https://krishujeniya.github.io/sparkwa/">
+
+  <style>
+    /* ==========================================================================
+       STRICT MONOCHROME HIGH-CONTRAST DESIGN SYSTEM — BY KRISH UJENIYA
+       ========================================================================== */
+    :root {
+      --bg: #000000;
+      --fg: #ffffff;
+      --panel: #0c0c0c;
+      --panel-alt: #141414;
+      --border: #282828;
+      --border-bright: #444444;
+      --muted: #888888;
+      --code-bg: #101010;
+      --btn-bg: #ffffff;
+      --btn-fg: #000000;
+      --focus: #ffffff;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --container: 1040px;
+    }
+
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --fg: #000000;
+      --panel: #f8f8f8;
+      --panel-alt: #eeeeee;
+      --border: #d0d0d0;
+      --border-bright: #999999;
+      --muted: #555555;
+      --code-bg: #f2f2f2;
+      --btn-bg: #000000;
+      --btn-fg: #ffffff;
+      --focus: #000000;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Accessibility Skip Link */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 10px;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      padding: 8px 16px;
+      text-decoration: none;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      z-index: 1000;
+      transition: top 0.2s;
+    }
+    .skip-link:focus {
+      top: 10px;
+      outline: 2px solid var(--focus);
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Navigation */
+    header.site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .logo-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--fg);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border: 1px solid var(--fg);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    nav.nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    nav.nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-family: var(--font-mono);
+      transition: color 0.15s;
+    }
+
+    nav.nav-links a:hover {
+      color: var(--fg);
+    }
+
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border-bright);
+      color: var(--fg);
+      padding: 6px 12px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    .theme-toggle:hover {
+      background: var(--panel-alt);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 56px 0 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-ascii {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      line-height: 1.15;
+      white-space: pre;
+      overflow-x: auto;
+      padding: 16px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      margin-bottom: 32px;
+      user-select: all;
+    }
+
+    .hero-title {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      margin-bottom: 32px;
+    }
+
+    .meta-tag {
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Fast Install Box */
+    .fast-install {
+      background: var(--panel);
+      border: 1px solid var(--border-bright);
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+
+    .fast-install-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .fast-install-title {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .command-box {
+      display: flex;
+      align-items: stretch;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      overflow: hidden;
+    }
+
+    .command-text {
+      flex: 1;
+      padding: 14px 16px;
+      overflow-x: auto;
+      white-space: nowrap;
+      user-select: all;
+      color: var(--fg);
+    }
+
+    .btn-copy {
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      border: none;
+      padding: 0 20px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.15s;
+    }
+    .btn-copy:hover {
+      opacity: 0.85;
+    }
+
+    .install-hint {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    /* Section Styling */
+    section.doc-section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-header {
+      margin-bottom: 32px;
+    }
+
+    .section-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 1.85rem;
+      font-weight: 700;
+      letter-spacing: -0.75px;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-top: 8px;
+      max-width: 780px;
+    }
+
+    /* Node Pipeline Cards */
+    .pipeline-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .pipeline-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 20px;
+      position: relative;
+    }
+
+    .card-node-badge {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      background: var(--fg);
+      color: var(--bg);
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card-body {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .flow-bar {
+      background: var(--code-bg);
+      border: 1px solid var(--border-bright);
+      padding: 16px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .flow-step {
+      font-weight: 700;
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    .flow-arrow {
+      color: var(--muted);
+    }
+
+    /* Master Prompt Section */
+    .prompt-container {
+      background: var(--code-bg);
+      border: 1px solid var(--border-bright);
+      position: relative;
+      margin-top: 16px;
+    }
+
+    .prompt-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .prompt-content {
+      padding: 20px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.55;
+      overflow-x: auto;
+      max-height: 480px;
+      user-select: all;
+      color: var(--fg);
+      white-space: pre;
+    }
+
+    /* Command Table */
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    table.data-table th {
+      background: var(--code-bg);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.5px;
+    }
+
+    table.data-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    table.data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.data-table code {
+      font-family: var(--font-mono);
+      background: var(--code-bg);
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+
+    /* Setup Steps Grid */
+    .steps-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .step-item {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 24px;
+      display: flex;
+      gap: 20px;
+    }
+
+    .step-number {
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      font-weight: 800;
+      width: 44px;
+      height: 44px;
+      border: 2px solid var(--fg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-body h4 {
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+    }
+
+    .step-body p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 12px;
+    }
+
+    .step-body pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      overflow-x: auto;
+    }
+
+    /* Security Grid */
+    .sec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .sec-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 20px;
+    }
+
+    .sec-card h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+    }
+
+    .sec-card p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* FAQ Details */
+    .faq-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    details.faq-item {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      cursor: pointer;
+    }
+
+    details.faq-item[open] {
+      border-color: var(--border-bright);
+    }
+
+    details.faq-item summary {
+      font-weight: 700;
+      font-size: 1rem;
+      outline: none;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    details.faq-item summary::after {
+      content: "+";
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+    }
+
+    details.faq-item[open] summary::after {
+      content: "−";
+    }
+
+    details.faq-item p {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    /* Footer */
+    footer.site-footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+      margin-top: auto;
+      background: var(--panel);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .footer-credits {
+      color: var(--muted);
+    }
+
+    .footer-credits strong {
+      color: var(--fg);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .footer-links a:hover {
+      color: var(--fg);
+      text-decoration: underline;
+    }
+
+    /* Live Toast for Copy Action */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      padding: 10px 18px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: 1px solid var(--fg);
+      z-index: 1000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.1rem;
+      }
+      .nav-links {
+        display: none;
+      }
+      .command-box {
+        flex-direction: column;
+      }
+      .btn-copy {
+        padding: 12px;
+        justify-content: center;
+      }
+      .step-item {
+        flex-direction: column;
+      }
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen reader skip link -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="#" class="logo-brand" aria-label="SparkWA Home">
+        <span>SPARKWA</span>
+        <span class="logo-badge">v1.0.0</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Documentation Navigation">
+        <a href="#install">Install</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#prompt">Spark Prompt</a>
+        <a href="#commands">Commands</a>
+        <a href="#setup">Setup</a>
+        <a href="#security">Security</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle monochrome color theme">
+        <span id="themeLabel">LIGHT MODE</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="container">
+        <div class="hero-ascii" aria-hidden="true">╔════════════════════════════════════════════════════════════════════════════════╗
+║  ███████╗██████╗  █████╗ ██████╗ ██╗  ██╗   ██╗    ██╗ █████╗                  ║
+║  ██╔════╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝   ██║    ██║██╔══██╗                 ║
+║  ███████╗██████╔╝███████║██████╔╝█████╔╝    ██║ █╗ ██║███████║                  ║
+║  ╚════██║██╔═══╝ ██╔══██║██╔══██╗██╔═██╗    ██║███╗██║██╔══██║                 ║
+║  ███████║██║     ██║  ██║██║  ██║██║  ██╗   ╚███╔███╔╝██║  ██║                 ║
+║  ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝    ╚══╝╚══╝ ╚═╝  ╚═╝                 ║
+║                                                                                ║
+║  THE HEADLESS WHATSAPP TO GEMINI SPARK BRIDGE                                  ║
+║  Pure Go • Single Native Binary • Zero Dependencies • By Krish Ujeniya         ║
+╚════════════════════════════════════════════════════════════════════════════════╝</div>
+
+        <h1 class="hero-title">The Headless WhatsApp Bridge for Google Gemini Spark</h1>
+        <p class="hero-subtitle">
+          Connect your personal WhatsApp directly to your autonomous Google Gemini Spark agent via event-driven Gmail triggers. Runs as a single native Go binary on any 512 MB Linux server with zero runtime dependencies.
+        </p>
+
+        <div class="hero-meta">
+          <span class="meta-tag">GO 1.24+</span>
+          <span class="meta-tag">~30 MB RAM</span>
+          <span class="meta-tag">0.0% IDLE CPU</span>
+          <span class="meta-tag">PURE MONOCHROME</span>
+          <span class="meta-tag">AUTHOR: KRISH UJENIYA</span>
+        </div>
+
+        <!-- 1-Line Fast Install -->
+        <div class="fast-install" id="install">
+          <div class="fast-install-header">
+            <span class="fast-install-title">Fast 1-Line Installation &amp; Runner</span>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted);">UBUNTU / DEBIAN / LINUX</span>
+          </div>
+
+          <div class="command-box">
+            <div class="command-text" id="installCmd">curl -fsSL https://raw.githubusercontent.com/krishujeniya/sparkwa/main/scripts/setup-apt.sh | sudo bash</div>
+            <button class="btn-copy" onclick="copySnippet('installCmd', this)" aria-label="Copy 1-line installation command">
+              <span>COPY</span>
+            </button>
+          </div>
+          <div class="install-hint">
+            Automatically installs SparkWA via <code>apt</code> and immediately launches the interactive TUI dashboard. Reopen anytime with <code>sparkwa</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Integration Pipeline -->
+    <section class="doc-section" id="pipeline">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">Zero Privacy Leaks</div>
+          <h2 class="section-title">System Integration Pipeline</h2>
+          <p class="section-desc">
+            SparkWA is designed with total privacy abstraction. The terminal user interface (TUI) and system logs never reveal your phone numbers, emails, or message bodies. Instead, actions are tracked through a deterministic 4-node flow.
+          </p>
+        </div>
+
+        <div class="pipeline-grid">
+          <div class="pipeline-card">
+            <span class="card-node-badge">NODE [1]</span>
+            <h3 class="card-title">WhatsApp Bot</h3>
+            <p class="card-body">Dedicated secondary WhatsApp SIM account. Connects headlessly via terminal QR code.</p>
+          </div>
+
+          <div class="pipeline-card">
+            <span class="card-node-badge">NODE [2]</span>
+            <h3 class="card-title">Authorized User</h3>
+            <p class="card-body">Your personal WhatsApp number. Only this number is permitted. Strangers are rejected.</p>
+          </div>
+
+          <div class="pipeline-card">
+            <span class="card-node-badge">NODE [E]</span>
+            <h3 class="card-title">Gmail Bridge</h3>
+            <p class="card-body">Secure Google Cloud OAuth 2.0 mailbox on VPS that delivers commands to Gemini Spark.</p>
+          </div>
+
+          <div class="pipeline-card">
+            <span class="card-node-badge">NODE [S]</span>
+            <h3 class="card-title">Gemini Spark</h3>
+            <p class="card-body">Your autonomous AI agent in Google Workspace with direct access to Docs, Drive &amp; Calendar.</p>
+          </div>
+        </div>
+
+        <div class="flow-bar">
+          <span style="color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">DATA PIPELINE:</span>
+          <span class="flow-step">[2 ➔ 1] Inbound</span>
+          <span class="flow-arrow">➔</span>
+          <span class="flow-step">[1 ➔ E] Bridge Dispatch</span>
+          <span class="flow-arrow">➔</span>
+          <span class="flow-step">[E ➔ S] Spark Process</span>
+          <span class="flow-arrow">➔</span>
+          <span class="flow-step">[S ➔ E] Spark Reply</span>
+          <span class="flow-arrow">➔</span>
+          <span class="flow-step">[E ➔ 2] WhatsApp Delivery</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Master Spark Prompt -->
+    <section class="doc-section" id="prompt">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">24/7 Autonomous Execution</div>
+          <h2 class="section-title">Master Gemini Spark System Prompt</h2>
+          <p class="section-desc">
+            Copy and paste this exact instruction into your Gemini Custom Instructions, Gem instructions, or Scheduled Task. It gives Spark permanent standing authorization so it never pauses to ask <em>"Should I send this email?"</em>, never echoes command envelopes, and always delivers the direct answer to your WhatsApp.
+          </p>
+        </div>
+
+        <div class="prompt-container">
+          <div class="prompt-toolbar">
+            <span>GEMINI SPARK MASTER INSTRUCTION</span>
+            <button class="btn-copy" onclick="copySnippet('sparkPrompt', this)" aria-label="Copy Spark Master Prompt">
+              <span>COPY PROMPT</span>
+            </button>
+          </div>
+          <pre class="prompt-content" id="sparkPrompt">You are an autonomous execution worker integrated with SparkWA. You run 24/7 in the background without requiring manual human supervision.
+
+You receive automated tasks via incoming emails with subjects formatted as:
+[SPARKWA:REQUEST_ID] &lt;Short Title&gt;
+
+The email body will follow this format:
+BEGIN SPARKWA COMMAND
+Request ID: &lt;REQUEST_ID&gt;
+Authorized sender: &lt;MASKED_PHONE&gt;
+Timestamp: &lt;ISO8601&gt;
+Command: &lt;USER_INSTRUCTION&gt;
+END SPARKWA COMMAND
+
+OPERATING PROTOCOL:
+1. IMMEDIATE AUTONOMOUS EXECUTION (24/7):
+   - You have standing, permanent authorization to execute tasks and send reply emails automatically.
+   - NEVER ask "Should I send this email?", "Do you want me to reply?", or "Shall I proceed?".
+   - NEVER pause or wait for user confirmation to send the email response. Send the email reply directly and immediately to the sender.
+
+2. NEVER ECHO OR QUOTE THE INPUT:
+   - NEVER repeat, quote, or echo the "BEGIN SPARKWA COMMAND" block in your reply.
+   - Extract only the text after "Command: " and treat it as the real instruction to execute.
+   - If the command is a conversational greeting (e.g., "Hi", "Hello"), reply directly and politely.
+   - If the command is a query, answer it thoroughly.
+   - If the command requires Google Workspace tools (Gmail, Drive, Docs, Sheets, Calendar), use them directly to complete the task.
+
+3. STRICT RESPONSE FORMAT:
+   Always reply directly to the email thread using this exact structure:
+
+BEGIN SPARKWA RESPONSE
+Request ID: &lt;REQUEST_ID&gt;
+Status: SUCCESS
+Result: &lt;YOUR DIRECT ANSWER, SUMMARY, OR OUTPUT&gt;
+END SPARKWA RESPONSE
+
+   - Replace &lt;REQUEST_ID&gt; with the exact Request ID from the incoming email.
+   - Put your actual answer or output after "Result: ".
+   - Do not include extra conversational text outside of this block.
+
+4. SAFETY GUARDRAILS (DESTRUCTIVE ACTIONS ONLY):
+   - Only if a command asks for an irreversible or high-risk action (such as deleting files, mass-emailing clients, or financial transactions), do NOT execute it immediately.
+   - Instead, respond with:
+
+BEGIN SPARKWA RESPONSE
+Request ID: &lt;REQUEST_ID&gt;
+Status: APPROVAL_REQUIRED
+Result: This action requires your confirmation: [brief description]. Reply YES to confirm.
+END SPARKWA RESPONSE</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- WhatsApp Commands -->
+    <section class="doc-section" id="commands">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">Real-Time Control</div>
+          <h2 class="section-title">WhatsApp Slash Commands</h2>
+          <p class="section-desc">
+            Send these commands from your authorized personal WhatsApp number directly to the bot account:
+          </p>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Action</th>
+                <th>Expected Response</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>/ping</code></td>
+                <td>Latency &amp; responsiveness diagnostic</td>
+                <td>Instant pong reply with server UTC timestamp</td>
+              </tr>
+              <tr>
+                <td><code>/status</code></td>
+                <td>System integration &amp; capability audit</td>
+                <td>Live health check for WhatsApp, Gmail, and Gemini Spark</td>
+              </tr>
+              <tr>
+                <td><code>/jobs</code></td>
+                <td>Inspect recent tasks in SQLite queue</td>
+                <td>Compact table of recent task IDs, flows, and states</td>
+              </tr>
+              <tr>
+                <td><code>/job &lt;id&gt;</code></td>
+                <td>Inspect details of a specific task</td>
+                <td>Full execution timestamps, Gmail thread ID, and results</td>
+              </tr>
+              <tr>
+                <td><code>/cancel &lt;id&gt;</code></td>
+                <td>Cancel an active pending task</td>
+                <td>Marks the task cancelled and cancels outbound worker dispatch</td>
+              </tr>
+              <tr>
+                <td><code>/help</code></td>
+                <td>Quick command cheatsheet</td>
+                <td>Displays the full operational command guide</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5-Minute Setup Walkthrough -->
+    <section class="doc-section" id="setup">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">Step-by-Step</div>
+          <h2 class="section-title">5-Minute Server Deployment</h2>
+          <p class="section-desc">
+            Complete walkthrough to deploy SparkWA to any clean Ubuntu 24.04, 22.04, or Debian VPS.
+          </p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-item">
+            <div class="step-number">1</div>
+            <div class="step-body">
+              <h4>Install via Single Command</h4>
+              <p>Run the automated installer on your server to install SparkWA and create system services:</p>
+              <pre>curl -fsSL https://raw.githubusercontent.com/krishujeniya/sparkwa/main/scripts/setup-apt.sh | sudo bash</pre>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-number">2</div>
+            <div class="step-body">
+              <h4>Download Google OAuth Credentials</h4>
+              <p>In Google Cloud Console, create an <strong>OAuth Client ID (Desktop App)</strong> with Gmail API enabled, download the JSON file, and save it as <code>/etc/sparkwa/credentials.json</code>:</p>
+              <pre>sudo chmod 0600 /etc/sparkwa/credentials.json</pre>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-number">3</div>
+            <div class="step-body">
+              <h4>Configure via Guided Setup Wizard</h4>
+              <p>Launch the interactive control menu and select <strong>[1] Guided Setup Wizard</strong>:</p>
+              <pre>sudo sparkwa</pre>
+              <p>Enter your Bot WhatsApp number (+country code), your personal phone number, and your Gmail accounts.</p>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-number">4</div>
+            <div class="step-body">
+              <h4>Pair WhatsApp via Terminal QR Code</h4>
+              <p>From the control menu, select <strong>[2] Pair WhatsApp</strong>. Open WhatsApp on Phone Number 1, go to <strong>Linked Devices &gt; Link a Device</strong>, and scan the terminal QR code.</p>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-number">5</div>
+            <div class="step-body">
+              <h4>Enable Background Systemd Service</h4>
+              <p>Start the persistent daemon so SparkWA runs 24/7 across server reboots:</p>
+              <pre>sudo systemctl enable --now sparkwa</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Security & Privacy -->
+    <section class="doc-section" id="security">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">Enterprise Hardening</div>
+          <h2 class="section-title">Security &amp; Privacy Architecture</h2>
+          <p class="section-desc">
+            SparkWA is engineered for fail-closed, multi-tenant safety. Your server is completely isolated.
+          </p>
+        </div>
+
+        <div class="sec-grid">
+          <div class="sec-card">
+            <h4>[SHIELD] Strict Allowlist Only</h4>
+            <p>SparkWA enforces strict fail-closed phone authorization. Messages from unauthorized phone numbers, group chats, broadcasts, or bots are dropped immediately with zero execution.</p>
+          </div>
+
+          <div class="sec-card">
+            <h4>[LOCK] Zero Shell Execution</h4>
+            <p>SparkWA contains zero shell evaluation (no <code>sh -c</code> or <code>exec.Command</code> on user input). All tasks are purely routed via structured Google API requests.</p>
+          </div>
+
+          <div class="sec-card">
+            <h4>[BOX] Systemd Linux Sandboxing</h4>
+            <p>Runs under strict Linux sandboxing: <code>ProtectSystem=strict</code>, <code>ProtectHome=yes</code>, <code>NoNewPrivileges=yes</code>, and <code>PrivateTmp=yes</code>.</p>
+          </div>
+
+          <div class="sec-card">
+            <h4>[EYE] Total Privacy Masking</h4>
+            <p>Phone numbers, email addresses, and command contents are scrubbed from TUI screens and daemon logs, preventing unauthorized shoulder-surfing on shared VPS terminals.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="doc-section" id="faq">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">Answers</div>
+          <h2 class="section-title">Frequently Asked Questions</h2>
+        </div>
+
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>Do I need to leave my laptop on?</summary>
+            <p>No. SparkWA runs 24/7 in the background on your Linux VPS (or Raspberry Pi). Your laptop can be closed or turned off.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>Does SparkWA require Docker, Node.js, Python, or Chromium?</summary>
+            <p>No. SparkWA is written in pure Go and compiled into a single static binary. It has zero external software dependencies.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>How much RAM does it need?</summary>
+            <p>SparkWA uses approximately 28 MB to 35 MB of RAM at idle. It runs reliably on the smallest 512 MB or 1 GB VPS instances.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>What happens if my VPS reboots?</summary>
+            <p>The systemd service unit automatically starts SparkWA on boot, reconnects WhatsApp and Gmail, and recovers any pending tasks from the embedded SQLite database.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-credits">
+        <strong>SparkWA</strong> — Open-source WhatsApp to Google Gemini Spark Bridge. Built by <strong>Krish Ujeniya</strong>.
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/krishujeniya/sparkwa" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/krishujeniya/sparkwa/releases" target="_blank" rel="noopener">Releases</a>
+        <a href="https://github.com/krishujeniya/sparkwa/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Element -->
+  <div class="toast" id="toast" role="status" aria-live="polite">COPIED TO CLIPBOARD</div>
+
+  <!-- Interactive Scripts -->
+  <script>
+    // Copy Snippet
+    function copySnippet(elementId, btn) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = el.innerText || el.textContent;
+
+      navigator.clipboard.writeText(text.trim()).then(() => {
+        showToast('COPIED TO CLIPBOARD');
+        if (btn) {
+          const original = btn.innerHTML;
+          btn.innerHTML = '<span>COPIED!</span>';
+          setTimeout(() => {
+            btn.innerHTML = original;
+          }, 2000);
+        }
+      }).catch(err => {
+        showToast('FAILED TO COPY');
+      });
+    }
+
+    // Toast Notification
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2200);
+    }
+
+    // Theme Toggle (Pure Monochrome Dark/Light)
+    const themeBtn = document.getElementById('themeBtn');
+    const themeLabel = document.getElementById('themeLabel');
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('sparkwa_theme', theme);
+      if (theme === 'light') {
+        themeLabel.textContent = 'DARK MODE';
+      } else {
+        themeLabel.textContent = 'LIGHT MODE';
+      }
+    }
+
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+        setTheme(current === 'dark' ? 'light' : 'dark');
+      });
+
+      // Restore saved preference
+      const saved = localStorage.getItem('sparkwa_theme');
+      if (saved) {
+        setTheme(saved);
+      }
+    }
+  </script>
+</body>
+</html>
