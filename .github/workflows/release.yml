@@ -37,6 +37,7 @@ jobs:
         with:
           files: |
             dist/*.tar.gz
+            dist/*.deb
             dist/SHA256SUMS
           generate_release_notes: true
           draft: false

@@ -28,7 +28,7 @@ func printFullLogo(w io.Writer) {
 ║  ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝    ╚══╝╚══╝ ╚═╝  ╚═╝                 ║
 ║                                                                                ║
 ║  THE HEADLESS WHATSAPP TO GEMINI SPARK BRIDGE                                  ║
-║  Pure Go • Single Native Binary • Zero Dependencies • Production Hardened      ║
+║  Pure Go • Single Native Binary • Zero Dependencies • By Krish Ujeniya         ║
 ╚════════════════════════════════════════════════════════════════════════════════╝`
 
 	lines := strings.Split(strings.Trim(banner, "\n"), "\n")
@@ -49,7 +49,7 @@ func printCompactLogo(w io.Writer) {
 	compact := `
 ┌────────────────────────────────────────────────────────┐
 │  SPARKWA │ WhatsApp ⇄ Google Gemini Spark Bridge      │
-│  Pure Go • Single Binary • Zero External Dependencies  │
+│  Pure Go • Single Binary • By Krish Ujeniya           │
 └────────────────────────────────────────────────────────┘`
 
 	lines := strings.Split(strings.Trim(compact, "\n"), "\n")

@@ -8,14 +8,17 @@
 ║  ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝    ╚══╝╚══╝ ╚═╝  ╚═╝                 ║
 ║                                                                                ║
 ║  THE HEADLESS WHATSAPP TO GEMINI SPARK BRIDGE                                  ║
-║  Pure Go • Single Native Binary • Zero Dependencies • Production Hardened      ║
+║  Pure Go • Single Native Binary • Zero Dependencies • By Krish Ujeniya         ║
 ╚════════════════════════════════════════════════════════════════════════════════╝
 ```
 
 # SparkWA: WhatsApp Bridge for Google Gemini Spark
 
+**The Headless WhatsApp to Google Gemini Spark Bridge**  
+*By Krish Ujeniya*
+
 [![Go Version](https://img.shields.io/badge/Go-1.23%2B-black.svg?style=for-the-badge&logo=go)](https://golang.org)
-[![Platform](https://img.shields.io/badge/Platform-Ubuntu%20%2F%20Debian%20Linux-black.svg?style=for-the-badge&logo=linux)]()
+[![Platform](https://img.shields.io/badge/Platform-Ubuntu%20%2F%20Debian%20%2F%20macOS-black.svg?style=for-the-badge&logo=linux)]()
 [![Memory Usage](https://img.shields.io/badge/RAM-~30%20MB-black.svg?style=for-the-badge)]()
 [![Interface](https://img.shields.io/badge/Interface-Black%20%26%20White%20TUI-black.svg?style=for-the-badge)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg?style=for-the-badge)](LICENSE)
@@ -24,7 +27,7 @@
 
 You send instructions from your personal WhatsApp chat, SparkWA forwards them to your Gemini Spark agent, and Spark's reply is sent straight back to your phone.
 
-It runs on an Ubuntu or Debian Linux server as a single native program. It uses about 30 MB of memory, runs in the background 24/7, and needs no browser, Docker, Python, or Node.js.
+It runs on an Ubuntu or Debian Linux server (or macOS) as a single native program. It uses about 30 MB of memory, runs in the background 24/7, and needs no browser, Docker, Python, or Node.js.
 
 ---
 
@@ -33,12 +36,14 @@ It runs on an Ubuntu or Debian Linux server as a single native program. It uses 
 - [What is SparkWA?](#what-is-sparkwa)
 - [How It Works](#how-it-works)
 - [Interactive Control Dashboard](#interactive-control-dashboard)
+- [Installation Options](#installation-options)
 - [Quick Start Guide (5 Minutes)](#quick-start-guide-5-minutes)
 - [WhatsApp Commands](#whatsapp-commands)
 - [System Requirements](#system-requirements)
 - [Security and Privacy](#security-and-privacy)
 - [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
 - [Documentation Index](#documentation-index)
+- [Author](#author)
 - [License](#license)
 
 ---
@@ -152,73 +157,101 @@ You can choose any action by pressing a single number key (`1` through `8`), or 
 
 ---
 
+## Installation Options
+
+SparkWA can be installed using your preferred package manager or installer:
+
+### Option 1: Ubuntu / Debian (`apt`)
+
+Install the official Debian package via `apt`:
+
+```bash
+# Download the latest Debian package
+curl -LO https://github.com/krishujeniya/sparkwa/releases/latest/download/sparkwa_1.0.0_amd64.deb
+
+# Install package and systemd service via apt
+sudo apt install ./sparkwa_1.0.0_amd64.deb
+```
+*For ARM64 servers (e.g. Raspberry Pi, AWS Graviton), substitute `sparkwa_1.0.0_arm64.deb`.*
+
+### Option 2: macOS / Linux (`brew`)
+
+Install via Homebrew:
+
+```bash
+# Tap repository and install
+brew tap krishujeniya/sparkwa
+brew install sparkwa
+```
+
+### Option 3: One-Line Auto Installer (Linux / VPS)
+
+Run the automated installer directly from your terminal:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/krishujeniya/sparkwa/main/scripts/install.sh | sudo bash
+```
+
+### Option 4: Standalone Binary Release (`tar.gz`)
+
+Download and extract the prebuilt binary archive:
+
+```bash
+# Download release archive for linux/amd64 (or arm64)
+curl -LO https://github.com/krishujeniya/sparkwa/releases/latest/download/sparkwa-v1.0.0-linux-amd64.tar.gz
+
+# Extract and run installer
+tar -xzf sparkwa-v1.0.0-linux-amd64.tar.gz
+cd sparkwa
+sudo ./scripts/install.sh
+```
+
+### Option 5: Build from Source (Go 1.24+)
+
+```bash
+git clone https://github.com/krishujeniya/sparkwa.git
+cd sparkwa
+make build
+sudo ./scripts/install.sh
+```
+
+---
+
 ## Quick Start Guide (5 Minutes)
 
-Follow these five steps to install SparkWA on a clean Ubuntu or Debian server.
+Once installed, follow these steps to pair your WhatsApp and Gmail accounts:
 
-### Step 1: Upload Files to Your Server
-
-Copy the downloaded release archive and your Google `credentials.json` file to your server:
-
+### Step 1: Place Your Google OAuth Credentials
+Place your `credentials.json` file from Google Cloud Console into `/etc/sparkwa`:
 ```bash
-scp sparkwa-v1.0.0-linux-amd64.tar.gz credentials.json user@your-server-ip:/tmp/
-```
-
-### Step 2: Run the Installer
-
-Log in to your server and run the installation script:
-
-```bash
-ssh user@your-server-ip
-cd /tmp && tar -xzf sparkwa-v1.0.0-linux-amd64.tar.gz
-cd sparkwa && sudo ./scripts/install.sh
-```
-
-The installer places the program at `/usr/local/bin/sparkwa`, creates a dedicated system user, and configures the background service.
-
-### Step 3: Run the Setup Wizard
-
-Move your Google credentials into place and start the guided wizard:
-
-```bash
-sudo mv /tmp/credentials.json /etc/sparkwa/credentials.json
+sudo mv credentials.json /etc/sparkwa/credentials.json
 sudo chmod 0600 /etc/sparkwa/credentials.json
-
-# Launch the wizard
-sudo -u sparkwa sparkwa wizard --config /etc/sparkwa/config.env
 ```
 
-The wizard will prompt you for:
+### Step 2: Open the Interactive Setup Wizard
+Run the command-line wizard:
+```bash
+sudo sparkwa
+```
+Select **[1] Guided Setup Wizard**. It will prompt you for:
 1. Phone Number 1 (your bot account number in international format, e.g. `+1234567890`).
 2. Phone Number 2 (your personal number in international format, e.g. `+1987654321`).
 3. Your Bridge Gmail address.
 4. Your Gemini Spark Gmail address.
 
-### Step 4: Link Gmail and WhatsApp
+### Step 3: Link WhatsApp & Connect Gmail
+From the same interactive dashboard:
+- Select **[2] Pair WhatsApp**: Scan the terminal ASCII QR code using Phone Number 1 (**Settings > Linked Devices > Link a Device**).
+- Select **[3] Connect Gmail API**: Authorize Google OAuth via browser loopback.
+- Select **[4] System Diagnostics**: Run a 6-point check to ensure all connections are healthy.
 
-Run these two commands to complete authorization:
-
+### Step 4: Start the Background Service
+Enable and start the background daemon to run 24/7:
 ```bash
-# 1. Authorize Gmail API access
-sudo -u sparkwa sparkwa gmail-auth --config /etc/sparkwa/config.env
-
-# 2. Display the WhatsApp pairing QR code in your terminal
-sudo -u sparkwa sparkwa login --config /etc/sparkwa/config.env
+sudo systemctl enable --now sparkwa
 ```
 
-Open WhatsApp on phone Number 1, go to **Settings > Linked Devices > Link a Device**, and scan the QR code displayed in your terminal.
-
-### Step 5: Start the Background Service
-
-Start the service and enable it to run automatically on system boot:
-
-```bash
-sudo systemctl start sparkwa
-sudo systemctl enable sparkwa
-```
-
-Check the live status anytime:
-
+Check live status anytime:
 ```bash
 sudo systemctl status sparkwa
 ```
@@ -300,6 +333,12 @@ Detailed guides are located in the [`docs/`](docs/) folder:
 - [docs/VPS_INSTALL.md](docs/VPS_INSTALL.md) — Full manual installation and deployment guide for Ubuntu servers.
 - [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) — Quick solutions for connection, pairing, or token issues.
 - [docs/SECURITY.md](docs/SECURITY.md) — Security model, permission settings, and guardrail details.
+
+---
+
+## Author
+
+Created and maintained by **Krish Ujeniya** ([@krishujeniya](https://github.com/krishujeniya)).
 
 ---
 

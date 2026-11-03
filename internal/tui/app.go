@@ -95,7 +95,7 @@ func (a *App) Run(ctx context.Context) error {
 
 		case "0", "exit", "quit", "q":
 			ClearScreen(a.Out)
-			fmt.Fprintln(a.Out, Bold("Thank you for using SparkWA. Goodbye!"))
+			fmt.Fprintln(a.Out, Bold("Thank you for using SparkWA — By Krish Ujeniya. Goodbye!"))
 			return nil
 
 		default:
@@ -454,6 +454,7 @@ func (a *App) runDaemonMode(ctx context.Context) {
 func (a *App) showDocumentation(reader *bufio.Reader) {
 	fmt.Fprintln(a.Out, Bold("================================================================================"))
 	fmt.Fprintln(a.Out, Bold("                     SPARKWA DOCUMENTATION & COMMAND GUIDE                      "))
+	fmt.Fprintln(a.Out, Bold("                               By Krish Ujeniya                                 "))
 	fmt.Fprintln(a.Out, Bold("================================================================================"))
 	fmt.Fprintln(a.Out, message.FormatHelp())
 	fmt.Fprintln(a.Out, "\nSystem Architecture:")

@@ -84,6 +84,9 @@ func TestLogoRendering(t *testing.T) {
 	if !strings.Contains(fullOut, "THE HEADLESS WHATSAPP TO GEMINI SPARK BRIDGE") {
 		t.Errorf("expected full banner in 82-column output, got: %s", fullOut)
 	}
+	if !strings.Contains(fullOut, "By Krish Ujeniya") {
+		t.Errorf("expected author credit in full banner, got: %s", fullOut)
+	}
 
 	// Compact width test (< 80 cols)
 	var bufCompact bytes.Buffer
@@ -91,6 +94,9 @@ func TestLogoRendering(t *testing.T) {
 	compactOut := bufCompact.String()
 	if !strings.Contains(compactOut, "SPARKWA") {
 		t.Errorf("expected compact banner in 60-column output, got: %s", compactOut)
+	}
+	if !strings.Contains(compactOut, "By Krish Ujeniya") {
+		t.Errorf("expected author credit in compact banner, got: %s", compactOut)
 	}
 }
 
