@@ -89,7 +89,7 @@ func TestLogoRendering(t *testing.T) {
 	var bufCompact bytes.Buffer
 	PrintLogo(&bufCompact, 60)
 	compactOut := bufCompact.String()
-	if !strings.Contains(compactOut, "⚡ SPARKWA") {
+	if !strings.Contains(compactOut, "SPARKWA") {
 		t.Errorf("expected compact banner in 60-column output, got: %s", compactOut)
 	}
 }

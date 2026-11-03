@@ -16,7 +16,7 @@ func FormatSubmissionAck(taskID, command string) string {
 		shortCmd = shortCmd[:77] + "..."
 	}
 	return fmt.Sprintf(
-		"⚡ *SparkWA* [SUBMITTED]\n\n"+
+		"*SparkWA* [SUBMITTED]\n\n"+
 			"*ID:* `%s`\n"+
 			"*Task:* %s\n\n"+
 			"_Forwarded to Gemini Spark via Gmail monitor. Waiting for agent processing._",
@@ -28,7 +28,7 @@ func FormatSubmissionAck(taskID, command string) string {
 // FormatCompletion formats the successful result received from Gemini Spark.
 func FormatCompletion(taskID, resultText string) string {
 	return fmt.Sprintf(
-		"⚡ *SparkWA* [COMPLETED]\n\n"+
+		"*SparkWA* [COMPLETED]\n\n"+
 			"*ID:* `%s`\n\n"+
 			"*Result:*\n%s",
 		taskID,
@@ -112,7 +112,7 @@ func FormatJobList(tasks []*store.Task) string {
 		case store.StateApprovalRequired:
 			statusIcon = "⚠️"
 		case store.StateSubmitted, store.StateAwaitingSpark:
-			statusIcon = "⚡"
+			statusIcon = "▶"
 		}
 
 		shortCmd := t.Command
@@ -166,7 +166,7 @@ func FormatJobDetail(t *store.Task) string {
 
 // FormatHelp returns the help manual for /help.
 func FormatHelp() string {
-	return "⚡ *SparkWA — Help*\n\n" +
+	return "*SparkWA — Help*\n\n" +
 		"Available Commands:\n" +
 		"• `/status` — View bridge, WhatsApp, and Gmail health.\n" +
 		"• `/jobs` — List the 5 most recent tasks.\n" +

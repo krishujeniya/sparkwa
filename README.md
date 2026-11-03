@@ -1,19 +1,87 @@
+```text
+╔════════════════════════════════════════════════════════════════════════════════╗
+║  ███████╗██████╗  █████╗ ██████╗ ██╗  ██╗   ██╗    ██╗ █████╗                  ║
+║  ██╔════╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝   ██║    ██║██╔══██╗                 ║
+║  ███████╗██████╔╝███████║██████╔╝█████╔╝    ██║ █╗ ██║███████║                  ║
+║  ╚════██║██╔═══╝ ██╔══██║██╔══██╗██╔═██╗    ██║███╗██║██╔══██║                 ║
+║  ███████║██║     ██║  ██║██║  ██║██║  ██╗   ╚███╔███╔╝██║  ██║                 ║
+║  ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝    ╚══╝╚══╝ ╚═╝  ╚═╝                 ║
+║                                                                                ║
+║  THE HEADLESS WHATSAPP TO GEMINI SPARK BRIDGE                                  ║
+║  Pure Go • Single Native Binary • Zero Dependencies • Production Hardened      ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+```
+
 # SparkWA
 
-[![Go Version](https://img.shields.io/badge/Go-1.23%2B-blue.svg)](https://golang.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Ubuntu%20%2F%20Debian%20Linux-orange.svg)]()
-[![Memory Footprint](https://img.shields.io/badge/RAM-~30%20MB-brightgreen.svg)]()
+[![Go Version](https://img.shields.io/badge/Go-1.23%2B-black.svg?style=for-the-badge&logo=go)](https://golang.org)
+[![Platform](https://img.shields.io/badge/Platform-Ubuntu%20%2F%20Debian%20Linux-black.svg?style=for-the-badge&logo=linux)]()
+[![Memory Footprint](https://img.shields.io/badge/RAM-~30%20MB-black.svg?style=for-the-badge)]()
+[![Design System](https://img.shields.io/badge/Design-Monochrome%20B%26W-black.svg?style=for-the-badge)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-black.svg?style=for-the-badge)](LICENSE)
 
 **SparkWA** is an ultra-lightweight, production-grade, headless bridge that connects a dedicated **WhatsApp** account to your existing **Google Gemini Spark** agent through Google's documented Gmail-triggered task schedules.
 
-Designed specifically for headless Ubuntu VPS deployments, it runs as a single native Linux binary under `systemd` with zero browser, desktop, Node.js, Python, or container dependencies.
+Designed specifically for headless Ubuntu VPS deployments and accessible to non-technical operators, it features an interactive **Black & White Terminal User Interface (TUI)**, a **Step-by-Step Setup Wizard**, and runs as a single native Linux binary under `systemd` with zero browser, desktop, Node.js, Python, or container dependencies.
+
+---
+
+## Interactive Control Dashboard (TUI)
+
+Non-technical users do not need to memorize terminal commands or arguments:
+
+```bash
+# Simply launch sparkwa to open the interactive Control Dashboard
+sparkwa
+
+# Or run the step-by-step Guided Setup Wizard directly
+sparkwa wizard
+```
+
+### Dashboard View
+
+```text
+┌─ SYSTEM HEALTH & INTEGRATION SNAPSHOT ─────────────────────────────────────────┐
+│  WhatsApp Bot (Number 1)    : +919510678362              [● CONNECTED]         │
+│  Authorized User (Number 2) : +918530483089              [● ALLOWLISTED]       │
+│  Gmail Bridge Mailbox       : aidrago0021@gmail.com      [● CONNECTED]         │
+│  Spark Agent Destination    : ukideashare0021@gmail.com  [● FULLY_VERIFIED]    │
+│  SQLite Persistent Queue    : 0 task(s) active in queue  [● HEALTHY]           │
+└────────────────────────────────────────────────────────────────────────────────┘
+
+┌─ CONTROL MENU — SELECT OPTION [0-8] ───────────────────────────────────────────┐
+│   [1] Guided Setup Wizard   Walk through phone numbers, Gmail & WhatsApp QR   │
+│   [2] Pair WhatsApp         Display terminal QR code to link Phone Number 1   │
+│   [3] Connect Gmail API     Perform Google OAuth 2.0 browser authorization    │
+│   [4] System Diagnostics    Run 6-point diagnostics on config, permissions    │
+│   [5] Queue & Status        Inspect bridge capability report & recent tasks   │
+│   [6] Send Test Ping        Dispatch safe read-only test ping to Spark        │
+│   [7] Start Bridge Daemon   Launch production background listener service     │
+│   [8] Documentation & Help  Show WhatsApp slash commands and operational guide│
+│                                                                               │
+│   [0] Exit                  Exit to command shell                             │
+└────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Logo Psychology & Monochromatic Design
+
+The visual design of SparkWA is guided by ergonomics and cognitive psychology:
+
+* **The Dual Archetype (The Magician & The Messenger)**:
+  * **Gemini Spark**: The spark of intelligence represents transformative thought, swift computation, and illumination.
+  * **WhatsApp (Dialogue & Bridge)**: The conversational bridge represents interpersonal communication, trust, and ubiquitous reach.
+* **Strict Black & White (Zero-Color ANSI)**:
+  * **Anxiety Mitigation**: Traditional terminal red/yellow warning banners trigger panic in non-technical users. A high-contrast monochrome palette eliminates warning fatigue and creates a calm, predictable operating atmosphere.
+  * **Swiss International Typographic Authority**: Clean structural frames (`┌─┐`, `│ │`, `└─┘`), high-contrast inverted badges (`\033[7m`), and bold white headings (`\033[1m`) provide the clarity of precision instruments.
+  * **Maximal Contrast (21:1)**: Pure Black and White guarantees optimal legibility across any terminal client, light or dark mode, and high-DPI displays.
 
 ---
 
 ## Architecture
 
-```
+```text
 WhatsApp User (Number 2)
        │ (Encrypted WhatsApp Text)
        ▼
@@ -48,8 +116,7 @@ WhatsApp User (Number 2) ◄─────┴── Verified Result Delivered
 
 ## Key Features
 
-- **Non-Tech Friendly TUI:** Launching `sparkwa` without flags opens an interactive Black & White Control Dashboard with a step-by-step Setup Wizard (`sparkwa wizard`).
-- **High-Contrast Monochrome Design:** Elegant Swiss-style Black & White ANSI palette—zero terminal intimidation, zero chromatic distractions.
+- **Non-Tech Friendly TUI:** Interactive Black & White Control Dashboard with step-by-step Setup Wizard (`sparkwa wizard`).
 - **Single Native Binary:** Built in Go. Zero external runtime dependencies.
 - **Ultra-Low Resource Footprint:** Uses ~30 MB RAM and 0.0% idle CPU. Runs comfortably on 512 MB to 1 GB VPS instances.
 - **Headless SSH QR Pairing:** Displays an ASCII QR code directly inside your SSH terminal to link WhatsApp Number 1 via Linked Devices.
@@ -60,34 +127,6 @@ WhatsApp User (Number 2) ◄─────┴── Verified Result Delivered
 - **Persistent Task Queue:** Embedded SQLite database with automatic crash recovery, duplicate message suppression, and timeout management.
 - **Approval Guardrail Detection:** Automatically detects when Spark pauses for confirmation and forwards the approval prompt to WhatsApp.
 - **Hardened systemd Unit:** Runs as a dedicated non-root `sparkwa` service account with strict Linux filesystem and kernel isolation.
-
----
-
-## Interactive Control Dashboard (TUI)
-
-Non-technical users can manage everything without memorizing commands:
-
-```bash
-# Simply launch sparkwa to open the interactive TUI
-sparkwa
-
-# Or run the step-by-step Guided Setup Wizard directly
-sparkwa wizard
-```
-
-```text
-╔════════════════════════════════════════════════════════════════════════════════╗
-║  ███████╗██████╗  █████╗ ██████╗ ██╗  ██╗   ██╗    ██╗ █████╗                  ║
-║  ██╔════╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝   ██║    ██║██╔══██╗                 ║
-║  ███████╗██████╔╝███████║██████╔╝█████╔╝    ██║ █╗ ██║███████║   ⚡             ║
-║  ╚════██║██╔═══╝ ██╔══██║██╔══██╗██╔═██╗    ██║███╗██║██╔══██║                 ║
-║  ███████║██║     ██║  ██║██║  ██║██║  ██╗   ╚███╔███╔╝██║  ██║                 ║
-║  ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝    ╚══╝╚══╝ ╚═╝  ╚═╝                 ║
-║                                                                                ║
-║  THE HEADLESS WHATSAPP TO GEMINI SPARK BRIDGE                                  ║
-║  Pure Go • Single Native Binary • Zero Dependencies • Production Hardened      ║
-╚════════════════════════════════════════════════════════════════════════════════╝
-```
 
 ---
 
@@ -120,14 +159,17 @@ cd /tmp && tar -xzf sparkwa-v1.0.0-linux-amd64.tar.gz
 cd sparkwa && sudo ./scripts/install.sh
 ```
 
-### 3. Move Credentials & Edit Config
+### 3. Move Credentials & Run Guided Setup
 ```bash
 sudo mv /tmp/credentials.json /etc/sparkwa/credentials.json
 sudo chmod 0600 /etc/sparkwa/credentials.json
-sudo nano /etc/sparkwa/config.env
+
+# Launch the interactive wizard
+sudo -u sparkwa sparkwa wizard --config /etc/sparkwa/config.env
 ```
 
 ### 4. Authenticate Gmail and Pair WhatsApp
+You can run these directly from the TUI menu, or via CLI:
 ```bash
 # Authorize Gmail API (via loopback or SSH tunnel port 8085)
 sudo -u sparkwa sparkwa gmail-auth --config /etc/sparkwa/config.env

@@ -197,7 +197,7 @@ Please summarize my upcoming meetings for this week.
 
 SparkWA will return:
 ```text
-⚡ *SparkWA* [SUBMITTED]
+*SparkWA* [SUBMITTED]
 
 *ID:* `d3b07384`
 *Task:* Please summarize my upcoming meetings for this week.
