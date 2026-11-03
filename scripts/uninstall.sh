@@ -21,9 +21,8 @@ rm -f /usr/local/bin/sparkwa
 echo ""
 read -p "Do you want to delete all configuration and session data (/var/lib/sparkwa and /etc/sparkwa)? [y/N]: " CONFIRM
 if [[ "$CONFIRM" =~ ^[Yy]$ ]]; then
-    echo "Removing /var/lib/sparkwa and /etc/sparkwa (and legacy paths)..."
-    rm -rf /var/lib/sparkwa /var/lib/sparkwa-lite
-    rm -rf /etc/sparkwa /etc/sparkwa-lite
+    echo "Removing /var/lib/sparkwa and /etc/sparkwa..."
+    rm -rf /var/lib/sparkwa /etc/sparkwa
     userdel sparkwa 2>/dev/null || true
     echo "All data removed."
 else

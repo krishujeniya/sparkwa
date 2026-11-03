@@ -300,7 +300,6 @@ Detailed guides are located in the [`docs/`](docs/) folder:
 - [docs/VPS_INSTALL.md](docs/VPS_INSTALL.md) — Full manual installation and deployment guide for Ubuntu servers.
 - [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) — Quick solutions for connection, pairing, or token issues.
 - [docs/SECURITY.md](docs/SECURITY.md) — Security model, permission settings, and guardrail details.
-- [docs/VERIFICATION.md](docs/VERIFICATION.md) — Automated test results and performance measurements.
 
 ---
 

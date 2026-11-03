@@ -77,16 +77,6 @@ CONFIG_DIR="/etc/sparkwa"
 DATA_DIR="/var/lib/sparkwa"
 BIN_DEST="/usr/local/bin/sparkwa"
 
-# Auto-migrate legacy sparkwa-lite paths if present
-if [ ! -d "$CONFIG_DIR" ] && [ -d "/etc/sparkwa-lite" ]; then
-    echo -e "Migrating legacy config directory /etc/sparkwa-lite to ${GREEN}${CONFIG_DIR}${NC}..."
-    cp -rn /etc/sparkwa-lite "$CONFIG_DIR"
-fi
-if [ ! -d "$DATA_DIR" ] && [ -d "/var/lib/sparkwa-lite" ]; then
-    echo -e "Migrating legacy data directory /var/lib/sparkwa-lite to ${GREEN}${DATA_DIR}${NC}..."
-    cp -rn /var/lib/sparkwa-lite "$DATA_DIR"
-fi
-
 echo -e "Setting up directory structure..."
 mkdir -p "$CONFIG_DIR"
 mkdir -p "$DATA_DIR"

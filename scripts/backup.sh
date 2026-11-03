@@ -19,16 +19,12 @@ echo "Creating atomic SQLite database snapshot..."
 if command -v sqlite3 >/dev/null 2>&1; then
     if [ -f /var/lib/sparkwa/sparkwa.db ]; then
         sqlite3 /var/lib/sparkwa/sparkwa.db ".backup /var/lib/sparkwa/sparkwa.db.bak"
-    elif [ -f /var/lib/sparkwa-lite/sparkwa.db ]; then
-        sqlite3 /var/lib/sparkwa-lite/sparkwa.db ".backup /var/lib/sparkwa-lite/sparkwa.db.bak"
     fi
 fi
 
 ARCHIVE_PATHS=()
 [ -d /etc/sparkwa ] && ARCHIVE_PATHS+=("etc/sparkwa")
 [ -d /var/lib/sparkwa ] && ARCHIVE_PATHS+=("var/lib/sparkwa")
-[ -d /etc/sparkwa-lite ] && ARCHIVE_PATHS+=("etc/sparkwa-lite")
-[ -d /var/lib/sparkwa-lite ] && ARCHIVE_PATHS+=("var/lib/sparkwa-lite")
 
 if [ ${#ARCHIVE_PATHS[@]} -eq 0 ]; then
     echo "Warning: No sparkwa configuration or data directories found in /etc or /var/lib."
@@ -40,7 +36,7 @@ else
         "${ARCHIVE_PATHS[@]}"
 fi
 
-rm -f /var/lib/sparkwa/sparkwa.db.bak /var/lib/sparkwa-lite/sparkwa.db.bak 2>/dev/null || true
+rm -f /var/lib/sparkwa/sparkwa.db.bak 2>/dev/null || true
 [ -f "$BACKUP_FILE" ] && chmod 0600 "$BACKUP_FILE"
 
 echo "✓ Backup created successfully at:"

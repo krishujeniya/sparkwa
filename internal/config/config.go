@@ -96,7 +96,6 @@ func Load(explicitFile string) (*Config, error) {
 	}
 	candidates = append(candidates,
 		"/etc/sparkwa/config.env",
-		"/etc/sparkwa-lite/config.env",
 		"./config.env",
 		".env",
 	)
