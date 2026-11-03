@@ -12,6 +12,7 @@ import (
 
 	"github.com/sparkwa/sparkwa/internal/config"
 	"github.com/sparkwa/sparkwa/internal/gmail"
+	"github.com/sparkwa/sparkwa/internal/identity"
 	"github.com/sparkwa/sparkwa/internal/message"
 	"github.com/sparkwa/sparkwa/internal/spark"
 	"github.com/sparkwa/sparkwa/internal/store"
@@ -105,7 +106,7 @@ func (e *Engine) HandleInboundWhatsApp(ctx context.Context, msgID, senderPhone, 
 	_ = e.store.MarkMessageProcessed(ctx, msgID, "whatsapp")
 
 	trimmed := strings.TrimSpace(text)
-	log.Printf("[Worker] Inbound message accepted from %s (msgID: %s): %q", senderPhone, msgID, trimmed)
+	log.Printf("[Worker] Flow [2 -> 1] Inbound message accepted from %s (msgID: %s)", identity.MaskPhone(senderPhone), msgID)
 
 	// Check for Slash Commands
 	if strings.HasPrefix(trimmed, "/") {
@@ -280,7 +281,7 @@ func (e *Engine) submitTaskToGmail(ctx context.Context, task *store.Task) {
 	_ = e.store.MarkMessageProcessed(ctx, msgID, "gmail")
 	_ = e.store.UpdateTaskState(ctx, task.ID, store.StateAwaitingSpark, "", "")
 
-	log.Printf("[Worker] Forwarded task %s to Gemini Spark via Gmail (%s -> %s, MsgID: %s)", task.ID, e.config.BridgeGmailAddress, e.config.SparkGmailAddress, msgID)
+	log.Printf("[Worker] Flow [1 -> E] Dispatched task %s to bridge for Spark (MsgID: %s)", task.ID, msgID)
 
 	// Send submission acknowledgment back to WhatsApp Number 2 if non-empty
 	ackMsg := message.FormatSubmissionAck(task.ID, task.Command)
@@ -347,11 +348,13 @@ func (e *Engine) processDiscoveredReply(ctx context.Context, reply *gmail.Discov
 		_ = e.store.UpdateTaskState(ctx, task.ID, store.StateApprovalRequired, parsed.ResultText, "")
 		promptMsg := message.FormatApprovalNeeded(task.ID, parsed.ApprovalPrompt)
 		_ = e.waSender.SendTextMessage(ctx, task.SenderPhone, promptMsg)
+		log.Printf("[Worker] Flow [S -> 2] Approval requested for task %s", task.ID)
 
 	case spark.StatusSuccess:
 		_ = e.store.UpdateTaskState(ctx, task.ID, store.StateCompleted, parsed.ResultText, "")
 		resultMsg := message.FormatCompletion(task.ID, parsed.ResultText)
 		_ = e.waSender.SendTextMessage(ctx, task.SenderPhone, resultMsg)
+		log.Printf("[Worker] Flow [E -> 2] Task %s completed and delivered to user", task.ID)
 
 		// Record that return path has been verified!
 		_ = e.capManager.SetState(ctx, config.CapResponsePathVerified)
@@ -360,6 +363,7 @@ func (e *Engine) processDiscoveredReply(ctx context.Context, reply *gmail.Discov
 		_ = e.store.UpdateTaskState(ctx, task.ID, store.StateFailed, "", parsed.ResultText)
 		failMsg := message.FormatFailure(task.ID, parsed.ResultText)
 		_ = e.waSender.SendTextMessage(ctx, task.SenderPhone, failMsg)
+		log.Printf("[Worker] Flow [S -> 2] Execution failed for task %s", task.ID)
 	}
 }
 

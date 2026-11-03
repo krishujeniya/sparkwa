@@ -35,7 +35,7 @@ func RunSetupWizard(ctx context.Context, in io.Reader, out io.Writer, cfg *confi
 	for {
 		prompt := "Enter Bot Phone Number"
 		if currentBot != "" {
-			prompt = fmt.Sprintf("Enter Bot Phone Number [%s]", currentBot)
+			prompt = fmt.Sprintf("Enter Bot Phone Number [%s]", identity.MaskPhone(currentBot))
 		}
 		fmt.Fprintf(out, "%s: ", prompt)
 
@@ -53,7 +53,7 @@ func RunSetupWizard(ctx context.Context, in io.Reader, out io.Writer, cfg *confi
 			continue
 		}
 		cfg.BotPhoneNumber = normalized
-		fmt.Fprintf(out, "  ✓ Bot number configured: %s\n\n", Bold(cfg.BotPhoneNumber))
+		fmt.Fprintf(out, "  ✓ Bot number configured: %s\n\n", Bold(identity.MaskPhone(cfg.BotPhoneNumber)))
 		break
 	}
 
@@ -66,7 +66,7 @@ func RunSetupWizard(ctx context.Context, in io.Reader, out io.Writer, cfg *confi
 	for {
 		prompt := "Enter Your Personal Phone Number"
 		if currentAuth != "" {
-			prompt = fmt.Sprintf("Enter Your Personal Phone Number [%s]", currentAuth)
+			prompt = fmt.Sprintf("Enter Your Personal Phone Number [%s]", identity.MaskPhone(currentAuth))
 		}
 		fmt.Fprintf(out, "%s: ", prompt)
 
@@ -88,7 +88,7 @@ func RunSetupWizard(ctx context.Context, in io.Reader, out io.Writer, cfg *confi
 			continue
 		}
 		cfg.AuthorizedPhoneNumber = normalized
-		fmt.Fprintf(out, "  ✓ Authorized personal number configured: %s\n\n", Bold(cfg.AuthorizedPhoneNumber))
+		fmt.Fprintf(out, "  ✓ Authorized personal number configured: %s\n\n", Bold(identity.MaskPhone(cfg.AuthorizedPhoneNumber)))
 		break
 	}
 
@@ -102,7 +102,7 @@ func RunSetupWizard(ctx context.Context, in io.Reader, out io.Writer, cfg *confi
 	for {
 		prompt := "Enter Bridge Gmail Address"
 		if currentBridge != "" {
-			prompt = fmt.Sprintf("Enter Bridge Gmail Address [%s]", currentBridge)
+			prompt = fmt.Sprintf("Enter Bridge Gmail Address [%s]", identity.MaskEmail(currentBridge))
 		}
 		fmt.Fprintf(out, "%s: ", prompt)
 
@@ -119,7 +119,7 @@ func RunSetupWizard(ctx context.Context, in io.Reader, out io.Writer, cfg *confi
 			continue
 		}
 		cfg.BridgeGmailAddress = val
-		fmt.Fprintf(out, "  ✓ Bridge Gmail address: %s\n\n", Bold(cfg.BridgeGmailAddress))
+		fmt.Fprintf(out, "  ✓ Bridge Gmail address: %s\n\n", Bold(identity.MaskEmail(cfg.BridgeGmailAddress)))
 		break
 	}
 
@@ -127,7 +127,7 @@ func RunSetupWizard(ctx context.Context, in io.Reader, out io.Writer, cfg *confi
 	for {
 		prompt := "Enter Spark-Connected Gmail Address"
 		if currentSpark != "" {
-			prompt = fmt.Sprintf("Enter Spark-Connected Gmail Address [%s]", currentSpark)
+			prompt = fmt.Sprintf("Enter Spark-Connected Gmail Address [%s]", identity.MaskEmail(currentSpark))
 		}
 		fmt.Fprintf(out, "%s: ", prompt)
 
@@ -144,7 +144,7 @@ func RunSetupWizard(ctx context.Context, in io.Reader, out io.Writer, cfg *confi
 			continue
 		}
 		cfg.SparkGmailAddress = val
-		fmt.Fprintf(out, "  ✓ Spark-connected Gmail address: %s\n\n", Bold(cfg.SparkGmailAddress))
+		fmt.Fprintf(out, "  ✓ Spark-connected Gmail address: %s\n\n", Bold(identity.MaskEmail(cfg.SparkGmailAddress)))
 		break
 	}
 

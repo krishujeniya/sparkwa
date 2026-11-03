@@ -288,13 +288,9 @@ func (a *App) runStatusAndQueue(ctx context.Context, reader *bufio.Reader) {
 	fmt.Fprintf(a.Out, "Recent Tasks     : %d recorded\n", len(recent))
 
 	if len(recent) > 0 {
-		fmt.Fprintln(a.Out, "\nRecent Tasks:")
+		fmt.Fprintln(a.Out, "\nRecent Pipeline Events [Privacy-Safe]:")
 		for _, t := range recent {
-			cmdExcerpt := strings.ReplaceAll(t.Command, "\n", " ")
-			if len(cmdExcerpt) > 50 {
-				cmdExcerpt = cmdExcerpt[:47] + "..."
-			}
-			fmt.Fprintf(a.Out, " • [%-12s] %s (%s) : %s\n", t.State, t.ID[:8], t.CreatedAt.Format("15:04:05"), cmdExcerpt)
+			fmt.Fprintf(a.Out, " • [%-12s] Flow [%s] | Event %s (%s)\n", t.State, t.FlowTag(), t.ID[:8], t.CreatedAt.Format("15:04:05"))
 		}
 	}
 	fmt.Fprintln(a.Out, Bold("================================================================================"))
@@ -443,7 +439,7 @@ func (a *App) runDaemonMode(ctx context.Context) {
 	}
 	defer eng.Stop()
 
-	fmt.Fprintf(a.Out, "✓ %s Listening for authorized commands from: %s\n", Bold("SPARKWA ACTIVE:"), Bold(a.Config.AuthorizedPhoneNumber))
+	fmt.Fprintf(a.Out, "✓ %s Listening for authorized commands from: %s\n", Bold("SPARKWA ACTIVE:"), Bold(identity.MaskPhone(a.Config.AuthorizedPhoneNumber)))
 
 	// Catch Ctrl+C locally so we return to menu instead of terminating terminal
 	sigChan := make(chan os.Signal, 1)

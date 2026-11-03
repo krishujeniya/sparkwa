@@ -188,3 +188,30 @@ func TestStoreIntegrationState(t *testing.T) {
 		t.Errorf("got %q, want RESPONSE_PATH_VERIFIED", val)
 	}
 }
+
+func TestTaskFlowTag(t *testing.T) {
+	tests := []struct {
+		state TaskState
+		want  string
+	}{
+		{StateReceived, "2 -> 1"},
+		{StateAuthorized, "2 -> 1"},
+		{StateQueued, "2 -> 1"},
+		{StateSubmitted, "1 -> E"},
+		{StateAwaitingSpark, "E -> S"},
+		{StateApprovalRequired, "S -> 2"},
+		{StateCompleted, "E -> 2"},
+		{StateFailed, "! -> 2"},
+		{StateExpired, "! -> 2"},
+		{StateCancelled, "! -> 2"},
+	}
+
+	for _, tc := range tests {
+		task := &Task{State: tc.state}
+		got := task.FlowTag()
+		if got != tc.want {
+			t.Errorf("FlowTag() for state %s = %s, want %s", tc.state, got, tc.want)
+		}
+	}
+}
+

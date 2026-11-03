@@ -124,12 +124,14 @@ sparkwa
 ### Dashboard Screen
 
 ```text
-┌─ SYSTEM HEALTH & INTEGRATION SNAPSHOT ─────────────────────────────────────────┐
-│  WhatsApp Bot (Number 1)    : +1 (555) ••••• 01          [● CONNECTED]         │
-│  Authorized User (Number 2) : +1 (555) ••••• 02          [● ALLOWLISTED]       │
-│  Gmail Bridge Mailbox       : br••••••ge@gmail.com       [● CONNECTED]         │
-│  Spark Agent Destination    : sp••••••rk@gmail.com       [● FULLY_VERIFIED]    │
-│  SQLite Persistent Queue    : 0 task(s) active in queue  [● HEALTHY]           │
+┌─ SYSTEM INTEGRATION PIPELINE [PRIVACY-SAFE] ───────────────────────────────────┐
+│  Node [1] WhatsApp Bot      : Connected & Listening      [● ONLINE]            │
+│  Node [2] Authorized User   : Allowlisted Sender         [● ALLOWED]           │
+│  Node [E] Gmail Bridge      : Authenticated (OAuth 2.0)  [● READY]             │
+│  Node [S] Gemini Spark      : Integration Verified       [● ACTIVE]            │
+│                                                                                │
+│  PIPELINE FLOW              : [2 ➔ 1] ➔ [1 ➔ E] ➔ [E ➔ S] ➔ [S ➔ E] ➔ [E ➔ 2] │
+│  Persistent Queue           : 0 active task(s) in queue  [● HEALTHY]           │
 └────────────────────────────────────────────────────────────────────────────────┘
 
 ┌─ CONTROL MENU — SELECT OPTION [0-8] ───────────────────────────────────────────┐

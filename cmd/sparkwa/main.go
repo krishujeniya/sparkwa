@@ -309,13 +309,13 @@ func runStatus(ctx context.Context, cfg *config.Config) {
 	fmt.Printf("Recent Tasks     : %d recorded\n", len(recent))
 
 	if len(recent) > 0 {
-		fmt.Println("\nRecent Tasks:")
+		fmt.Println("\nRecent Pipeline Events [Privacy-Safe]:")
 		for _, t := range recent {
 			displayID := t.ID
 			if len(displayID) > 8 {
 				displayID = displayID[:8]
 			}
-			fmt.Printf(" • [%s] %s (%s) : %s\n", t.State, displayID, t.CreatedAt.Format("15:04:05"), strings.ReplaceAll(t.Command, "\n", " "))
+			fmt.Printf(" • [%-12s] Flow [%s] | Event %s (%s)\n", t.State, t.FlowTag(), displayID, t.CreatedAt.Format("15:04:05"))
 		}
 	}
 	fmt.Println("================================================================================")

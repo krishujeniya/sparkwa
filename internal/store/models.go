@@ -60,3 +60,28 @@ func (t *Task) CanCancel() bool {
 		return false
 	}
 }
+
+// FlowTag returns a privacy-safe node flow indicator for the task's pipeline progress.
+// Node [1]: WhatsApp Bot
+// Node [2]: Authorized User
+// Node [E]: Gmail Bridge
+// Node [S]: Gemini Spark Agent
+func (t *Task) FlowTag() string {
+	switch t.State {
+	case StateReceived, StateAuthorized, StateQueued:
+		return "2 -> 1"
+	case StateSubmitted:
+		return "1 -> E"
+	case StateAwaitingSpark:
+		return "E -> S"
+	case StateApprovalRequired:
+		return "S -> 2"
+	case StateCompleted:
+		return "E -> 2"
+	case StateFailed, StateExpired, StateCancelled:
+		return "! -> 2"
+	default:
+		return "1 -> E"
+	}
+}
+

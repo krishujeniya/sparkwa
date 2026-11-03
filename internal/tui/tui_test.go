@@ -110,14 +110,17 @@ func TestRenderDashboard(t *testing.T) {
 	RenderDashboard(&buf, snap, 82)
 	out := buf.String()
 
-	if !strings.Contains(out, "SYSTEM HEALTH & INTEGRATION SNAPSHOT") {
+	if !strings.Contains(out, "SYSTEM INTEGRATION PIPELINE [PRIVACY-SAFE]") {
 		t.Errorf("missing snapshot title in dashboard: %s", out)
 	}
-	if !strings.Contains(out, "+1234") {
-		t.Errorf("missing masked bot phone in dashboard: %s", out)
+	if !strings.Contains(out, "Node [1] WhatsApp Bot") {
+		t.Errorf("missing node 1 in dashboard: %s", out)
 	}
-	if !strings.Contains(out, "[● CONNECTED]") {
-		t.Errorf("missing connected indicator in dashboard: %s", out)
+	if !strings.Contains(out, "Node [E] Gmail Bridge") {
+		t.Errorf("missing node E in dashboard: %s", out)
+	}
+	if !strings.Contains(out, "[● ONLINE]") {
+		t.Errorf("missing online indicator in dashboard: %s", out)
 	}
 	if !strings.Contains(out, "[1] Guided Setup Wizard") {
 		t.Errorf("missing menu option 1 in dashboard: %s", out)

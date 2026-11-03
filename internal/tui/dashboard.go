@@ -3,8 +3,6 @@ package tui
 import (
 	"fmt"
 	"io"
-
-	"github.com/sparkwa/sparkwa/internal/identity"
 )
 
 // StatusSnapshot contains pre-evaluated status details for the TUI dashboard.
@@ -26,52 +24,62 @@ func RenderDashboard(w io.Writer, snap StatusSnapshot, termWidth int) {
 	PrintLogo(w, termWidth)
 	fmt.Fprintln(w)
 
-	// 2. System Status Summary Card
+	// 2. System Status Summary Card (Privacy-Safe Node Flow)
 	var statusLines []string
 
-	// WhatsApp Status
+	// Node 1: WhatsApp Bot
 	waIndicator := IndicatorPending("NOT LINKED")
+	waDesc := "Awaiting QR Pairing"
 	if snap.WhatsAppPaired {
-		waIndicator = IndicatorActive("CONNECTED")
+		waIndicator = IndicatorActive("ONLINE")
+		waDesc = "Connected & Listening"
 	}
-	botPhoneStr := identity.MaskPhone(snap.BotPhone)
-	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "WhatsApp Bot (Number 1)", botPhoneStr, waIndicator))
+	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "Node [1] WhatsApp Bot", waDesc, waIndicator))
 
-	// Authorized User
-	authPhoneStr := identity.MaskPhone(snap.AuthPhone)
-	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "Authorized User (Number 2)", authPhoneStr, IndicatorActive("ALLOWLISTED")))
+	// Node 2: Authorized User
+	authIndicator := IndicatorActive("ALLOWED")
+	authDesc := "Allowlisted Sender"
+	if snap.AuthPhone == "" {
+		authIndicator = IndicatorPending("CONFIG NEEDED")
+		authDesc = "Unconfigured"
+	}
+	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "Node [2] Authorized User", authDesc, authIndicator))
 
-	// Gmail Bridge Status
-	gIndicator := IndicatorPending("TOKEN NEEDED")
+	// Node E: Gmail Bridge
+	gIndicator := IndicatorPending("AUTH NEEDED")
+	gDesc := "Token Required"
 	if snap.GmailAuthed {
-		gIndicator = IndicatorActive("CONNECTED")
+		gIndicator = IndicatorActive("READY")
+		gDesc = "Authenticated (OAuth 2.0)"
 	}
-	bridgeEmailStr := identity.MaskEmail(snap.BridgeEmail)
-	if len(bridgeEmailStr) > 26 {
-		bridgeEmailStr = bridgeEmailStr[:23] + "..."
-	}
-	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "Gmail Bridge Mailbox", bridgeEmailStr, gIndicator))
+	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "Node [E] Gmail Bridge", gDesc, gIndicator))
 
-	// Spark Mailbox
-	sparkEmailStr := identity.MaskEmail(snap.SparkEmail)
-	if len(sparkEmailStr) > 26 {
-		sparkEmailStr = sparkEmailStr[:23] + "..."
-	}
+	// Node S: Spark Agent
 	capStr := snap.CapabilityState
 	if capStr == "" {
 		capStr = "NOT_CONFIGURED"
 	}
-	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "Spark Agent Destination", sparkEmailStr, Bold("["+capStr+"]")))
+	sparkIndicator := IndicatorActive("ACTIVE")
+	sparkDesc := "Integration Verified"
+	if capStr == "NOT_CONFIGURED" {
+		sparkIndicator = IndicatorPending("NOT READY")
+		sparkDesc = "Setup Required"
+	}
+	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "Node [S] Gemini Spark", sparkDesc, sparkIndicator))
+
+	// Pipeline Data Flow
+	statusLines = append(statusLines, "")
+	statusLines = append(statusLines, fmt.Sprintf("%-26s : %s", "PIPELINE FLOW", Bold("[2 ➔ 1] ➔ [1 ➔ E] ➔ [E ➔ S] ➔ [S ➔ E] ➔ [E ➔ 2]")))
 
 	// Queue State
-	queueStr := fmt.Sprintf("%d task(s) active in queue", snap.ActiveTasks)
-	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "SQLite Persistent Queue", queueStr, IndicatorActive("HEALTHY")))
+	queueStr := fmt.Sprintf("%d active task(s) in queue", snap.ActiveTasks)
+	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "Persistent Queue", queueStr, IndicatorActive("HEALTHY")))
 
 	boxWidth := termWidth
 	if boxWidth > 82 {
 		boxWidth = 82
 	}
-	fmt.Fprint(w, Box("SYSTEM HEALTH & INTEGRATION SNAPSHOT", statusLines, boxWidth))
+	fmt.Fprint(w, Box("SYSTEM INTEGRATION PIPELINE [PRIVACY-SAFE]", statusLines, boxWidth))
 	fmt.Fprintln(w)
 
 	// 3. Primary Actions Menu Card
