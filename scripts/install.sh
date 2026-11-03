@@ -46,19 +46,32 @@ echo -e "Detected Architecture: ${GREEN}${TARGET_ARCH}${NC} ($ARCH)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# 4. Locate Binary
+# 4. Locate or Download Binary
 BIN_SOURCE=""
+TMP_DOWNLOAD=""
 if [ -f "$PROJECT_ROOT/bin/sparkwa" ]; then
     BIN_SOURCE="$PROJECT_ROOT/bin/sparkwa"
 elif [ -f "$PROJECT_ROOT/sparkwa" ]; then
     BIN_SOURCE="$PROJECT_ROOT/sparkwa"
-elif command -v go >/dev/null 2>&1; then
+elif command -v go >/dev/null 2>&1 && [ -f "$PROJECT_ROOT/cmd/sparkwa/main.go" ]; then
     echo -e "Compiling sparkwa binary for linux/$TARGET_ARCH..."
     (cd "$PROJECT_ROOT" && CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/sparkwa ./cmd/sparkwa)
     BIN_SOURCE="$PROJECT_ROOT/bin/sparkwa"
 else
-    echo -e "${RED}Error: Could not find prebuilt sparkwa binary and Go compiler is not installed.${NC}" >&2
-    exit 1
+    echo -e "Downloading precompiled SparkWA binary for linux/$TARGET_ARCH..."
+    TMP_DOWNLOAD=$(mktemp -d)
+    TARBALL_URL="https://github.com/krishujeniya/sparkwa/releases/latest/download/sparkwa-v1.0.0-linux-${TARGET_ARCH}.tar.gz"
+    if curl -fsSL "$TARBALL_URL" -o "$TMP_DOWNLOAD/sparkwa.tar.gz" 2>/dev/null; then
+        tar -xzf "$TMP_DOWNLOAD/sparkwa.tar.gz" -C "$TMP_DOWNLOAD"
+        BIN_SOURCE="$TMP_DOWNLOAD/sparkwa/sparkwa"
+    elif wget -q "$TARBALL_URL" -O "$TMP_DOWNLOAD/sparkwa.tar.gz" 2>/dev/null; then
+        tar -xzf "$TMP_DOWNLOAD/sparkwa.tar.gz" -C "$TMP_DOWNLOAD"
+        BIN_SOURCE="$TMP_DOWNLOAD/sparkwa/sparkwa"
+    else
+        echo -e "${RED}Error: Could not locate local binary and release download failed.${NC}" >&2
+        rm -rf "$TMP_DOWNLOAD"
+        exit 1
+    fi
 fi
 
 # 5. Create Dedicated System User
@@ -84,6 +97,7 @@ mkdir -p "$DATA_DIR"
 # 7. Install Binary
 echo -e "Installing binary to ${GREEN}${BIN_DEST}${NC}..."
 install -m 0755 "$BIN_SOURCE" "$BIN_DEST"
+[ -n "$TMP_DOWNLOAD" ] && rm -rf "$TMP_DOWNLOAD" || true
 
 # 8. Setup Configuration Template (Preserve existing!)
 CONFIG_FILE="$CONFIG_DIR/config.env"

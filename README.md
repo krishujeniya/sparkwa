@@ -163,13 +163,20 @@ SparkWA can be installed using your preferred package manager or installer:
 
 ### Option 1: Ubuntu / Debian (`apt`)
 
-Install the official Debian package via `apt`:
+Configure the SparkWA repository once, then install directly via `apt`:
 
 ```bash
-# Download the latest Debian package
-curl -LO https://github.com/krishujeniya/sparkwa/releases/latest/download/sparkwa_1.0.0_amd64.deb
+# 1. Setup SparkWA repository
+curl -fsSL https://raw.githubusercontent.com/krishujeniya/sparkwa/main/scripts/setup-apt.sh | sudo bash
 
-# Install package and systemd service via apt
+# 2. Install SparkWA directly
+sudo apt install -y sparkwa
+```
+
+Or install the standalone `.deb` package directly:
+
+```bash
+curl -LO https://github.com/krishujeniya/sparkwa/releases/latest/download/sparkwa_1.0.0_amd64.deb
 sudo apt install ./sparkwa_1.0.0_amd64.deb
 ```
 *For ARM64 servers (e.g. Raspberry Pi, AWS Graviton), substitute `sparkwa_1.0.0_arm64.deb`.*
