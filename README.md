@@ -40,6 +40,7 @@ It runs on an Ubuntu or Debian Linux server (or macOS) as a single native progra
 - [Installation Options](#installation-options)
 - [Quick Start Guide (5 Minutes)](#quick-start-guide-5-minutes)
 - [WhatsApp Commands](#whatsapp-commands)
+- [Example Prompts for Gemini Spark](#example-prompts-for-gemini-spark)
 - [System Requirements](#system-requirements)
 - [Security and Privacy](#security-and-privacy)
 - [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
@@ -288,6 +289,76 @@ Send these commands from your personal phone (Number 2) to your bot (Number 1):
 | `/cancel <id>` | Stop a task that is waiting or in progress. |
 | `/help` | Print the command manual directly in your chat. |
 | **Any other text** | Forwarded to Gemini Spark as an instruction for your agent to complete. |
+
+---
+
+## Example Prompts for Gemini Spark
+
+Any text message sent from your personal phone (Number 2) that does not start with a slash command (`/`) is treated as an autonomous instruction for Gemini Spark. Spark accesses your Google Workspace tools directly and returns the response.
+
+### 1. Calendar & Scheduling
+- **Create an Event**:
+  > *"Schedule a 30-minute sync with Alex tomorrow at 3:00 PM and invite alex@company.com"*
+  >
+  > **Spark Action**: Checks Google Calendar for conflicts, creates the event with a Google Meet link, sends invitations, and reports confirmation back to WhatsApp.
+- **Daily Agenda Briefing**:
+  > *"What meetings and tasks do I have scheduled for today and tomorrow morning?"*
+  >
+  > **Spark Action**: Queries Google Calendar and Google Tasks, formats a chronological agenda, and delivers it to WhatsApp.
+- **Rescheduling**:
+  > *"Move my 2:00 PM team review today to Thursday at 11:00 AM."*
+  >
+  > **Spark Action**: Locates the calendar entry, checks attendee availability, updates the event, and notifies participants.
+- **Reminders & Deadlines**:
+  > *"Remind me on Friday at 5:00 PM to submit monthly expenses and invoice reports."*
+  >
+  > **Spark Action**: Creates a scheduled task with a notification trigger in Google Tasks.
+
+### 2. Gmail & Communications
+- **Morning Inbox Summary**:
+  > *"Summarize my unread emails from the past 24 hours. Highlight any urgent emails from clients or management."*
+  >
+  > **Spark Action**: Scans your Gmail inbox, generates concise bullet summaries, and highlights items requiring action.
+- **Assisted Drafts**:
+  > *"Draft a polite reply to Sarah's email regarding the product roadmap delay, confirming we will ship on Friday."*
+  >
+  > **Spark Action**: Creates a draft in your Gmail account and sends the preview back to WhatsApp for your review.
+- **Search & Lookup**:
+  > *"Did invoice #4081 from Acme Corp arrive this week? Check attachments for a PDF."*
+  >
+  > **Spark Action**: Searches messages matching the query, verifies the PDF attachment, and extracts the invoice total.
+
+### 3. Google Drive, Docs & Sheets
+- **Document Summarization**:
+  > *"Find the latest 'Q4 Financial Review' presentation in my Google Drive and summarize the key revenue milestones."*
+  >
+  > **Spark Action**: Locates the presentation, analyzes slides and notes, and delivers key metrics to WhatsApp.
+- **Google Sheets Data Entry**:
+  > *"Add a row to the '2026 Expense Log' spreadsheet: Nov 3, Client Lunch, $64.20, Paid via Visa."*
+  >
+  > **Spark Action**: Opens the Google Sheet, appends the row under the correct columns, and confirms the updated sheet balance.
+- **Document Creation**:
+  > *"Create a new Google Doc named 'Weekly Standup Notes - Nov 3' with sections for Wins, Blockers, and Action Items."*
+  >
+  > **Spark Action**: Creates the formatted document in Google Drive and returns the direct edit link.
+
+### 4. Safety Guardrails & Approval Confirmation
+When an instruction has external impact or irreversible consequences, Gemini Spark halts execution and requests your explicit approval via WhatsApp before proceeding:
+- **Mass Email / Bulk Operations**:
+  > *"Draft an announcement email to all team leads about Friday server maintenance."*
+  >
+  > **WhatsApp Approval Flow**:
+  > ```text
+  > [APPROVAL REQUIRED]
+  > Task: 256c0c48
+  > Action: Send announcement email to team-all@company.com (18 recipients).
+  > 
+  > Reply with your confirmation or cancellation.
+  > ```
+- **File Archival / Deletion**:
+  > *"Move all files in the 'Old Scans' folder older than 1 year to Archive."*
+  >
+  > **Spark Action**: Counts matching files and requests confirmation with the exact count before moving any files.
 
 ---
 

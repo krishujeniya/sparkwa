@@ -539,6 +539,84 @@
       line-height: 1.5;
     }
 
+    /* Prompt Examples Grid */
+    .prompt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .prompt-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .prompt-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .prompt-category-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    .prompt-action-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .prompt-user-bubble {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--fg);
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .prompt-user-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .prompt-execution {
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .prompt-execution strong {
+      color: var(--fg);
+    }
+
+    .prompt-approval-box {
+      background: var(--code-bg);
+      border: 1px dashed var(--border);
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--fg);
+      line-height: 1.4;
+    }
+
     /* FAQ Details */
     .faq-list {
       display: grid;
@@ -900,6 +978,7 @@
         <a href="#pipeline">Pipeline</a>
         <a href="#prompt">Spark Prompt</a>
         <a href="#commands">Commands</a>
+        <a href="#examples">Examples</a>
         <a href="#setup">Setup</a>
         <a href="#security">Security</a>
         <a href="#faq">FAQ</a>
@@ -1336,6 +1415,147 @@ END SPARKWA RESPONSE</pre>
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prompt Examples -->
+    <section class="doc-section" id="examples">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">Real-World Workflows</div>
+          <h2 class="section-title">Example Prompts for Gemini Spark</h2>
+          <p class="section-desc">
+            Any natural language text sent from your authorized personal WhatsApp is delivered directly to Gemini Spark. Spark executes actions using Google Workspace APIs and streams answers back to chat.
+          </p>
+        </div>
+
+        <div class="prompt-grid">
+          <!-- Card 1: Calendar Event -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">CALENDAR</span>
+              <span class="prompt-action-tag">Google Calendar API</span>
+            </div>
+            <div class="prompt-user-bubble">
+              <div class="prompt-user-label">WhatsApp Prompt</div>
+              "Schedule a 30-minute sync with Alex tomorrow at 3:00 PM and invite alex@company.com"
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Checks your calendar for schedule collisions, books the event with a Google Meet link, sends calendar invitations, and returns meeting confirmation to WhatsApp.
+            </p>
+          </div>
+
+          <!-- Card 2: Morning Agenda -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">SCHEDULE</span>
+              <span class="prompt-action-tag">Calendar &amp; Tasks</span>
+            </div>
+            <div class="prompt-user-bubble">
+              <div class="prompt-user-label">WhatsApp Prompt</div>
+              "What meetings and tasks do I have scheduled for today and tomorrow morning?"
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Aggregates events from Google Calendar and to-dos from Google Tasks, organizes them into a chronological agenda, and delivers it to your chat.
+            </p>
+          </div>
+
+          <!-- Card 3: Reschedule -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">RESCHEDULE</span>
+              <span class="prompt-action-tag">Google Calendar API</span>
+            </div>
+            <div class="prompt-user-bubble">
+              <div class="prompt-user-label">WhatsApp Prompt</div>
+              "Move my 2:00 PM team review today to Thursday at 11:00 AM."
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Locates the calendar entry, checks attendee availability, updates start/end timestamps, and dispatches automated update notices.
+            </p>
+          </div>
+
+          <!-- Card 4: Inbox Summary -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">GMAIL</span>
+              <span class="prompt-action-tag">Gmail ReadOnly API</span>
+            </div>
+            <div class="prompt-user-bubble">
+              <div class="prompt-user-label">WhatsApp Prompt</div>
+              "Summarize my unread emails from the past 24 hours. Highlight any urgent emails from clients or management."
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Scans incoming messages, filters newsletters and spam, produces bullet summaries for key threads, and flags urgent action items.
+            </p>
+          </div>
+
+          <!-- Card 5: Draft Email -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">DRAFTS</span>
+              <span class="prompt-action-tag">Gmail Compose API</span>
+            </div>
+            <div class="prompt-user-bubble">
+              <div class="prompt-user-label">WhatsApp Prompt</div>
+              "Draft a polite reply to Sarah's email regarding the product roadmap delay, confirming we will ship on Friday."
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Drafts the response directly into your Gmail account, formats it appropriately, and provides a preview back to WhatsApp for your review.
+            </p>
+          </div>
+
+          <!-- Card 6: Sheets Entry -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">SHEETS</span>
+              <span class="prompt-action-tag">Google Sheets API</span>
+            </div>
+            <div class="prompt-user-bubble">
+              <div class="prompt-user-label">WhatsApp Prompt</div>
+              "Add a row to the '2026 Expense Log' spreadsheet: Nov 3, Client Lunch, $64.20, Paid via Visa."
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Accesses the spreadsheet in Google Drive, maps columns accurately, appends the entry, and reports the updated sheet total.
+            </p>
+          </div>
+
+          <!-- Card 7: Drive Search -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">DRIVE</span>
+              <span class="prompt-action-tag">Google Drive API</span>
+            </div>
+            <div class="prompt-user-bubble">
+              <div class="prompt-user-label">WhatsApp Prompt</div>
+              "Find the latest 'Q4 Financial Review' presentation in my Google Drive and summarize key revenue milestones."
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Locates the file in Google Drive, analyzes slide text and charts, and produces an executive briefing delivered directly to your chat.
+            </p>
+          </div>
+
+          <!-- Card 8: Safety Guardrail -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">SAFETY</span>
+              <span class="prompt-action-tag">Human Confirmation</span>
+            </div>
+            <div class="prompt-user-bubble">
+              <div class="prompt-user-label">WhatsApp Prompt</div>
+              "Draft an announcement email to all team leads about Friday server maintenance."
+            </div>
+            <div class="prompt-approval-box">
+              [APPROVAL REQUIRED]<br>
+              Task: 256c0c48<br>
+              Action: Send announcement email to team-all@company.com (18 recipients).<br>
+              Reply with your confirmation or cancellation.
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Detects external high-impact action, pauses execution, and demands your confirmation before sending.
+            </p>
+          </div>
         </div>
       </div>
     </section>
