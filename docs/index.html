@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>SparkWA — Headless WhatsApp to Google Gemini Spark Bridge | Documentation</title>
   <meta name="description" content="Official documentation for SparkWA: a lightweight, single-binary bridge connecting WhatsApp to Google Gemini Spark via Gmail. Pure Go, 30MB RAM, zero dependencies. By Krish Ujeniya.">
   <meta name="author" content="Krish Ujeniya">
@@ -72,8 +72,8 @@
       --btn-bg: #ffffff;
       --btn-fg: #000000;
       --focus: #ffffff;
-      --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", -apple-system-headline, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --container: 1040px;
     }
 
@@ -103,6 +103,12 @@
       color: var(--fg);
       font-family: var(--font-sans);
       line-height: 1.6;
+      overflow-x: hidden;
+      max-width: 100vw;
+      width: 100%;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     body {
@@ -111,6 +117,10 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
+      max-width: 100vw;
+      width: 100%;
+      position: relative;
     }
 
     /* Accessibility Skip Link */
@@ -145,14 +155,20 @@
       padding: 0 24px;
     }
 
-    /* Navigation */
+    /* Apple Glassmorphic Navigation Bar */
     header.site-header {
       position: sticky;
       top: 0;
-      z-index: 100;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(8px);
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.76);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+    [data-theme="light"] header.site-header {
+      background: rgba(255, 255, 255, 0.82);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     .nav-inner {
@@ -277,18 +293,13 @@
     }
 
     /* Fast Install Box */
-    .fast-install {
-      background: var(--panel);
-      border: 1px solid var(--border-bright);
-      padding: 24px;
-      margin-bottom: 32px;
-    }
-
     .fast-install-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
     .fast-install-title {
@@ -299,23 +310,38 @@
       letter-spacing: 0.5px;
     }
 
+    .fast-install {
+      background: var(--panel);
+      border: 1px solid var(--border-bright);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
     .command-box {
       display: flex;
       align-items: stretch;
       background: var(--code-bg);
       border: 1px solid var(--border);
+      border-radius: 12px;
       font-family: var(--font-mono);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       overflow: hidden;
+      max-width: 100%;
+      min-width: 0;
     }
 
     .command-text {
       flex: 1;
+      min-width: 0; /* CRITICAL: prevents flex item blowout */
       padding: 14px 16px;
       overflow-x: auto;
       white-space: nowrap;
       user-select: all;
       color: var(--fg);
+      -webkit-overflow-scrolling: touch;
     }
 
     .btn-copy {
@@ -380,16 +406,21 @@
     /* Node Pipeline Cards */
     .pipeline-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
       gap: 16px;
       margin-bottom: 24px;
+      max-width: 100%;
+      min-width: 0;
     }
 
     .pipeline-card {
       background: var(--panel);
       border: 1px solid var(--border);
+      border-radius: 16px;
       padding: 20px;
       position: relative;
+      min-width: 0;
+      transition: border-color 0.2s ease, transform 0.2s ease;
     }
 
     .card-node-badge {
@@ -539,20 +570,129 @@
       line-height: 1.5;
     }
 
-    /* Prompt Examples Grid */
+    /* Prompt Examples Grid (Apple HIG responsive squircle cards) */
     .prompt-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
       gap: 20px;
+      max-width: 100%;
+      min-width: 0;
     }
 
     .prompt-card {
       background: var(--panel);
       border: 1px solid var(--border);
+      border-radius: 16px;
       padding: 24px;
       display: flex;
       flex-direction: column;
       gap: 14px;
+      min-width: 0;
+      max-width: 100%;
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .prompt-card:hover {
+      border-color: var(--border-bright);
+    }
+
+    .prompt-user-bubble {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--fg);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .prompt-bubble-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .prompt-user-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    .btn-copy-prompt {
+      background: var(--panel-alt);
+      border: 1px solid var(--border-bright);
+      color: var(--fg);
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      min-height: 32px;
+      border-radius: 9999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-copy-prompt:hover {
+      background: var(--fg);
+      color: var(--bg);
+    }
+    .btn-copy-prompt:active {
+      transform: scale(0.94);
+    }
+
+    .prompt-quote-text {
+      color: var(--fg);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    /* Command Pills in Slash Commands Table */
+    .cmd-pill-btn {
+      background: var(--code-bg);
+      border: 1px solid var(--border-bright);
+      color: var(--fg);
+      padding: 6px 12px;
+      min-height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cmd-pill-btn:hover {
+      background: var(--fg);
+      color: var(--bg);
+    }
+    .cmd-pill-btn:active {
+      transform: scale(0.95);
+    }
+    .cmd-pill-btn code {
+      background: transparent !important;
+      padding: 0 !important;
+      border: none !important;
+      color: inherit !important;
+    }
+    .cmd-pill-icon {
+      font-size: 0.85rem;
+      opacity: 0.7;
     }
 
     .prompt-card-header {
@@ -849,35 +989,49 @@
       color: var(--fg);
     }
 
-    /* Live Toast for Copy Action */
+    /* Apple Floating Dynamic Island HUD Toast */
     .toast {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--btn-bg);
-      color: var(--btn-fg);
-      padding: 10px 18px;
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      font-weight: 700;
-      border: 1px solid var(--fg);
-      z-index: 1000;
-      transform: translateY(100px);
+      top: 20px;
+      left: 50%;
+      transform: translate(-50%, -100px) scale(0.9);
+      background: rgba(18, 18, 18, 0.94);
+      color: #ffffff;
+      padding: 12px 24px;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(24px) saturate(190%);
+      -webkit-backdrop-filter: blur(24px) saturate(190%);
+      z-index: 99999;
       opacity: 0;
-      transition: transform 0.2s, opacity 0.2s;
+      pointer-events: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    }
+    [data-theme="light"] .toast {
+      background: rgba(255, 255, 255, 0.94);
+      color: #000000;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.05);
     }
     .toast.show {
-      transform: translateY(0);
+      transform: translate(-50%, 0) scale(1);
       opacity: 1;
+    }
+    .toast-icon {
+      font-size: 1rem;
     }
 
     /* Architecture Diagram Component */
-    .arch-diagram-wrapper {
-      margin-top: 36px;
-      background: var(--panel);
-      border: 1px solid var(--border-bright);
-      padding: 32px 24px;
-    }
+
 
     .arch-header {
       display: flex;
@@ -937,13 +1091,7 @@
       margin: 0 auto;
     }
 
-    .arch-node {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border-bright);
-      padding: 16px 20px;
-      position: relative;
-    }
+
 
     .arch-node-main {
       border-width: 2px;
@@ -1045,11 +1193,36 @@
       color: var(--fg);
     }
 
+
+
+    .arch-diagram-wrapper {
+      margin-top: 36px;
+      background: var(--panel);
+      border: 1px solid var(--border-bright);
+      border-radius: 16px;
+      padding: 32px 24px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .arch-node {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      padding: 16px 20px;
+      position: relative;
+      min-width: 0;
+    }
+
     .arch-subflow-box {
       margin-top: 14px;
       background: var(--code-bg);
       border: 1px dashed var(--border-bright);
+      border-radius: 12px;
       padding: 16px;
+      max-width: 100%;
+      min-width: 0;
     }
 
     .arch-subflow-row {
@@ -1061,6 +1234,33 @@
       margin-bottom: 10px;
       flex-wrap: wrap;
       gap: 8px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .arch-flex-arrow {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      min-width: 24px;
+      max-width: 140px;
+      margin: 0 8px;
+      color: var(--muted);
+    }
+    .arch-flex-arrow .arrow-line {
+      flex: 1;
+      height: 2px;
+      background: var(--border-bright);
+    }
+    .arch-flex-arrow .arrow-head {
+      font-size: 0.75rem;
+      line-height: 1;
+      color: var(--fg);
+      margin-left: -2px;
+    }
+    .arch-flex-arrow.reverse .arrow-head {
+      margin-left: 0;
+      margin-right: -2px;
     }
 
     .arch-subflow-inner {
@@ -1088,7 +1288,7 @@
       color: var(--fg);
     }
 
-    /* Responsive adjustments */
+    /* Apple Responsive Layout & Zero Overflow Engine */
     @media (max-width: 768px) {
       .hero-title {
         font-size: 2.1rem;
@@ -1110,8 +1310,10 @@
         border-bottom: 2px solid var(--border-bright);
         padding: 16px 24px;
         gap: 4px;
-        z-index: 100;
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+        z-index: 1000;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
       }
       nav.nav-links.is-open a {
         display: flex;
@@ -1131,10 +1333,83 @@
       .btn-copy {
         padding: 12px;
         justify-content: center;
+        border-top: 1px solid var(--border);
+      }
+      .hero-ascii {
+        font-size: 0.52rem;
+        line-height: 1.1;
+        padding: 12px;
+        max-width: 100%;
+      }
+      .prompt-grid {
+        grid-template-columns: 1fr;
+      }
+      .guides-grid {
+        grid-template-columns: 1fr;
+      }
+      .sec-grid {
+        grid-template-columns: 1fr;
       }
       .footer-inner {
         flex-direction: column;
         align-items: flex-start;
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 16px;
+      }
+      .hero {
+        padding: 40px 0 28px;
+      }
+      .hero-title {
+        font-size: 1.85rem;
+        letter-spacing: -1px;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        line-height: 1.45;
+      }
+      .hero-ascii {
+        font-size: 0.44rem;
+        padding: 8px;
+      }
+      .fast-install {
+        padding: 16px;
+      }
+      .prompt-card,
+      .guide-card,
+      .sec-card,
+      .pipeline-card {
+        padding: 18px 16px;
+      }
+      .arch-diagram-wrapper {
+        padding: 20px 14px;
+      }
+      .arch-node {
+        padding: 14px 16px;
+      }
+      .arch-subflow-inner {
+        margin: 6px 0 6px 8px;
+        padding: 10px 12px;
+      }
+      .arch-subflow-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+      .arch-flex-arrow {
+        transform: rotate(90deg);
+        margin: 6px 0;
+        align-self: center;
+      }
+      .toast {
+        width: calc(100% - 32px);
+        max-width: 360px;
+        justify-content: center;
+        padding: 10px 16px;
       }
     }
   </style>
@@ -1362,7 +1637,7 @@
               <div class="arch-subflow-box">
                 <div class="arch-subflow-row">
                   <span><strong>Bridge Gmail</strong></span>
-                  <span style="font-weight: 700; color: var(--muted);">──────────────────────►</span>
+                  <span class="arch-flex-arrow" aria-hidden="true"><span class="arrow-line"></span><span class="arrow-head">►</span></span>
                   <span><strong>Spark Gmail Inbox</strong></span>
                 </div>
                 <div class="arch-connector" style="padding: 2px 0;">
@@ -1383,7 +1658,7 @@
                 </div>
                 <div class="arch-subflow-row">
                   <span><strong>Bridge Gmail</strong></span>
-                  <span style="font-weight: 700; color: var(--muted);">◄───────────────────────</span>
+                  <span class="arch-flex-arrow reverse" aria-hidden="true"><span class="arrow-head">◄</span><span class="arrow-line"></span></span>
                   <span><strong>Spark Gmail Outbox</strong></span>
                 </div>
               </div>
@@ -1570,32 +1845,62 @@ END SPARKWA RESPONSE</pre>
             </thead>
             <tbody>
               <tr>
-                <td><code>/ping</code></td>
+                <td>
+                  <button class="cmd-pill-btn" onclick="copyDirectText('/ping', this)" aria-label="Copy /ping command">
+                    <code>/ping</code>
+                    <span class="cmd-pill-icon" aria-hidden="true">⎘</span>
+                  </button>
+                </td>
                 <td>Latency &amp; responsiveness diagnostic</td>
                 <td>Instant pong reply with server UTC timestamp</td>
               </tr>
               <tr>
-                <td><code>/status</code></td>
+                <td>
+                  <button class="cmd-pill-btn" onclick="copyDirectText('/status', this)" aria-label="Copy /status command">
+                    <code>/status</code>
+                    <span class="cmd-pill-icon" aria-hidden="true">⎘</span>
+                  </button>
+                </td>
                 <td>System integration &amp; capability audit</td>
                 <td>Live health check for WhatsApp, Gmail, and Gemini Spark</td>
               </tr>
               <tr>
-                <td><code>/jobs</code></td>
+                <td>
+                  <button class="cmd-pill-btn" onclick="copyDirectText('/jobs', this)" aria-label="Copy /jobs command">
+                    <code>/jobs</code>
+                    <span class="cmd-pill-icon" aria-hidden="true">⎘</span>
+                  </button>
+                </td>
                 <td>Inspect recent tasks in SQLite queue</td>
                 <td>Compact table of recent task IDs, flows, and states</td>
               </tr>
               <tr>
-                <td><code>/job &lt;id&gt;</code></td>
+                <td>
+                  <button class="cmd-pill-btn" onclick="copyDirectText('/job 1', this)" aria-label="Copy /job command example">
+                    <code>/job &lt;id&gt;</code>
+                    <span class="cmd-pill-icon" aria-hidden="true">⎘</span>
+                  </button>
+                </td>
                 <td>Inspect details of a specific task</td>
                 <td>Full execution timestamps, Gmail thread ID, and results</td>
               </tr>
               <tr>
-                <td><code>/cancel &lt;id&gt;</code></td>
+                <td>
+                  <button class="cmd-pill-btn" onclick="copyDirectText('/cancel 1', this)" aria-label="Copy /cancel command example">
+                    <code>/cancel &lt;id&gt;</code>
+                    <span class="cmd-pill-icon" aria-hidden="true">⎘</span>
+                  </button>
+                </td>
                 <td>Cancel an active pending task</td>
                 <td>Marks the task cancelled and cancels outbound worker dispatch</td>
               </tr>
               <tr>
-                <td><code>/help</code></td>
+                <td>
+                  <button class="cmd-pill-btn" onclick="copyDirectText('/help', this)" aria-label="Copy /help command">
+                    <code>/help</code>
+                    <span class="cmd-pill-icon" aria-hidden="true">⎘</span>
+                  </button>
+                </td>
                 <td>Quick command cheatsheet</td>
                 <td>Displays the full operational command guide</td>
               </tr>
@@ -1625,8 +1930,14 @@ END SPARKWA RESPONSE</pre>
             </div>
             <h3 class="prompt-card-title">Schedule Calendar Sync</h3>
             <div class="prompt-user-bubble">
-              <div class="prompt-user-label">WhatsApp Prompt</div>
-              "Schedule a 30-minute sync with Alex tomorrow at 3:00 PM and invite alex@company.com"
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy calendar sync prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Schedule a 30-minute sync with Alex tomorrow at 3:00 PM and invite alex@company.com</p>
             </div>
             <p class="prompt-execution">
               <strong>Spark Action:</strong> Checks your calendar for schedule collisions, books the event with a Google Meet link, sends calendar invitations, and returns meeting confirmation to WhatsApp.
@@ -1641,8 +1952,14 @@ END SPARKWA RESPONSE</pre>
             </div>
             <h3 class="prompt-card-title">Morning Daily Agenda</h3>
             <div class="prompt-user-bubble">
-              <div class="prompt-user-label">WhatsApp Prompt</div>
-              "What meetings and tasks do I have scheduled for today and tomorrow morning?"
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy morning agenda prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">What meetings and tasks do I have scheduled for today and tomorrow morning?</p>
             </div>
             <p class="prompt-execution">
               <strong>Spark Action:</strong> Aggregates events from Google Calendar and to-dos from Google Tasks, organizes them into a chronological agenda, and delivers it to your chat.
@@ -1657,8 +1974,14 @@ END SPARKWA RESPONSE</pre>
             </div>
             <h3 class="prompt-card-title">Reschedule Existing Meeting</h3>
             <div class="prompt-user-bubble">
-              <div class="prompt-user-label">WhatsApp Prompt</div>
-              "Move my 2:00 PM team review today to Thursday at 11:00 AM."
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy reschedule prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Move my 2:00 PM team review today to Thursday at 11:00 AM.</p>
             </div>
             <p class="prompt-execution">
               <strong>Spark Action:</strong> Locates the calendar entry, checks attendee availability, updates start/end timestamps, and dispatches automated update notices.
@@ -1673,8 +1996,14 @@ END SPARKWA RESPONSE</pre>
             </div>
             <h3 class="prompt-card-title">Inbox Priority Summary</h3>
             <div class="prompt-user-bubble">
-              <div class="prompt-user-label">WhatsApp Prompt</div>
-              "Summarize my unread emails from the past 24 hours. Highlight any urgent emails from clients or management."
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy inbox summary prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Summarize my unread emails from the past 24 hours. Highlight any urgent emails from clients or management.</p>
             </div>
             <p class="prompt-execution">
               <strong>Spark Action:</strong> Scans incoming messages, filters newsletters and spam, produces bullet summaries for key threads, and flags urgent action items.
@@ -1689,8 +2018,14 @@ END SPARKWA RESPONSE</pre>
             </div>
             <h3 class="prompt-card-title">Draft Email Reply</h3>
             <div class="prompt-user-bubble">
-              <div class="prompt-user-label">WhatsApp Prompt</div>
-              "Draft a polite reply to Sarah's email regarding the product roadmap delay, confirming we will ship on Friday."
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy draft reply prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Draft a polite reply to Sarah's email regarding the product roadmap delay, confirming we will ship on Friday.</p>
             </div>
             <p class="prompt-execution">
               <strong>Spark Action:</strong> Drafts the response directly into your Gmail account, formats it appropriately, and provides a preview back to WhatsApp for your review.
@@ -1705,8 +2040,14 @@ END SPARKWA RESPONSE</pre>
             </div>
             <h3 class="prompt-card-title">Append Spreadsheet Row</h3>
             <div class="prompt-user-bubble">
-              <div class="prompt-user-label">WhatsApp Prompt</div>
-              "Add a row to the '2026 Expense Log' spreadsheet: Nov 3, Client Lunch, $64.20, Paid via Visa."
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy expense entry prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Add a row to the '2026 Expense Log' spreadsheet: Nov 3, Client Lunch, $64.20, Paid via Visa.</p>
             </div>
             <p class="prompt-execution">
               <strong>Spark Action:</strong> Accesses the spreadsheet in Google Drive, maps columns accurately, appends the entry, and reports the updated sheet total.
@@ -1721,8 +2062,14 @@ END SPARKWA RESPONSE</pre>
             </div>
             <h3 class="prompt-card-title">Search Google Drive Files</h3>
             <div class="prompt-user-bubble">
-              <div class="prompt-user-label">WhatsApp Prompt</div>
-              "Find the latest 'Q4 Financial Review' presentation in my Google Drive and summarize key revenue milestones."
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy Drive search prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Find the latest 'Q4 Financial Review' presentation in my Google Drive and summarize key revenue milestones.</p>
             </div>
             <p class="prompt-execution">
               <strong>Spark Action:</strong> Locates the file in Google Drive, analyzes slide text and charts, and produces an executive briefing delivered directly to your chat.
@@ -1737,8 +2084,14 @@ END SPARKWA RESPONSE</pre>
             </div>
             <h3 class="prompt-card-title">Destructive Action Safety Guardrail</h3>
             <div class="prompt-user-bubble">
-              <div class="prompt-user-label">WhatsApp Prompt</div>
-              "Draft an announcement email to all team leads about Friday server maintenance."
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy announcement prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Draft an announcement email to all team leads about Friday server maintenance.</p>
             </div>
             <div class="prompt-approval-box">
               [APPROVAL REQUIRED]<br>
@@ -1927,37 +2280,18 @@ END SPARKWA RESPONSE</pre>
   </footer>
 
   <!-- Toast Element -->
-  <div class="toast" id="toast" role="status" aria-live="polite">COPIED TO CLIPBOARD</div>
+  <div class="toast" id="toast" role="status" aria-live="polite"><span class="toast-icon" aria-hidden="true">✓</span><span id="toastMsg">Copied to clipboard</span></div>
 
   <!-- Interactive Scripts -->
   <script>
-    // Copy Snippet with Fallback
-    function copySnippet(elementId, btn) {
-      const el = document.getElementById(elementId);
-      if (!el) return;
-      const text = (el.innerText || el.textContent || '').trim();
-
-      function notifySuccess() {
-        showToast('COPIED TO CLIPBOARD');
-        if (btn) {
-          const original = btn.innerHTML;
-          btn.innerHTML = '<span>COPIED!</span>';
-          setTimeout(() => {
-            btn.innerHTML = original;
-          }, 2000);
-        }
-      }
-
-      function notifyFailure() {
-        showToast('FAILED TO COPY');
-      }
-
+    // Generic Safe Clipboard Writer
+    function copyToClipboard(text, onSuccess, onFailure) {
       if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(notifySuccess).catch(() => {
-          fallbackCopy(text, notifySuccess, notifyFailure);
+        navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+          fallbackCopy(text, onSuccess, onFailure);
         });
       } else {
-        fallbackCopy(text, notifySuccess, notifyFailure);
+        fallbackCopy(text, onSuccess, onFailure);
       }
     }
 
@@ -1968,6 +2302,7 @@ END SPARKWA RESPONSE</pre>
         textArea.style.position = 'fixed';
         textArea.style.left = '-999999px';
         textArea.style.top = '-999999px';
+        textArea.setAttribute('readonly', '');
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
@@ -1978,6 +2313,69 @@ END SPARKWA RESPONSE</pre>
       } catch (err) {
         onFailure();
       }
+    }
+
+    // Copy by Element ID
+    function copySnippet(elementId, btn) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = (el.innerText || el.textContent || '').trim();
+
+      copyToClipboard(text, () => {
+        showToast('Copied to clipboard');
+        if (btn) {
+          const original = btn.innerHTML;
+          btn.innerHTML = '<span>COPIED! ✓</span>';
+          setTimeout(() => {
+            btn.innerHTML = original;
+          }, 2000);
+        }
+      }, () => {
+        showToast('Failed to copy');
+      });
+    }
+
+    // Direct String Copy (Commands)
+    function copyDirectText(text, btn) {
+      copyToClipboard(text, () => {
+        showToast('Copied: ' + text);
+        if (btn) {
+          const icon = btn.querySelector('.cmd-pill-icon');
+          if (icon) {
+            const original = icon.textContent;
+            icon.textContent = '✓';
+            setTimeout(() => {
+              icon.textContent = original;
+            }, 1800);
+          }
+        }
+      }, () => {
+        showToast('Failed to copy');
+      });
+    }
+
+    // Copy Prompt Card Bubble
+    function copyPromptCard(btn) {
+      const bubble = btn.closest('.prompt-user-bubble');
+      if (!bubble) return;
+      const textEl = bubble.querySelector('.prompt-quote-text');
+      const text = (textEl ? textEl.innerText || textEl.textContent : '').trim();
+
+      copyToClipboard(text, () => {
+        showToast('Prompt copied to clipboard');
+        if (btn) {
+          const label = btn.querySelector('.copy-pill-text');
+          const icon = btn.querySelector('.copy-pill-icon');
+          if (label) label.textContent = 'Copied! ✓';
+          if (icon) icon.textContent = '';
+          setTimeout(() => {
+            if (label) label.textContent = 'Copy';
+            if (icon) icon.textContent = '⎘';
+          }, 2000);
+        }
+      }, () => {
+        showToast('Failed to copy prompt');
+      });
     }
 
     // Toggle Architecture Diagram Display View (Visual vs ASCII)
@@ -2069,15 +2467,20 @@ END SPARKWA RESPONSE</pre>
       });
     })();
 
-    // Toast Notification
+    // Toast Notification (Apple Floating Dynamic Island HUD)
+    let toastTimeout = null;
     function showToast(msg) {
       const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
       if (!toast) return;
-      toast.textContent = msg;
+      if (toastMsg) toastMsg.textContent = msg;
+      else toast.textContent = msg;
+
       toast.classList.add('show');
-      setTimeout(() => {
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
         toast.classList.remove('show');
-      }, 2200);
+      }, 2400);
     }
 
     // Theme Toggle (Pure Monochrome Dark/Light)
