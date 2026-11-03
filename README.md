@@ -35,9 +35,10 @@ It runs on an Ubuntu or Debian Linux server (or macOS) as a single native progra
 ## Table of Contents
 
 - [What is SparkWA?](#what-is-sparkwa)
+- [Fast 1-Line Installation (Recommended)](#fast-1-line-installation-recommended)
+- [Alternative Installation Options](#alternative-installation-options)
 - [How It Works](#how-it-works)
 - [Interactive Control Dashboard](#interactive-control-dashboard)
-- [Installation Options](#installation-options)
 - [Quick Start Guide (5 Minutes)](#quick-start-guide-5-minutes)
 - [WhatsApp Commands](#whatsapp-commands)
 - [Example Prompts for Gemini Spark](#example-prompts-for-gemini-spark)
@@ -63,6 +64,61 @@ Standard chatbot tools replace your agent with a basic model API that cannot acc
 - **Low Server Cost:** Uses about 30 MB of RAM and 0.0% idle CPU. Runs on basic 512 MB or 1 GB Linux virtual private servers (VPS).
 - **Private and Restricted:** Only your personal phone number can send commands. Messages from unknown numbers or group chats are dropped.
 - **Safety First:** If Gemini Spark needs confirmation before taking an action (like deleting a file), it forwards the confirmation prompt to your WhatsApp chat before proceeding.
+
+---
+
+## Fast 1-Line Installation (Recommended)
+
+Run this single command on your Ubuntu, Debian, or Linux server. It automatically installs SparkWA and immediately launches the interactive dashboard:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/krishujeniya/sparkwa/main/scripts/setup-apt.sh | sudo bash
+```
+
+Once installed, you can reopen the control dashboard anytime simply by typing:
+
+```bash
+sparkwa
+```
+
+---
+
+## Alternative Installation Options
+
+### Option 1: Debian Package (`apt`)
+
+```bash
+# Download and install the latest official .deb package
+curl -LO https://github.com/krishujeniya/sparkwa/releases/latest/download/sparkwa_1.0.0_amd64.deb
+sudo apt install ./sparkwa_1.0.0_amd64.deb
+```
+*For ARM64 servers (e.g. Raspberry Pi, AWS Graviton), substitute `sparkwa_1.0.0_arm64.deb`.*
+
+### Option 2: macOS / Linux (`brew`)
+
+Install via Homebrew:
+
+```bash
+brew tap krishujeniya/sparkwa
+brew install sparkwa
+```
+
+### Option 3: Standalone Binary Release (`tar.gz`)
+
+```bash
+curl -LO https://github.com/krishujeniya/sparkwa/releases/latest/download/sparkwa-v1.0.0-linux-amd64.tar.gz
+tar -xzf sparkwa-v1.0.0-linux-amd64.tar.gz
+cd sparkwa && sudo ./scripts/install.sh
+```
+
+### Option 4: Build from Source (Go 1.24+)
+
+```bash
+git clone https://github.com/krishujeniya/sparkwa.git
+cd sparkwa
+make build
+sudo ./scripts/install.sh
+```
 
 ---
 
@@ -177,61 +233,6 @@ sparkwa
 ```
 
 You can choose any action by pressing a single number key (`1` through `8`), or navigate with the arrow keys and press Enter.
-
----
-
-## Fast 1-Line Installation (Recommended)
-
-Run this single command on your Ubuntu, Debian, or Linux server. It automatically installs SparkWA and immediately launches the interactive dashboard:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/krishujeniya/sparkwa/main/scripts/setup-apt.sh | sudo bash
-```
-
-Once installed, you can reopen the control dashboard anytime simply by typing:
-
-```bash
-sparkwa
-```
-
----
-
-## Alternative Installation Options
-
-### Option 1: Debian Package (`apt`)
-
-```bash
-# Download and install the latest official .deb package
-curl -LO https://github.com/krishujeniya/sparkwa/releases/latest/download/sparkwa_1.0.0_amd64.deb
-sudo apt install ./sparkwa_1.0.0_amd64.deb
-```
-*For ARM64 servers (e.g. Raspberry Pi, AWS Graviton), substitute `sparkwa_1.0.0_arm64.deb`.*
-
-### Option 2: macOS / Linux (`brew`)
-
-Install via Homebrew:
-
-```bash
-brew tap krishujeniya/sparkwa
-brew install sparkwa
-```
-
-### Option 3: Standalone Binary Release (`tar.gz`)
-
-```bash
-curl -LO https://github.com/krishujeniya/sparkwa/releases/latest/download/sparkwa-v1.0.0-linux-amd64.tar.gz
-tar -xzf sparkwa-v1.0.0-linux-amd64.tar.gz
-cd sparkwa && sudo ./scripts/install.sh
-```
-
-### Option 4: Build from Source (Go 1.24+)
-
-```bash
-git clone https://github.com/krishujeniya/sparkwa.git
-cd sparkwa
-make build
-sudo ./scripts/install.sh
-```
 
 ---
 
