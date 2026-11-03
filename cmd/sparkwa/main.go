@@ -12,14 +12,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/sparkwa/sparkwa-lite/internal/config"
-	"github.com/sparkwa/sparkwa-lite/internal/gmail"
-	"github.com/sparkwa/sparkwa-lite/internal/health"
-	"github.com/sparkwa/sparkwa-lite/internal/identity"
-	"github.com/sparkwa/sparkwa-lite/internal/spark"
-	"github.com/sparkwa/sparkwa-lite/internal/store"
-	"github.com/sparkwa/sparkwa-lite/internal/whatsapp"
-	"github.com/sparkwa/sparkwa-lite/internal/worker"
+	"github.com/sparkwa/sparkwa/internal/config"
+	"github.com/sparkwa/sparkwa/internal/gmail"
+	"github.com/sparkwa/sparkwa/internal/health"
+	"github.com/sparkwa/sparkwa/internal/identity"
+	"github.com/sparkwa/sparkwa/internal/spark"
+	"github.com/sparkwa/sparkwa/internal/store"
+	"github.com/sparkwa/sparkwa/internal/whatsapp"
+	"github.com/sparkwa/sparkwa/internal/worker"
 )
 
 var (
@@ -52,7 +52,7 @@ func main() {
 
 	switch cmd {
 	case "version", "--version", "-v":
-		fmt.Printf("SparkWA Lite %s (%s) %s/%s built %s\n", Version, GitCommit, runtime.GOOS, runtime.GOARCH, BuildDate)
+		fmt.Printf("SparkWA %s (%s) %s/%s built %s\n", Version, GitCommit, runtime.GOOS, runtime.GOARCH, BuildDate)
 
 	case "init":
 		runInit(cfg)
@@ -86,7 +86,7 @@ func main() {
 }
 
 func printUsage() {
-	fmt.Printf(`SparkWA Lite %s — Ultra-lightweight WhatsApp to Gemini Spark Bridge
+	fmt.Printf(`SparkWA %s — Ultra-lightweight WhatsApp to Gemini Spark Bridge
 
 Usage:
   sparkwa <command> [flags]
@@ -102,15 +102,15 @@ Commands:
   version      Print application version and build details
 
 Flags:
-  --config     Explicit path to configuration file (default: /etc/sparkwa-lite/config.env or ./config.env)
+  --config     Explicit path to configuration file (default: /etc/sparkwa/config.env or ./config.env)
 
 Documentation:
-  https://github.com/sparkwa/sparkwa-lite/tree/main/docs
+  https://github.com/sparkwa/sparkwa/tree/main/docs
 `, Version)
 }
 
 func runInit(cfg *config.Config) {
-	fmt.Println("Initializing SparkWA Lite environment...")
+	fmt.Println("Initializing SparkWA environment...")
 
 	// 1. Create data directory
 	if err := os.MkdirAll(cfg.DataDir, 0700); err != nil {
@@ -122,15 +122,15 @@ func runInit(cfg *config.Config) {
 	targetConfig := cfg.ConfigPath
 	if targetConfig == "" {
 		if os.Geteuid() == 0 {
-			_ = os.MkdirAll("/etc/sparkwa-lite", 0755)
-			targetConfig = "/etc/sparkwa-lite/config.env"
+			_ = os.MkdirAll("/etc/sparkwa", 0755)
+			targetConfig = "/etc/sparkwa/config.env"
 		} else {
 			targetConfig = "./config.env"
 		}
 	}
 
 	if _, err := os.Stat(targetConfig); os.IsNotExist(err) {
-		template := `# SparkWA Lite Configuration File
+		template := `# SparkWA Configuration File
 # WhatsApp Settings
 BOT_PHONE_NUMBER="+1234567890"         # Number 1 (bot account)
 AUTHORIZED_PHONE_NUMBER="+1987654321"  # Number 2 (your personal number, only permitted sender)
@@ -140,7 +140,7 @@ BRIDGE_GMAIL_ADDRESS="bridge-bot@gmail.com"  # Mailbox used by the bridge
 SPARK_GMAIL_ADDRESS="your-spark-account@gmail.com"  # Google account connected to Gemini Spark
 
 # Runtime Paths & Polling
-DATA_DIR="/var/lib/sparkwa-lite"
+DATA_DIR="/var/lib/sparkwa"
 GMAIL_POLL_INTERVAL="45s"
 TASK_TIMEOUT="15m"
 LOG_LEVEL="info"
@@ -267,7 +267,7 @@ func runStatus(ctx context.Context, cfg *config.Config) {
 	recent, _ := s.ListRecentTasks(ctx, 5)
 
 	fmt.Println("================================================================================")
-	fmt.Println("                        SPARKWA LITE STATUS REPORT")
+	fmt.Println("                           SPARKWA STATUS REPORT")
 	fmt.Println("================================================================================")
 	fmt.Printf("Capability State : %s\n", report.State)
 	fmt.Printf("Description      : %s\n", report.Description)
@@ -337,7 +337,7 @@ func runDaemon(ctx context.Context, cfg *config.Config) {
 		log.Fatalf("Configuration validation failed:\n%v", err)
 	}
 
-	log.Printf("[Main] Starting SparkWA Lite %s (%s)...", Version, GitCommit)
+	log.Printf("[Main] Starting SparkWA %s (%s)...", Version, GitCommit)
 
 	// 1. Open SQLite database
 	s, err := store.Open(ctx, cfg.DBPath)
@@ -401,7 +401,7 @@ func runDaemon(ctx context.Context, cfg *config.Config) {
 	}
 	defer eng.Stop()
 
-	log.Printf("[Main] SparkWA Lite is running headlessly. Authorized user: %s", cfg.AuthorizedPhoneNumber)
+	log.Printf("[Main] SparkWA is running headlessly. Authorized user: %s", cfg.AuthorizedPhoneNumber)
 
 	// Wait for shutdown signals
 	sigChan := make(chan os.Signal, 1)

@@ -1,11 +1,11 @@
-# SparkWA Lite
+# SparkWA
 
 [![Go Version](https://img.shields.io/badge/Go-1.23%2B-blue.svg)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Ubuntu%20%2F%20Debian%20Linux-orange.svg)]()
 [![Memory Footprint](https://img.shields.io/badge/RAM-~30%20MB-brightgreen.svg)]()
 
-**SparkWA Lite** is an ultra-lightweight, production-grade, headless bridge that connects a dedicated **WhatsApp** account to your existing **Google Gemini Spark** agent through Google's documented Gmail-triggered task schedules.
+**SparkWA** is an ultra-lightweight, production-grade, headless bridge that connects a dedicated **WhatsApp** account to your existing **Google Gemini Spark** agent through Google's documented Gmail-triggered task schedules.
 
 Designed specifically for headless Ubuntu VPS deployments, it runs as a single native Linux binary under `systemd` with zero browser, desktop, Node.js, Python, or container dependencies.
 
@@ -21,7 +21,7 @@ WhatsApp Bot Account (Number 1)
        │ (whatsmeow Multi-Device)
        ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                      SPARKWA LITE                           │
+│                          SPARKWA                            │
 │  • Fail-Closed Sender Verifier (Only Number 2 Allowed)      │
 │  • SQLite Task Queue & Recovery Engine (PRAGMA WAL)        │
 │  • Structured [SPARKWA:REQ_ID] Protocol Formatter          │
@@ -63,7 +63,7 @@ WhatsApp User (Number 2) ◄─────┴── Verified Result Delivered
 
 ## Capability Feasibility Gates
 
-SparkWA Lite enforces explicit capability states to maintain transparency regarding what is verified versus unverified:
+SparkWA enforces explicit capability states to maintain transparency regarding what is verified versus unverified:
 
 | Capability State | Meaning |
 |------------------|---------|
@@ -80,36 +80,36 @@ SparkWA Lite enforces explicit capability states to maintain transparency regard
 
 ### 1. Upload Release Archive to VPS
 ```bash
-scp sparkwa-lite-v1.0.0-linux-amd64.tar.gz credentials.json user@your-vps-ip:/tmp/
+scp sparkwa-v1.0.0-linux-amd64.tar.gz credentials.json user@your-vps-ip:/tmp/
 ```
 
 ### 2. Extract and Run Automated Installer
 ```bash
 ssh user@your-vps-ip
-cd /tmp && tar -xzf sparkwa-lite-v1.0.0-linux-amd64.tar.gz
-cd sparkwa-lite && sudo ./scripts/install.sh
+cd /tmp && tar -xzf sparkwa-v1.0.0-linux-amd64.tar.gz
+cd sparkwa && sudo ./scripts/install.sh
 ```
 
 ### 3. Move Credentials & Edit Config
 ```bash
-sudo mv /tmp/credentials.json /etc/sparkwa-lite/credentials.json
-sudo chmod 0600 /etc/sparkwa-lite/credentials.json
-sudo nano /etc/sparkwa-lite/config.env
+sudo mv /tmp/credentials.json /etc/sparkwa/credentials.json
+sudo chmod 0600 /etc/sparkwa/credentials.json
+sudo nano /etc/sparkwa/config.env
 ```
 
 ### 4. Authenticate Gmail and Pair WhatsApp
 ```bash
 # Authorize Gmail API (via loopback or SSH tunnel port 8085)
-sudo -u sparkwa sparkwa gmail-auth --config /etc/sparkwa-lite/config.env
+sudo -u sparkwa sparkwa gmail-auth --config /etc/sparkwa/config.env
 
 # Pair WhatsApp Number 1 via Terminal QR Code
-sudo -u sparkwa sparkwa login --config /etc/sparkwa-lite/config.env
+sudo -u sparkwa sparkwa login --config /etc/sparkwa/config.env
 ```
 
 ### 5. Validate Health and Start Service
 ```bash
 # Run system doctor
-sudo -u sparkwa sparkwa doctor --config /etc/sparkwa-lite/config.env
+sudo -u sparkwa sparkwa doctor --config /etc/sparkwa/config.env
 
 # Start systemd daemon
 sudo systemctl start sparkwa

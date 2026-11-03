@@ -44,7 +44,7 @@ func TestSplitTextLongUnbrokenWord(t *testing.T) {
 }
 
 func TestSplitTextUnicodeAndEmojis(t *testing.T) {
-	emojiText := strings.Repeat("⚡🚀🤖 SparkWA Lite Multi-byte text test! \n", 20)
+	emojiText := strings.Repeat("⚡🚀🤖 SparkWA Multi-byte text test! \n", 20)
 	chunks := SplitText(emojiText, 150)
 
 	for i, c := range chunks {

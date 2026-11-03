@@ -1,6 +1,6 @@
 # Google Gemini Spark Integration Guide
 
-This guide details the exact procedure for connecting your existing **Google Gemini Spark** agent to **SparkWA Lite** using Google's documented **Gmail-triggered Task Schedules**.
+This guide details the exact procedure for connecting your existing **Google Gemini Spark** agent to **SparkWA** using Google's documented **Gmail-triggered Task Schedules**.
 
 ---
 
@@ -10,7 +10,7 @@ This guide details the exact procedure for connecting your existing **Google Gem
 WhatsApp User (Number 2)
        │
        ▼
-SparkWA Lite (VPS)
+SparkWA (VPS)
        │
        ▼ (Gmail API)
 Bridge Mailbox (BRIDGE_GMAIL)
@@ -22,7 +22,7 @@ Spark-Connected Gmail Inbox (SPARK_GMAIL)
 Gemini Spark Agent (Autonomous Execution)
        │
        ▼ Output Channel (Email Reply or Gmail Draft)
-SparkWA Lite Gmail Poller
+SparkWA Gmail Poller
        │
        ▼ WhatsApp Message
 WhatsApp User (Number 2)
@@ -71,7 +71,7 @@ Whenever an email arrives from "BRIDGE_GMAIL_ADDRESS" with a subject containing 
 Attach this prompt to your Gemini Spark task or schedule instructions so Spark knows the exact protocol format:
 
 ```text
-You are integrated with SparkWA Lite. You receive automated instructions from an authorized user via emails with subjects formatted as:
+You are integrated with SparkWA. You receive automated instructions from an authorized user via emails with subjects formatted as:
 [SPARKWA:REQUEST_ID] <Short Title>
 
 The email body will follow this format:
@@ -101,23 +101,23 @@ END SPARKWA RESPONSE
 
 ## 5. Output Paths & Feasibility Gate
 
-Google Gemini Spark operates in the background, but its return mechanisms depend on your Google Workspace settings. SparkWA Lite supports two verified return channels:
+Google Gemini Spark operates in the background, but its return mechanisms depend on your Google Workspace settings. SparkWA supports two verified return channels:
 
 ### Output Path A: Direct Email Reply (Recommended)
 - Spark generates a reply email addressed to `BRIDGE_GMAIL_ADDRESS` containing `BEGIN SPARKWA RESPONSE`.
-- SparkWA Lite's poller discovers this email via Gmail API within 45 seconds and forwards it to WhatsApp.
+- SparkWA's poller discovers this email via Gmail API within 45 seconds and forwards it to WhatsApp.
 
 ### Output Path B: Identifiable Draft
 - If your Gemini account policy restricts autonomous external outbound emails, instruct Spark to create a **Draft** in the Gmail account.
-- Set `SPARK_RESPONSE_MODE="draft_or_email"` in `/etc/sparkwa-lite/config.env`.
-- SparkWA Lite checks for drafts matching `[SPARKWA:REQ_ID]` and reads the result.
+- Set `SPARK_RESPONSE_MODE="draft_or_email"` in `/etc/sparkwa/config.env`.
+- SparkWA checks for drafts matching `[SPARKWA:REQ_ID]` and reads the result.
 
 ### Output Path C: Submission-Only Fallback
 - If your Gemini Spark setup executes tasks directly in Google Docs, Google Sheets, or Drive without creating emails or drafts, configure:
   ```env
   SPARK_RESPONSE_MODE="submission_only"
   ```
-- In this mode, SparkWA Lite acknowledges task submission on WhatsApp and tracks the task as `SUBMISSION_ONLY`. You inspect results directly in Google Workspace.
+- In this mode, SparkWA acknowledges task submission on WhatsApp and tracks the task as `SUBMISSION_ONLY`. You inspect results directly in Google Workspace.
 
 ---
 
@@ -127,7 +127,7 @@ Before enabling destructive or complex tasks, perform this dedicated test:
 
 1. On your VPS, run the diagnostic test command:
    ```bash
-   sudo -u sparkwa sparkwa test-gmail --config /etc/sparkwa-lite/config.env
+   sudo -u sparkwa sparkwa test-gmail --config /etc/sparkwa/config.env
    ```
 2. Verify in your Spark Gmail inbox that an email was received with Subject:
    `[SPARKWA:test-...] SparkWA Diagnostics Ping`

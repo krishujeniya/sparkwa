@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sparkwa/sparkwa-lite/internal/config"
-	"github.com/sparkwa/sparkwa-lite/internal/identity"
-	"github.com/sparkwa/sparkwa-lite/internal/message"
-	"github.com/sparkwa/sparkwa-lite/internal/spark"
-	"github.com/sparkwa/sparkwa-lite/internal/store"
+	"github.com/sparkwa/sparkwa/internal/config"
+	"github.com/sparkwa/sparkwa/internal/identity"
+	"github.com/sparkwa/sparkwa/internal/message"
+	"github.com/sparkwa/sparkwa/internal/spark"
+	"github.com/sparkwa/sparkwa/internal/store"
 	"go.mau.fi/whatsmeow/types"
 )
 

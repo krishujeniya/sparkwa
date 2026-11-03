@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sparkwa/sparkwa-lite/internal/config"
-	"github.com/sparkwa/sparkwa-lite/internal/gmail"
-	"github.com/sparkwa/sparkwa-lite/internal/spark"
-	"github.com/sparkwa/sparkwa-lite/internal/store"
+	"github.com/sparkwa/sparkwa/internal/config"
+	"github.com/sparkwa/sparkwa/internal/gmail"
+	"github.com/sparkwa/sparkwa/internal/spark"
+	"github.com/sparkwa/sparkwa/internal/store"
 )
 
 // MockWhatsAppSender implements WhatsAppSender for unit tests.
@@ -98,7 +98,7 @@ func TestEngineSlashCommands(t *testing.T) {
 	// 3. /status
 	eng.HandleInboundWhatsApp(ctx, "wa-3", "+19876543210", "/status")
 	last = wa.lastMessage()
-	if !strings.Contains(last, "SparkWA Lite Status") {
+	if !strings.Contains(last, "SparkWA Status") {
 		t.Errorf("unexpected /status reply: %s", last)
 	}
 

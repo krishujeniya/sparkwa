@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SparkWA Lite — Production VPS Installer
+# SparkWA — Production VPS Installer
 # Target: Ubuntu 24.04 LTS / Debian / Linux
 set -euo pipefail
 
@@ -10,7 +10,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 echo -e "${BLUE}================================================================================${NC}"
-echo -e "${BLUE}                    SPARKWA LITE VPS INSTALLER                                 ${NC}"
+echo -e "${BLUE}                       SPARKWA VPS INSTALLER                                    ${NC}"
 echo -e "${BLUE}================================================================================${NC}"
 
 # 1. Root check
@@ -37,7 +37,7 @@ case "$ARCH" in
         TARGET_ARCH="arm64"
         ;;
     *)
-        echo -e "${RED}Error: Unsupported architecture: $ARCH. SparkWA Lite supports amd64 and arm64.${NC}" >&2
+        echo -e "${RED}Error: Unsupported architecture: $ARCH. SparkWA supports amd64 and arm64.${NC}" >&2
         exit 1
         ;;
 esac
@@ -73,9 +73,19 @@ else
 fi
 
 # 6. Create Protected Directories
-CONFIG_DIR="/etc/sparkwa-lite"
-DATA_DIR="/var/lib/sparkwa-lite"
+CONFIG_DIR="/etc/sparkwa"
+DATA_DIR="/var/lib/sparkwa"
 BIN_DEST="/usr/local/bin/sparkwa"
+
+# Auto-migrate legacy sparkwa-lite paths if present
+if [ ! -d "$CONFIG_DIR" ] && [ -d "/etc/sparkwa-lite" ]; then
+    echo -e "Migrating legacy config directory /etc/sparkwa-lite to ${GREEN}${CONFIG_DIR}${NC}..."
+    cp -rn /etc/sparkwa-lite "$CONFIG_DIR"
+fi
+if [ ! -d "$DATA_DIR" ] && [ -d "/var/lib/sparkwa-lite" ]; then
+    echo -e "Migrating legacy data directory /var/lib/sparkwa-lite to ${GREEN}${DATA_DIR}${NC}..."
+    cp -rn /var/lib/sparkwa-lite "$DATA_DIR"
+fi
 
 echo -e "Setting up directory structure..."
 mkdir -p "$CONFIG_DIR"
@@ -94,7 +104,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
     else
         cat << 'EOF' > "$CONFIG_FILE"
 # ==============================================================================
-# SPARKWA LITE CONFIGURATION
+# SPARKWA CONFIGURATION
 # ==============================================================================
 
 # WhatsApp Phone Numbers (Must be in standard E.164 format: +<country><digits>)
@@ -106,9 +116,9 @@ BRIDGE_GMAIL_ADDRESS="bot-bridge@gmail.com"         # Account used by SparkWA br
 SPARK_GMAIL_ADDRESS="personal-spark@gmail.com"      # Google account where Gemini Spark runs
 
 # Paths & Security
-DATA_DIR="/var/lib/sparkwa-lite"
-GMAIL_CREDENTIALS_FILE="/etc/sparkwa-lite/credentials.json"
-GMAIL_TOKEN_FILE="/var/lib/sparkwa-lite/token.json"
+DATA_DIR="/var/lib/sparkwa"
+GMAIL_CREDENTIALS_FILE="/etc/sparkwa/credentials.json"
+GMAIL_TOKEN_FILE="/var/lib/sparkwa/token.json"
 
 # Polling & Quota Management
 GMAIL_POLL_INTERVAL="45s"
@@ -142,19 +152,19 @@ if [ -f "$SERVICE_SRC" ]; then
 fi
 
 echo -e "\n${GREEN}================================================================================${NC}"
-echo -e "${GREEN}                  SPARKWA LITE INSTALLATION COMPLETE                            ${NC}"
+echo -e "${GREEN}                     SPARKWA INSTALLATION COMPLETE                              ${NC}"
 echo -e "${GREEN}================================================================================${NC}"
 echo -e "NEXT STEPS TO GO LIVE:"
 echo -e "1. Edit your configuration file:"
-echo -e "   ${YELLOW}sudo nano /etc/sparkwa-lite/config.env${NC}"
+echo -e "   ${YELLOW}sudo nano /etc/sparkwa/config.env${NC}"
 echo -e "2. Upload Google Cloud OAuth credentials JSON to:"
-echo -e "   ${YELLOW}/etc/sparkwa-lite/credentials.json${NC} (mode 0600)"
+echo -e "   ${YELLOW}/etc/sparkwa/credentials.json${NC} (mode 0600)"
 echo -e "3. Authenticate with Google Gmail API:"
-echo -e "   ${YELLOW}sudo -u sparkwa sparkwa gmail-auth --config /etc/sparkwa-lite/config.env${NC}"
+echo -e "   ${YELLOW}sudo -u sparkwa sparkwa gmail-auth --config /etc/sparkwa/config.env${NC}"
 echo -e "4. Pair WhatsApp Number 1 via Terminal QR code:"
-echo -e "   ${YELLOW}sudo -u sparkwa sparkwa login --config /etc/sparkwa-lite/config.env${NC}"
+echo -e "   ${YELLOW}sudo -u sparkwa sparkwa login --config /etc/sparkwa/config.env${NC}"
 echo -e "5. Validate all system health checks:"
-echo -e "   ${YELLOW}sudo -u sparkwa sparkwa doctor --config /etc/sparkwa-lite/config.env${NC}"
+echo -e "   ${YELLOW}sudo -u sparkwa sparkwa doctor --config /etc/sparkwa/config.env${NC}"
 echo -e "6. Start the headless background service:"
 echo -e "   ${YELLOW}sudo systemctl start sparkwa${NC}"
 echo -e "7. Check live service logs:"

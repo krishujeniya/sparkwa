@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SparkWA Lite — Uninstaller
+# SparkWA — Uninstaller
 set -euo pipefail
 
 if [ "$(id -u)" -ne 0 ]; then
@@ -19,15 +19,15 @@ echo "Removing binary..."
 rm -f /usr/local/bin/sparkwa
 
 echo ""
-read -p "Do you want to delete all configuration and session data (/var/lib/sparkwa-lite and /etc/sparkwa-lite)? [y/N]: " CONFIRM
+read -p "Do you want to delete all configuration and session data (/var/lib/sparkwa and /etc/sparkwa)? [y/N]: " CONFIRM
 if [[ "$CONFIRM" =~ ^[Yy]$ ]]; then
-    echo "Removing /var/lib/sparkwa-lite and /etc/sparkwa-lite..."
-    rm -rf /var/lib/sparkwa-lite
-    rm -rf /etc/sparkwa-lite
+    echo "Removing /var/lib/sparkwa and /etc/sparkwa (and legacy paths)..."
+    rm -rf /var/lib/sparkwa /var/lib/sparkwa-lite
+    rm -rf /etc/sparkwa /etc/sparkwa-lite
     userdel sparkwa 2>/dev/null || true
     echo "All data removed."
 else
-    echo "Preserved configuration and session data in /var/lib/sparkwa-lite and /etc/sparkwa-lite."
+    echo "Preserved configuration and session data in /var/lib/sparkwa and /etc/sparkwa."
 fi
 
-echo "✓ SparkWA Lite has been cleanly uninstalled."
+echo "✓ SparkWA has been cleanly uninstalled."

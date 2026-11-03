@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sparkwa/sparkwa-lite/internal/config"
-	"github.com/sparkwa/sparkwa-lite/internal/spark"
-	"github.com/sparkwa/sparkwa-lite/internal/store"
+	"github.com/sparkwa/sparkwa/internal/config"
+	"github.com/sparkwa/sparkwa/internal/spark"
+	"github.com/sparkwa/sparkwa/internal/store"
 )
 
 func TestDoctorDiagnostics(t *testing.T) {
@@ -49,7 +49,7 @@ func TestDoctorDiagnostics(t *testing.T) {
 	allPass := PrintReport(results, &buf)
 
 	output := buf.String()
-	if !strings.Contains(output, "SPARKWA LITE SYSTEM DIAGNOSTICS") {
+	if !strings.Contains(output, "SPARKWA SYSTEM DIAGNOSTICS") {
 		t.Errorf("missing title in report: %s", output)
 	}
 

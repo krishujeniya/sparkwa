@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/sparkwa/sparkwa-lite/internal/config"
-	"github.com/sparkwa/sparkwa-lite/internal/store"
+	"github.com/sparkwa/sparkwa/internal/config"
+	"github.com/sparkwa/sparkwa/internal/store"
 )
 
 func TestCapabilityManager(t *testing.T) {

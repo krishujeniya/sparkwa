@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SparkWA Lite — Release Packaging Script
+# SparkWA — Release Packaging Script
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -15,7 +15,7 @@ mkdir -p "$DIST_DIR"
 LDFLAGS="-s -w -X main.Version=$VERSION -X main.GitCommit=$COMMIT -X main.BuildDate=$BUILD_DATE"
 
 echo "================================================================================"
-echo " Packaging SparkWA Lite $VERSION ($COMMIT)"
+echo " Packaging SparkWA $VERSION ($COMMIT)"
 echo "================================================================================"
 
 for ARCH in amd64 arm64; do
@@ -29,31 +29,31 @@ for ARCH in amd64 arm64; do
         -o "$OUTPUT_BIN" \
         "$PROJECT_ROOT/cmd/sparkwa"
 
-    ARCHIVE_NAME="sparkwa-lite-$VERSION-linux-$ARCH.tar.gz"
+    ARCHIVE_NAME="sparkwa-$VERSION-linux-$ARCH.tar.gz"
     STAGE_DIR="$DIST_DIR/stage-$ARCH"
     rm -rf "$STAGE_DIR"
-    mkdir -p "$STAGE_DIR/sparkwa-lite"
+    mkdir -p "$STAGE_DIR/sparkwa"
 
     # Copy binary
-    cp "$OUTPUT_BIN" "$STAGE_DIR/sparkwa-lite/sparkwa"
-    chmod 0755 "$STAGE_DIR/sparkwa-lite/sparkwa"
+    cp "$OUTPUT_BIN" "$STAGE_DIR/sparkwa/sparkwa"
+    chmod 0755 "$STAGE_DIR/sparkwa/sparkwa"
 
     # Copy deployment & scripts
-    mkdir -p "$STAGE_DIR/sparkwa-lite/deploy" "$STAGE_DIR/sparkwa-lite/scripts" "$STAGE_DIR/sparkwa-lite/docs"
-    cp "$PROJECT_ROOT/deploy/sparkwa.service" "$STAGE_DIR/sparkwa-lite/deploy/"
-    cp "$PROJECT_ROOT/scripts/"*.sh "$STAGE_DIR/sparkwa-lite/scripts/"
-    chmod 0755 "$STAGE_DIR/sparkwa-lite/scripts/"*.sh
+    mkdir -p "$STAGE_DIR/sparkwa/deploy" "$STAGE_DIR/sparkwa/scripts" "$STAGE_DIR/sparkwa/docs"
+    cp "$PROJECT_ROOT/deploy/sparkwa.service" "$STAGE_DIR/sparkwa/deploy/"
+    cp "$PROJECT_ROOT/scripts/"*.sh "$STAGE_DIR/sparkwa/scripts/"
+    chmod 0755 "$STAGE_DIR/sparkwa/scripts/"*.sh
 
     # Copy documentation & configuration
-    cp -r "$PROJECT_ROOT/docs/"* "$STAGE_DIR/sparkwa-lite/docs/"
-    cp "$PROJECT_ROOT/.env.example" "$STAGE_DIR/sparkwa-lite/"
-    cp "$PROJECT_ROOT/README.md" "$STAGE_DIR/sparkwa-lite/"
-    cp "$PROJECT_ROOT/LICENSE" "$STAGE_DIR/sparkwa-lite/"
-    cp "$PROJECT_ROOT/CHANGELOG.md" "$STAGE_DIR/sparkwa-lite/"
+    cp -r "$PROJECT_ROOT/docs/"* "$STAGE_DIR/sparkwa/docs/"
+    cp "$PROJECT_ROOT/.env.example" "$STAGE_DIR/sparkwa/"
+    cp "$PROJECT_ROOT/README.md" "$STAGE_DIR/sparkwa/"
+    cp "$PROJECT_ROOT/LICENSE" "$STAGE_DIR/sparkwa/"
+    cp "$PROJECT_ROOT/CHANGELOG.md" "$STAGE_DIR/sparkwa/"
 
     # Create tar.gz archive
     echo "Creating archive $ARCHIVE_NAME..."
-    tar -czf "$DIST_DIR/$ARCHIVE_NAME" -C "$STAGE_DIR" sparkwa-lite
+    tar -czf "$DIST_DIR/$ARCHIVE_NAME" -C "$STAGE_DIR" sparkwa
     rm -rf "$STAGE_DIR"
 
     echo "✓ Built $ARCHIVE_NAME"
@@ -62,7 +62,7 @@ done
 # Compute checksums
 echo "Generating SHA-256 checksums..."
 cd "$DIST_DIR"
-sha256sum sparkwa-lite-*.tar.gz > SHA256SUMS
+sha256sum sparkwa-*.tar.gz > SHA256SUMS
 
 echo "================================================================================"
 cat "$DIST_DIR/SHA256SUMS"

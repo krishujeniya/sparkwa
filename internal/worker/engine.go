@@ -10,11 +10,11 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/sparkwa/sparkwa-lite/internal/config"
-	"github.com/sparkwa/sparkwa-lite/internal/gmail"
-	"github.com/sparkwa/sparkwa-lite/internal/message"
-	"github.com/sparkwa/sparkwa-lite/internal/spark"
-	"github.com/sparkwa/sparkwa-lite/internal/store"
+	"github.com/sparkwa/sparkwa/internal/config"
+	"github.com/sparkwa/sparkwa/internal/gmail"
+	"github.com/sparkwa/sparkwa/internal/message"
+	"github.com/sparkwa/sparkwa/internal/spark"
+	"github.com/sparkwa/sparkwa/internal/store"
 )
 
 // WhatsAppSender represents the interface needed to send WhatsApp messages back to the authorized user.
@@ -126,7 +126,7 @@ func (e *Engine) handleSlashCommand(ctx context.Context, senderPhone, commandTex
 		_ = e.waSender.SendTextMessage(ctx, senderPhone, message.FormatHelp())
 
 	case "/ping":
-		reply := fmt.Sprintf("🏓 *Pong!*\n\nSparkWA Lite is responsive.\nTimestamp: %s UTC", time.Now().UTC().Format(time.RFC3339))
+		reply := fmt.Sprintf("🏓 *Pong!*\n\nSparkWA is responsive.\nTimestamp: %s UTC", time.Now().UTC().Format(time.RFC3339))
 		_ = e.waSender.SendTextMessage(ctx, senderPhone, reply)
 
 	case "/status":

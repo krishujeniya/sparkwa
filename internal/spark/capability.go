@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sparkwa/sparkwa-lite/internal/config"
-	"github.com/sparkwa/sparkwa-lite/internal/store"
+	"github.com/sparkwa/sparkwa/internal/config"
+	"github.com/sparkwa/sparkwa/internal/store"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 	StateKeyVerifiedAt = "spark_capability_verified_at"
 )
 
-// CapabilityManager tracks and evaluates the integration capability state of SparkWA Lite.
+// CapabilityManager tracks and evaluates the integration capability state of SparkWA.
 type CapabilityManager struct {
 	store  *store.Store
 	config *config.Config

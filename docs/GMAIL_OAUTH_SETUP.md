@@ -1,6 +1,6 @@
 # Google Gmail OAuth 2.0 Setup Guide
 
-SparkWA Lite uses official Google Gmail APIs with least-privilege OAuth 2.0 scopes. It does **not** use deprecated Out-Of-Band (OOB) authentication, does not store Google account passwords, and never exposes public HTTP listeners.
+SparkWA uses official Google Gmail APIs with least-privilege OAuth 2.0 scopes. It does **not** use deprecated Out-Of-Band (OOB) authentication, does not store Google account passwords, and never exposes public HTTP listeners.
 
 ---
 
@@ -19,7 +19,7 @@ SparkWA Lite uses official Google Gmail APIs with least-privilege OAuth 2.0 scop
 1. In the left navigation menu, go to **APIs & Services** > **OAuth consent screen**.
 2. Select **External** (or **Internal** if using Google Workspace organization) and click **Create**.
 3. Fill in the required fields:
-   - **App name**: `SparkWA Lite`
+   - **App name**: `SparkWA`
    - **User support email**: Your personal email.
    - **Developer contact information**: Your personal email.
 4. Click **Save and Continue**.
@@ -60,17 +60,17 @@ scp credentials.json user@your-vps-ip:/tmp/credentials.json
 On the VPS, move it to the protected configuration directory:
 
 ```bash
-sudo mkdir -p /etc/sparkwa-lite
-sudo mv /tmp/credentials.json /etc/sparkwa-lite/credentials.json
-sudo chown root:sparkwa /etc/sparkwa-lite/credentials.json
-sudo chmod 0600 /etc/sparkwa-lite/credentials.json
+sudo mkdir -p /etc/sparkwa
+sudo mv /tmp/credentials.json /etc/sparkwa/credentials.json
+sudo chown root:sparkwa /etc/sparkwa/credentials.json
+sudo chmod 0600 /etc/sparkwa/credentials.json
 ```
 
 ---
 
 ## 3. Running Headless OAuth Authorization
 
-Because your Ubuntu VPS has no graphical interface or browser, SparkWA Lite provides a secure loopback helper that coordinates with your desktop browser.
+Because your Ubuntu VPS has no graphical interface or browser, SparkWA provides a secure loopback helper that coordinates with your desktop browser.
 
 ### Method 1: SSH Port Forwarding (Recommended)
 
@@ -81,10 +81,10 @@ Because your Ubuntu VPS has no graphical interface or browser, SparkWA Lite prov
 
 2. Run the authorization command on the VPS:
    ```bash
-   sudo -u sparkwa sparkwa gmail-auth --config /etc/sparkwa-lite/config.env
+   sudo -u sparkwa sparkwa gmail-auth --config /etc/sparkwa/config.env
    ```
 
-3. SparkWA Lite will print an authorization link:
+3. SparkWA will print an authorization link:
    ```text
    Open this authorization URL in your browser:
    https://accounts.google.com/o/oauth2/auth?...
@@ -96,7 +96,7 @@ Because your Ubuntu VPS has no graphical interface or browser, SparkWA Lite prov
 7. The terminal will display:
    ```text
    ✓ Received authorization code via loopback callback!
-   ✓ Successfully saved OAuth token with refresh capabilities to /var/lib/sparkwa-lite/token.json (permissions 0600)
+   ✓ Successfully saved OAuth token with refresh capabilities to /var/lib/sparkwa/token.json (permissions 0600)
    ✓ Successfully verified Gmail API connection for: bot-bridge@gmail.com
    ```
 
@@ -110,12 +110,12 @@ If you cannot forward ports via SSH:
    ```text
    Auth Code or Redirect URL: http://127.0.0.1:8085/oauth/callback?code=4/0A...
    ```
-5. SparkWA Lite extracts the code and exchanges it for the token automatically.
+5. SparkWA extracts the code and exchanges it for the token automatically.
 
 ---
 
 ## 4. Token Security
 
-- Stored at: `/var/lib/sparkwa-lite/token.json`
+- Stored at: `/var/lib/sparkwa/token.json`
 - Permissions: `0600` (readable only by the `sparkwa` service account).
-- SparkWA Lite automatically uses the `refresh_token` to renew expired access tokens silently in the background.
+- SparkWA automatically uses the `refresh_token` to renew expired access tokens silently in the background.

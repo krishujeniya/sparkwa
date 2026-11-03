@@ -23,7 +23,7 @@ const (
 	CapFullyVerified           CapabilityState = "FULLY_VERIFIED"
 )
 
-// Config holds all runtime configuration for SparkWA Lite.
+// Config holds all runtime configuration for SparkWA.
 type Config struct {
 	// WhatsApp settings
 	BotPhoneNumber        string // E.164, Number 1 (bot account)
@@ -34,7 +34,7 @@ type Config struct {
 	SparkGmailAddress  string // Google account where Gemini Spark task runs
 
 	// Paths
-	DataDir              string // Directory for databases & runtime state (default: /var/lib/sparkwa-lite)
+	DataDir              string // Directory for databases & runtime state (default: /var/lib/sparkwa)
 	ConfigPath           string // Path to config file loaded
 	GmailCredentialsPath string // Path to GCP OAuth client credentials JSON
 	GmailTokenPath       string // Path to stored OAuth refresh/access token JSON
@@ -54,12 +54,12 @@ type Config struct {
 
 // DefaultConfig returns safe defaults for production VPS deployment.
 func DefaultConfig() *Config {
-	dataDir := "/var/lib/sparkwa-lite"
+	dataDir := "/var/lib/sparkwa"
 	// Fall back to local data directory if not running with root/service privileges
 	if os.Geteuid() != 0 {
 		home, err := os.UserHomeDir()
 		if err == nil {
-			localDir := filepath.Join(home, ".local", "share", "sparkwa-lite")
+			localDir := filepath.Join(home, ".local", "share", "sparkwa")
 			dataDir = localDir
 		} else {
 			dataDir = "./data"
@@ -95,6 +95,7 @@ func Load(explicitFile string) (*Config, error) {
 		candidates = append(candidates, explicitFile)
 	}
 	candidates = append(candidates,
+		"/etc/sparkwa/config.env",
 		"/etc/sparkwa-lite/config.env",
 		"./config.env",
 		".env",

@@ -1,6 +1,6 @@
 # Verification & Quality Audit Report
 
-This report documents the automated verification results, acceptance gates, and capability evaluations for **SparkWA Lite v1.0.0**.
+This report documents the automated verification results, acceptance gates, and capability evaluations for **SparkWA v1.0.0**.
 
 ---
 
@@ -135,5 +135,5 @@ PASS: tests
 - **Idle Memory (RSS):** ~28 MB to 35 MB.
 - **512 MB VPS Viability:**
   - **Verdict:** **Fully Viable.**
-  - At idle, SparkWA Lite uses < 40 MB of RAM, leaving > 400 MB available for Linux OS kernel and systemd.
+  - At idle, SparkWA uses < 40 MB of RAM, leaving > 400 MB available for Linux OS kernel and systemd.
   - Idle CPU usage is ~0.0% (wakes up only once every 45s for ~20ms to poll Gmail).

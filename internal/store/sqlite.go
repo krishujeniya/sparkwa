@@ -18,7 +18,7 @@ var (
 	ErrDuplicateWA  = errors.New("whatsapp message id already recorded")
 )
 
-// Store provides thread-safe persistent SQLite storage for SparkWA Lite.
+// Store provides thread-safe persistent SQLite storage for SparkWA.
 type Store struct {
 	db *sql.DB
 	mu sync.RWMutex

@@ -10,7 +10,7 @@ import (
 	"go.mau.fi/whatsmeow/types/events"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/sparkwa/sparkwa-lite/internal/identity"
+	"github.com/sparkwa/sparkwa/internal/identity"
 )
 
 func TestExtractTextFromMessage(t *testing.T) {

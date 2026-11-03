@@ -164,7 +164,7 @@ func RunHeadlessOAuthHelper(ctx context.Context, oauthCfg *oauth2.Config, tokenP
 <html>
 <body style="font-family:sans-serif; text-align:center; padding:50px;">
   <h2 style="color:#2e7d32;">Authentication Successful!</h2>
-  <p>SparkWA Lite has captured your authorization token.</p>
+  <p>SparkWA has captured your authorization token.</p>
   <p>You can close this browser tab and return to your SSH terminal.</p>
 </body>
 </html>

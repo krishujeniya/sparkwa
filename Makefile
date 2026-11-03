@@ -1,4 +1,4 @@
-# SparkWA Lite — Build Automation
+# SparkWA — Build Automation
 SHELL := /bin/bash
 VERSION ?= v1.0.0
 COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "release")
@@ -11,7 +11,7 @@ LDFLAGS := -s -w -X main.Version=$(VERSION) -X main.GitCommit=$(COMMIT) -X main.
 all: test build
 
 build:
-	@echo "Building SparkWA Lite ($(VERSION))..."
+	@echo "Building SparkWA ($(VERSION))..."
 	@mkdir -p bin
 	CGO_ENABLED=0 go build -trimpath -ldflags="$(LDFLAGS)" -o bin/sparkwa ./cmd/sparkwa
 	@echo "✓ Binary compiled: bin/sparkwa"

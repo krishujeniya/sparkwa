@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/sparkwa/sparkwa-lite/internal/spark"
-	"github.com/sparkwa/sparkwa-lite/internal/store"
+	"github.com/sparkwa/sparkwa/internal/spark"
+	"github.com/sparkwa/sparkwa/internal/store"
 	"google.golang.org/api/gmail/v1"
 )
 

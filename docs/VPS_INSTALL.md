@@ -1,6 +1,6 @@
 # Ubuntu VPS Installation & Deployment Guide
 
-This guide describes the complete workflow to deploy **SparkWA Lite** to a headless Ubuntu VPS (Ubuntu 24.04 LTS / 22.04 LTS / Debian).
+This guide describes the complete workflow to deploy **SparkWA** to a headless Ubuntu VPS (Ubuntu 24.04 LTS / 22.04 LTS / Debian).
 
 The application runs headlessly as a native background service using systemd.
 
@@ -22,7 +22,7 @@ From your local machine where you built or downloaded the release archive:
 
 ```bash
 # Upload release archive and credentials JSON to your VPS
-scp sparkwa-lite-v1.0.0-linux-amd64.tar.gz user@your-vps-ip:/tmp/
+scp sparkwa-v1.0.0-linux-amd64.tar.gz user@your-vps-ip:/tmp/
 scp credentials.json user@your-vps-ip:/tmp/
 ```
 
@@ -35,8 +35,8 @@ ssh user@your-vps-ip
 
 # Navigate to /tmp and extract package
 cd /tmp
-tar -xzf sparkwa-lite-v1.0.0-linux-amd64.tar.gz
-cd sparkwa-lite
+tar -xzf sparkwa-v1.0.0-linux-amd64.tar.gz
+cd sparkwa
 ```
 
 ---
@@ -53,8 +53,8 @@ The installer automatically:
 1. Detects system architecture (`amd64` or `arm64`).
 2. Creates the dedicated non-login system user `sparkwa`.
 3. Installs the single static binary to `/usr/local/bin/sparkwa`.
-4. Creates protected directory `/var/lib/sparkwa-lite` with mode `0700`.
-5. Creates configuration directory `/etc/sparkwa-lite` with mode `0750`.
+4. Creates protected directory `/var/lib/sparkwa` with mode `0700`.
+5. Creates configuration directory `/etc/sparkwa` with mode `0750`.
 6. Installs and enables the hardened `sparkwa.service` systemd unit.
 
 ---
@@ -64,15 +64,15 @@ The installer automatically:
 Move your Google Cloud OAuth credentials into place:
 
 ```bash
-sudo mv /tmp/credentials.json /etc/sparkwa-lite/credentials.json
-sudo chown root:sparkwa /etc/sparkwa-lite/credentials.json
-sudo chmod 0600 /etc/sparkwa-lite/credentials.json
+sudo mv /tmp/credentials.json /etc/sparkwa/credentials.json
+sudo chown root:sparkwa /etc/sparkwa/credentials.json
+sudo chmod 0600 /etc/sparkwa/credentials.json
 ```
 
 Edit the configuration file:
 
 ```bash
-sudo nano /etc/sparkwa-lite/config.env
+sudo nano /etc/sparkwa/config.env
 ```
 
 Ensure the following variables are set:
@@ -87,9 +87,9 @@ BRIDGE_GMAIL_ADDRESS="bot-bridge@gmail.com"
 SPARK_GMAIL_ADDRESS="personal-spark@gmail.com"
 
 # Paths
-DATA_DIR="/var/lib/sparkwa-lite"
-GMAIL_CREDENTIALS_FILE="/etc/sparkwa-lite/credentials.json"
-GMAIL_TOKEN_FILE="/var/lib/sparkwa-lite/token.json"
+DATA_DIR="/var/lib/sparkwa"
+GMAIL_CREDENTIALS_FILE="/etc/sparkwa/credentials.json"
+GMAIL_TOKEN_FILE="/var/lib/sparkwa/token.json"
 
 # Timing
 GMAIL_POLL_INTERVAL="45s"
@@ -106,7 +106,7 @@ Save and exit (`Ctrl+O`, `Enter`, `Ctrl+X`).
 Run the Gmail authorization helper as the `sparkwa` service user:
 
 ```bash
-sudo -u sparkwa sparkwa gmail-auth --config /etc/sparkwa-lite/config.env
+sudo -u sparkwa sparkwa gmail-auth --config /etc/sparkwa/config.env
 ```
 
 Follow the on-screen instructions (see [GMAIL_OAUTH_SETUP.md](GMAIL_OAUTH_SETUP.md) for details):
@@ -120,7 +120,7 @@ Follow the on-screen instructions (see [GMAIL_OAUTH_SETUP.md](GMAIL_OAUTH_SETUP.
 Pair the WhatsApp account for Number 1 directly in your SSH terminal:
 
 ```bash
-sudo -u sparkwa sparkwa login --config /etc/sparkwa-lite/config.env
+sudo -u sparkwa sparkwa login --config /etc/sparkwa/config.env
 ```
 
 1. An ASCII QR code will be displayed directly inside your SSH terminal.
@@ -140,7 +140,7 @@ sudo -u sparkwa sparkwa login --config /etc/sparkwa-lite/config.env
 Run the diagnostic check to ensure all subsystems are ready:
 
 ```bash
-sudo -u sparkwa sparkwa doctor --config /etc/sparkwa-lite/config.env
+sudo -u sparkwa sparkwa doctor --config /etc/sparkwa/config.env
 ```
 
 Verify that all critical checks report `[✓ PASS]`:
@@ -181,7 +181,7 @@ The bot will reply within seconds:
 ```text
 🏓 *Pong!*
 
-SparkWA Lite is responsive.
+SparkWA is responsive.
 Timestamp: 2026-10-31T18:00:00Z UTC
 ```
 
@@ -195,9 +195,9 @@ Then submit your first task:
 Please summarize my upcoming meetings for this week.
 ```
 
-SparkWA Lite will return:
+SparkWA will return:
 ```text
-⚡ *SparkWA Lite* [SUBMITTED]
+⚡ *SparkWA* [SUBMITTED]
 
 *ID:* `d3b07384`
 *Task:* Please summarize my upcoming meetings for this week.
@@ -216,7 +216,7 @@ Once your Gemini Spark agent processes the command, the result is forwarded back
 sudo journalctl -u sparkwa -f
 
 # Check recent tasks and capability status
-sudo -u sparkwa sparkwa status --config /etc/sparkwa-lite/config.env
+sudo -u sparkwa sparkwa status --config /etc/sparkwa/config.env
 
 # Stop service
 sudo systemctl stop sparkwa
@@ -225,5 +225,5 @@ sudo systemctl stop sparkwa
 sudo systemctl restart sparkwa
 
 # Create automated backup
-sudo /usr/local/bin/sparkwa-backup # (or /tmp/sparkwa-lite/scripts/backup.sh)
+sudo /usr/local/bin/sparkwa-backup # (or /tmp/sparkwa/scripts/backup.sh)
 ```

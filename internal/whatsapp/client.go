@@ -23,8 +23,8 @@ import (
 	waLog "go.mau.fi/whatsmeow/util/log"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/sparkwa/sparkwa-lite/internal/identity"
-	"github.com/sparkwa/sparkwa-lite/internal/message"
+	"github.com/sparkwa/sparkwa/internal/identity"
+	"github.com/sparkwa/sparkwa/internal/message"
 )
 
 // MessageHandler is the callback function invoked when a verified command from Number 2 arrives.
@@ -56,7 +56,7 @@ func NewClient(ctx context.Context, sessionDBPath string, verifier *identity.Ver
 	}
 
 	// Set clean client OS information
-	store.SetOSInfo("SparkWA Lite", [3]uint32{1, 0, 0})
+	store.SetOSInfo("SparkWA", [3]uint32{1, 0, 0})
 
 	var waLogLevel string
 	switch logLevel {

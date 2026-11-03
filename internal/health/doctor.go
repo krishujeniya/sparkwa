@@ -7,11 +7,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/sparkwa/sparkwa-lite/internal/config"
-	"github.com/sparkwa/sparkwa-lite/internal/gmail"
-	"github.com/sparkwa/sparkwa-lite/internal/spark"
-	"github.com/sparkwa/sparkwa-lite/internal/store"
-	"github.com/sparkwa/sparkwa-lite/internal/whatsapp"
+	"github.com/sparkwa/sparkwa/internal/config"
+	"github.com/sparkwa/sparkwa/internal/gmail"
+	"github.com/sparkwa/sparkwa/internal/spark"
+	"github.com/sparkwa/sparkwa/internal/store"
+	"github.com/sparkwa/sparkwa/internal/whatsapp"
 )
 
 // CheckStatus indicates whether a check passed, warned, or failed.
@@ -79,7 +79,7 @@ func (d *Doctor) RunDiagnostics(ctx context.Context) []CheckResult {
 // PrintReport writes a formatted diagnostic summary to the given writer.
 func PrintReport(results []CheckResult, out io.Writer) bool {
 	fmt.Fprintln(out, "================================================================================")
-	fmt.Fprintln(out, "                     SPARKWA LITE SYSTEM DIAGNOSTICS")
+	fmt.Fprintln(out, "                        SPARKWA SYSTEM DIAGNOSTICS")
 	fmt.Fprintln(out, "================================================================================")
 
 	allPass := true

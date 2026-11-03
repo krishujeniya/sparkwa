@@ -1,4 +1,4 @@
-module github.com/sparkwa/sparkwa-lite
+module github.com/sparkwa/sparkwa
 
 go 1.27.3
 

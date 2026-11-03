@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SparkWA Lite — Binary Update Script
+# SparkWA — Binary Update Script
 # Updates executable while preserving existing sessions, tokens, and config.
 set -euo pipefail
 
@@ -32,6 +32,6 @@ install -m 0755 "$NEW_BIN" /usr/local/bin/sparkwa
 echo "Starting sparkwa service..."
 systemctl start sparkwa.service
 
-echo "✓ SparkWA Lite successfully updated to:"
+echo "✓ SparkWA successfully updated to:"
 /usr/local/bin/sparkwa version
 systemctl status sparkwa.service --no-pager

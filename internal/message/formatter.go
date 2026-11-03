@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sparkwa/sparkwa-lite/internal/config"
-	"github.com/sparkwa/sparkwa-lite/internal/store"
+	"github.com/sparkwa/sparkwa/internal/config"
+	"github.com/sparkwa/sparkwa/internal/store"
 )
 
 // FormatSubmissionAck formats the immediate confirmation sent when a user command is queued and submitted.
@@ -16,7 +16,7 @@ func FormatSubmissionAck(taskID, command string) string {
 		shortCmd = shortCmd[:77] + "..."
 	}
 	return fmt.Sprintf(
-		"⚡ *SparkWA Lite* [SUBMITTED]\n\n"+
+		"⚡ *SparkWA* [SUBMITTED]\n\n"+
 			"*ID:* `%s`\n"+
 			"*Task:* %s\n\n"+
 			"_Forwarded to Gemini Spark via Gmail monitor. Waiting for agent processing._",
@@ -28,7 +28,7 @@ func FormatSubmissionAck(taskID, command string) string {
 // FormatCompletion formats the successful result received from Gemini Spark.
 func FormatCompletion(taskID, resultText string) string {
 	return fmt.Sprintf(
-		"⚡ *SparkWA Lite* [COMPLETED]\n\n"+
+		"⚡ *SparkWA* [COMPLETED]\n\n"+
 			"*ID:* `%s`\n\n"+
 			"*Result:*\n%s",
 		taskID,
@@ -39,7 +39,7 @@ func FormatCompletion(taskID, resultText string) string {
 // FormatApprovalNeeded formats an explicit agent action approval prompt.
 func FormatApprovalNeeded(taskID, promptText string) string {
 	return fmt.Sprintf(
-		"⚠️ *SparkWA Lite* [APPROVAL NEEDED]\n\n"+
+		"⚠️ *SparkWA* [APPROVAL NEEDED]\n\n"+
 			"*ID:* `%s`\n\n"+
 			"Gemini Spark paused for your confirmation:\n\n"+
 			"%s\n\n"+
@@ -52,7 +52,7 @@ func FormatApprovalNeeded(taskID, promptText string) string {
 // FormatFailure formats a failed task notification.
 func FormatFailure(taskID, errorMsg string) string {
 	return fmt.Sprintf(
-		"❌ *SparkWA Lite* [FAILED]\n\n"+
+		"❌ *SparkWA* [FAILED]\n\n"+
 			"*ID:* `%s`\n"+
 			"*Error:* %s\n\n"+
 			"_Check VPS logs or run /status to diagnose._",
@@ -74,7 +74,7 @@ func FormatStatusReport(waConnected bool, botPhone string, authPhone string, gma
 	}
 
 	return fmt.Sprintf(
-		"📊 *SparkWA Lite Status*\n\n"+
+		"📊 *SparkWA Status*\n\n"+
 			"• *WhatsApp:* %s\n"+
 			"• *Authorized User:* %s\n"+
 			"• *Gmail Bridge:* %s\n"+
@@ -94,7 +94,7 @@ func FormatStatusReport(waConnected bool, botPhone string, authPhone string, gma
 // FormatJobList formats the list of recent tasks for /jobs.
 func FormatJobList(tasks []*store.Task) string {
 	if len(tasks) == 0 {
-		return "📋 *SparkWA Lite Jobs*\n\nNo recent tasks recorded in the database."
+		return "📋 *SparkWA Jobs*\n\nNo recent tasks recorded in the database."
 	}
 
 	var sb strings.Builder
@@ -166,7 +166,7 @@ func FormatJobDetail(t *store.Task) string {
 
 // FormatHelp returns the help manual for /help.
 func FormatHelp() string {
-	return "⚡ *SparkWA Lite — Help*\n\n" +
+	return "⚡ *SparkWA — Help*\n\n" +
 		"Available Commands:\n" +
 		"• `/status` — View bridge, WhatsApp, and Gmail health.\n" +
 		"• `/jobs` — List the 5 most recent tasks.\n" +
