@@ -48,6 +48,8 @@ WhatsApp User (Number 2) ◄─────┴── Verified Result Delivered
 
 ## Key Features
 
+- **Non-Tech Friendly TUI:** Launching `sparkwa` without flags opens an interactive Black & White Control Dashboard with a step-by-step Setup Wizard (`sparkwa wizard`).
+- **High-Contrast Monochrome Design:** Elegant Swiss-style Black & White ANSI palette—zero terminal intimidation, zero chromatic distractions.
 - **Single Native Binary:** Built in Go. Zero external runtime dependencies.
 - **Ultra-Low Resource Footprint:** Uses ~30 MB RAM and 0.0% idle CPU. Runs comfortably on 512 MB to 1 GB VPS instances.
 - **Headless SSH QR Pairing:** Displays an ASCII QR code directly inside your SSH terminal to link WhatsApp Number 1 via Linked Devices.
@@ -58,6 +60,34 @@ WhatsApp User (Number 2) ◄─────┴── Verified Result Delivered
 - **Persistent Task Queue:** Embedded SQLite database with automatic crash recovery, duplicate message suppression, and timeout management.
 - **Approval Guardrail Detection:** Automatically detects when Spark pauses for confirmation and forwards the approval prompt to WhatsApp.
 - **Hardened systemd Unit:** Runs as a dedicated non-root `sparkwa` service account with strict Linux filesystem and kernel isolation.
+
+---
+
+## Interactive Control Dashboard (TUI)
+
+Non-technical users can manage everything without memorizing commands:
+
+```bash
+# Simply launch sparkwa to open the interactive TUI
+sparkwa
+
+# Or run the step-by-step Guided Setup Wizard directly
+sparkwa wizard
+```
+
+```text
+╔════════════════════════════════════════════════════════════════════════════════╗
+║  ███████╗██████╗  █████╗ ██████╗ ██╗  ██╗   ██╗    ██╗ █████╗                  ║
+║  ██╔════╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝   ██║    ██║██╔══██╗                 ║
+║  ███████╗██████╔╝███████║██████╔╝█████╔╝    ██║ █╗ ██║███████║   ⚡             ║
+║  ╚════██║██╔═══╝ ██╔══██║██╔══██╗██╔═██╗    ██║███╗██║██╔══██║                 ║
+║  ███████║██║     ██║  ██║██║  ██║██║  ██╗   ╚███╔███╔╝██║  ██║                 ║
+║  ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝    ╚══╝╚══╝ ╚═╝  ╚═╝                 ║
+║                                                                                ║
+║  THE HEADLESS WHATSAPP TO GEMINI SPARK BRIDGE                                  ║
+║  Pure Go • Single Native Binary • Zero Dependencies • Production Hardened      ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+```
 
 ---
 

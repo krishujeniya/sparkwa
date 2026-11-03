@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -18,8 +17,10 @@ import (
 	"github.com/sparkwa/sparkwa/internal/identity"
 	"github.com/sparkwa/sparkwa/internal/spark"
 	"github.com/sparkwa/sparkwa/internal/store"
+	"github.com/sparkwa/sparkwa/internal/tui"
 	"github.com/sparkwa/sparkwa/internal/whatsapp"
 	"github.com/sparkwa/sparkwa/internal/worker"
+	"golang.org/x/term"
 )
 
 var (
@@ -29,18 +30,28 @@ var (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		printUsage()
-		os.Exit(1)
+	var configPath string
+	var cmd string
+
+	for i := 1; i < len(os.Args); i++ {
+		arg := os.Args[i]
+		if arg == "--config" && i+1 < len(os.Args) {
+			configPath = os.Args[i+1]
+			i++
+		} else if strings.HasPrefix(arg, "--config=") {
+			configPath = strings.TrimPrefix(arg, "--config=")
+		} else if cmd == "" && !strings.HasPrefix(arg, "-") {
+			cmd = arg
+		} else if arg == "-h" || arg == "--help" || arg == "help" {
+			cmd = "help"
+		} else if arg == "-v" || arg == "--version" || arg == "version" {
+			cmd = "version"
+		}
 	}
 
-	cmd := os.Args[1]
-	args := os.Args[2:]
-
-	var configPath string
-	fs := flag.NewFlagSet(cmd, flag.ExitOnError)
-	fs.StringVar(&configPath, "config", "", "Path to configuration file")
-	_ = fs.Parse(args)
+	if cmd == "" {
+		cmd = "tui"
+	}
 
 	cfg, err := config.Load(configPath)
 	if err != nil {
@@ -51,6 +62,21 @@ func main() {
 	defer cancel()
 
 	switch cmd {
+	case "tui", "menu", "dashboard":
+		if term.IsTerminal(int(os.Stdin.Fd())) && term.IsTerminal(int(os.Stdout.Fd())) {
+			app := tui.NewApp(cfg)
+			if err := app.Run(ctx); err != nil {
+				log.Fatalf("TUI session encountered error: %v", err)
+			}
+			return
+		}
+		printUsage()
+
+	case "wizard", "setup":
+		if err := tui.RunSetupWizard(ctx, os.Stdin, os.Stdout, cfg); err != nil {
+			log.Fatalf("Setup wizard error: %v", err)
+		}
+
 	case "version", "--version", "-v":
 		fmt.Printf("SparkWA %s (%s) %s/%s built %s\n", Version, GitCommit, runtime.GOOS, runtime.GOARCH, BuildDate)
 
@@ -79,19 +105,23 @@ func main() {
 		printUsage()
 
 	default:
-		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", cmd)
+		fmt.Fprintf(os.Stderr, "Unknown command: %s\n\n", cmd)
 		printUsage()
 		os.Exit(1)
 	}
 }
 
 func printUsage() {
-	fmt.Printf(`SparkWA %s — Ultra-lightweight WhatsApp to Gemini Spark Bridge
-
+	tui.PrintLogo(os.Stdout, tui.GetTerminalWidth())
+	fmt.Printf(`
 Usage:
-  sparkwa <command> [flags]
+  sparkwa [command] [flags]
 
-Commands:
+Interactive TUI & Wizards (Non-Technical Friendly):
+  sparkwa                      Launch the interactive Black & White TUI Control Dashboard
+  sparkwa wizard               Start the guided step-by-step setup wizard
+
+Direct CLI Commands:
   run          Start the background bridge service (daemon mode)
   login        Pair WhatsApp Number 1 via terminal QR code
   gmail-auth   Authenticate with Google Gmail API (OAuth 2.0 helper)
@@ -100,13 +130,14 @@ Commands:
   test-gmail   Send a test verification message to the Spark Gmail inbox
   init         Initialize config and data directories with safe permissions
   version      Print application version and build details
+  help         Display this command reference
 
 Flags:
   --config     Explicit path to configuration file (default: /etc/sparkwa/config.env or ./config.env)
 
 Documentation:
   https://github.com/sparkwa/sparkwa/tree/main/docs
-`, Version)
+`)
 }
 
 func runInit(cfg *config.Config) {
