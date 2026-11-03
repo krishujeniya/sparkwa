@@ -3,6 +3,8 @@ package tui
 import (
 	"fmt"
 	"io"
+
+	"github.com/sparkwa/sparkwa/internal/identity"
 )
 
 // StatusSnapshot contains pre-evaluated status details for the TUI dashboard.
@@ -32,17 +34,11 @@ func RenderDashboard(w io.Writer, snap StatusSnapshot, termWidth int) {
 	if snap.WhatsAppPaired {
 		waIndicator = IndicatorActive("CONNECTED")
 	}
-	botPhoneStr := snap.BotPhone
-	if botPhoneStr == "" {
-		botPhoneStr = "Unconfigured"
-	}
+	botPhoneStr := identity.MaskPhone(snap.BotPhone)
 	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "WhatsApp Bot (Number 1)", botPhoneStr, waIndicator))
 
 	// Authorized User
-	authPhoneStr := snap.AuthPhone
-	if authPhoneStr == "" {
-		authPhoneStr = "Unconfigured"
-	}
+	authPhoneStr := identity.MaskPhone(snap.AuthPhone)
 	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "Authorized User (Number 2)", authPhoneStr, IndicatorActive("ALLOWLISTED")))
 
 	// Gmail Bridge Status
@@ -50,20 +46,14 @@ func RenderDashboard(w io.Writer, snap StatusSnapshot, termWidth int) {
 	if snap.GmailAuthed {
 		gIndicator = IndicatorActive("CONNECTED")
 	}
-	bridgeEmailStr := snap.BridgeEmail
-	if bridgeEmailStr == "" {
-		bridgeEmailStr = "Unconfigured"
-	}
+	bridgeEmailStr := identity.MaskEmail(snap.BridgeEmail)
 	if len(bridgeEmailStr) > 26 {
 		bridgeEmailStr = bridgeEmailStr[:23] + "..."
 	}
 	statusLines = append(statusLines, fmt.Sprintf("%-26s : %-26s %s", "Gmail Bridge Mailbox", bridgeEmailStr, gIndicator))
 
 	// Spark Mailbox
-	sparkEmailStr := snap.SparkEmail
-	if sparkEmailStr == "" {
-		sparkEmailStr = "Unconfigured"
-	}
+	sparkEmailStr := identity.MaskEmail(snap.SparkEmail)
 	if len(sparkEmailStr) > 26 {
 		sparkEmailStr = sparkEmailStr[:23] + "..."
 	}

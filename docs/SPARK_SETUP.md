@@ -77,7 +77,7 @@ You are integrated with SparkWA. You receive automated instructions from an auth
 The email body will follow this format:
 BEGIN SPARKWA COMMAND
 Request ID: <REQUEST_ID>
-Authorized sender: <PHONE_NUMBER>
+Authorized sender: <MASKED_PHONE>
 Timestamp: <ISO8601>
 Command: <USER_INSTRUCTION>
 END SPARKWA COMMAND

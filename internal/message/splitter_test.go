@@ -56,13 +56,13 @@ func TestSplitTextUnicodeAndEmojis(t *testing.T) {
 
 func TestFormatters(t *testing.T) {
 	ack := FormatSubmissionAck("req-123", "Test command")
-	if !strings.Contains(ack, "req-123") || !strings.Contains(ack, "SUBMITTED") {
-		t.Errorf("unexpected submission ack: %s", ack)
+	if ack != "" {
+		t.Errorf("expected empty submission ack for direct conversational mode, got: %s", ack)
 	}
 
 	comp := FormatCompletion("req-123", "Finished result")
-	if !strings.Contains(comp, "COMPLETED") || !strings.Contains(comp, "Finished result") {
-		t.Errorf("unexpected completion: %s", comp)
+	if comp != "Finished result" {
+		t.Errorf("expected direct result without title or ID wrappers, got: %q", comp)
 	}
 
 	help := FormatHelp()

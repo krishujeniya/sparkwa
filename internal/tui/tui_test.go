@@ -113,8 +113,8 @@ func TestRenderDashboard(t *testing.T) {
 	if !strings.Contains(out, "SYSTEM HEALTH & INTEGRATION SNAPSHOT") {
 		t.Errorf("missing snapshot title in dashboard: %s", out)
 	}
-	if !strings.Contains(out, "+1234567890") {
-		t.Errorf("missing bot phone in dashboard: %s", out)
+	if !strings.Contains(out, "+1234") {
+		t.Errorf("missing masked bot phone in dashboard: %s", out)
 	}
 	if !strings.Contains(out, "[● CONNECTED]") {
 		t.Errorf("missing connected indicator in dashboard: %s", out)

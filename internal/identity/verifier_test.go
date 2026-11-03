@@ -3,6 +3,7 @@ package identity
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
 	"go.mau.fi/whatsmeow/types"
@@ -173,5 +174,25 @@ func TestVerifier(t *testing.T) {
 	_, err = v.Authorize(ctx, unknownLID)
 	if !errors.Is(err, ErrUnresolvedLID) {
 		t.Errorf("expected ErrUnresolvedLID for unmapped LID, got %v", err)
+	}
+}
+
+func TestMaskingPrivacy(t *testing.T) {
+	phone := "+19876543210"
+	maskedPhone := MaskPhone(phone)
+	if !strings.HasPrefix(maskedPhone, "+1987") || !strings.HasSuffix(maskedPhone, "10") {
+		t.Errorf("expected masked phone to keep prefix and suffix, got %s", maskedPhone)
+	}
+	if strings.Contains(maskedPhone, "65432") {
+		t.Errorf("masked phone leaked middle digits: %s", maskedPhone)
+	}
+
+	email := "operator.bridge@example.com"
+	maskedEmail := MaskEmail(email)
+	if !strings.HasPrefix(maskedEmail, "op") || !strings.HasSuffix(maskedEmail, "ge@example.com") {
+		t.Errorf("expected masked email to keep prefix and domain, got %s", maskedEmail)
+	}
+	if strings.Contains(maskedEmail, "erator.brid") {
+		t.Errorf("masked email leaked middle username: %s", maskedEmail)
 	}
 }

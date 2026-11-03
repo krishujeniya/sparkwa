@@ -242,7 +242,7 @@ func runGmailAuth(ctx context.Context, cfg *config.Config) {
 	if err != nil {
 		fmt.Printf("⚠️ Warning: Connectivity check failed: %v\n", err)
 	} else {
-		fmt.Printf("✓ Successfully verified Gmail API connection for: %s\n", email)
+		fmt.Printf("✓ Successfully verified Gmail API connection for: %s\n", identity.MaskEmail(email))
 	}
 }
 
@@ -311,7 +311,11 @@ func runStatus(ctx context.Context, cfg *config.Config) {
 	if len(recent) > 0 {
 		fmt.Println("\nRecent Tasks:")
 		for _, t := range recent {
-			fmt.Printf(" • [%s] %s (%s) : %s\n", t.State, t.ID[:8], t.CreatedAt.Format("15:04:05"), strings.ReplaceAll(t.Command, "\n", " "))
+			displayID := t.ID
+			if len(displayID) > 8 {
+				displayID = displayID[:8]
+			}
+			fmt.Printf(" • [%s] %s (%s) : %s\n", t.State, displayID, t.CreatedAt.Format("15:04:05"), strings.ReplaceAll(t.Command, "\n", " "))
 		}
 	}
 	fmt.Println("================================================================================")
@@ -336,7 +340,7 @@ func runTestGmail(ctx context.Context, cfg *config.Config) {
 	if err != nil {
 		log.Fatalf("Gmail connectivity check failed: %v", err)
 	}
-	fmt.Printf("✓ Gmail API profile connected: %s\n", email)
+	fmt.Printf("✓ Gmail API profile connected: %s\n", identity.MaskEmail(email))
 
 	// Send a test read-only diagnostic ping to the Spark mailbox
 	testID := fmt.Sprintf("test-%d", time.Now().Unix())
@@ -349,11 +353,11 @@ func runTestGmail(ctx context.Context, cfg *config.Config) {
 			"Command: READ_ONLY_DIAGNOSTIC_PING — Please respond with 'Diagnostics verified'.\n"+
 			"END SPARKWA COMMAND\n",
 		testID,
-		cfg.AuthorizedPhoneNumber,
+		identity.MaskPhone(cfg.AuthorizedPhoneNumber),
 		time.Now().UTC().Format(time.RFC3339),
 	)
 
-	fmt.Printf("Sending test command to Spark inbox: %s ...\n", cfg.SparkGmailAddress)
+	fmt.Printf("Sending test command to Spark inbox: %s ...\n", identity.MaskEmail(cfg.SparkGmailAddress))
 	msgID, threadID, err := gClient.SendCommand(ctx, cfg.BridgeGmailAddress, cfg.SparkGmailAddress, subject, body, testID, cfg.AuthorizedPhoneNumber)
 	if err != nil {
 		log.Fatalf("Failed to send test command: %v", err)
@@ -432,7 +436,7 @@ func runDaemon(ctx context.Context, cfg *config.Config) {
 	}
 	defer eng.Stop()
 
-	log.Printf("[Main] SparkWA is running headlessly. Authorized user: %s", cfg.AuthorizedPhoneNumber)
+	log.Printf("[Main] SparkWA is running headlessly. Authorized user: %s", identity.MaskPhone(cfg.AuthorizedPhoneNumber))
 
 	// Wait for shutdown signals
 	sigChan := make(chan os.Signal, 1)

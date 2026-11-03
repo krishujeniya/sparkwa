@@ -67,3 +67,49 @@ func CompareE164(a, b string) bool {
 	}
 	return normA == normB
 }
+
+// MaskPhone masks the central digits of a phone number to protect operator privacy in logs, emails, and UI.
+// Example: "+19876543210" -> "+1987•••••10"
+func MaskPhone(phone string) string {
+	trimmed := strings.TrimSpace(phone)
+	if trimmed == "" {
+		return "Unconfigured"
+	}
+	clean := strings.ReplaceAll(trimmed, " ", "")
+	if len(clean) <= 6 {
+		return strings.Repeat("•", len(clean))
+	}
+	// Preserve country prefix (e.g. +91 95) and last 2 digits
+	prefixLen := 5
+	if len(clean) < 10 {
+		prefixLen = 3
+	}
+	prefix := clean[:prefixLen]
+	suffix := clean[len(clean)-2:]
+	maskLen := len(clean) - len(prefix) - len(suffix)
+	if maskLen < 3 {
+		maskLen = 4
+	}
+	return prefix + strings.Repeat("•", maskLen) + suffix
+}
+
+// MaskEmail masks the username portion of an email address to prevent privacy leaks.
+// Example: "operator.bridge@example.com" -> "op••••ge@example.com"
+func MaskEmail(email string) string {
+	trimmed := strings.TrimSpace(email)
+	if trimmed == "" {
+		return "Unconfigured"
+	}
+	parts := strings.Split(trimmed, "@")
+	if len(parts) != 2 {
+		return "••••@" + trimmed
+	}
+	user := parts[0]
+	domain := parts[1]
+	if len(user) <= 4 {
+		return string(user[0]) + "••@" + domain
+	}
+	prefix := user[:2]
+	suffix := user[len(user)-2:]
+	return prefix + "••••" + suffix + "@" + domain
+}

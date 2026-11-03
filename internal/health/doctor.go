@@ -6,9 +6,11 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/sparkwa/sparkwa/internal/config"
 	"github.com/sparkwa/sparkwa/internal/gmail"
+	"github.com/sparkwa/sparkwa/internal/identity"
 	"github.com/sparkwa/sparkwa/internal/spark"
 	"github.com/sparkwa/sparkwa/internal/store"
 	"github.com/sparkwa/sparkwa/internal/whatsapp"
@@ -124,7 +126,7 @@ func (d *Doctor) checkConfig() []CheckResult {
 			Category: "Configuration",
 			Name:     "Validation",
 			Status:   StatusPass,
-			Details:  fmt.Sprintf("Bot: %s, User: %s, Bridge: %s, Spark: %s", d.config.BotPhoneNumber, d.config.AuthorizedPhoneNumber, d.config.BridgeGmailAddress, d.config.SparkGmailAddress),
+			Details:  fmt.Sprintf("Bot: %s, User: %s, Bridge: %s, Spark: %s", identity.MaskPhone(d.config.BotPhoneNumber), identity.MaskPhone(d.config.AuthorizedPhoneNumber), identity.MaskEmail(d.config.BridgeGmailAddress), identity.MaskEmail(d.config.SparkGmailAddress)),
 		})
 	}
 
@@ -248,11 +250,20 @@ func (d *Doctor) checkWhatsApp() []CheckResult {
 			Details:  "Not paired to any WhatsApp account. Run 'sparkwa login' to scan terminal QR code.",
 		})
 	} else {
+		jid := d.waClient.DeviceJID()
+		phonePart := jid
+		if atIdx := strings.Index(phonePart, "@"); atIdx != -1 {
+			phonePart = phonePart[:atIdx]
+		}
+		if colonIdx := strings.Index(phonePart, ":"); colonIdx != -1 {
+			phonePart = phonePart[:colonIdx]
+		}
+		maskedJID := identity.MaskPhone("+" + phonePart)
 		res = append(res, CheckResult{
 			Category: "WhatsApp",
 			Name:     "Device Pairing",
 			Status:   StatusPass,
-			Details:  fmt.Sprintf("Paired to WhatsApp device %s", d.waClient.DeviceJID()),
+			Details:  fmt.Sprintf("Paired to WhatsApp device %s", maskedJID),
 		})
 	}
 
@@ -314,7 +325,7 @@ func (d *Doctor) checkGmail(ctx context.Context) []CheckResult {
 			Category: "Gmail API",
 			Name:     "Connectivity",
 			Status:   StatusPass,
-			Details:  fmt.Sprintf("Successfully connected as %s", email),
+			Details:  fmt.Sprintf("Successfully connected as %s", identity.MaskEmail(email)),
 		})
 	}
 

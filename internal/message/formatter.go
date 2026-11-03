@@ -6,71 +6,46 @@ import (
 	"time"
 
 	"github.com/sparkwa/sparkwa/internal/config"
+	"github.com/sparkwa/sparkwa/internal/identity"
 	"github.com/sparkwa/sparkwa/internal/store"
 )
 
-// FormatSubmissionAck formats the immediate confirmation sent when a user command is queued and submitted.
+// FormatSubmissionAck formats the immediate confirmation sent when a user command is queued.
+// Returning an empty string suppresses intermediate robotic messages for a direct AI chat experience.
 func FormatSubmissionAck(taskID, command string) string {
-	shortCmd := strings.TrimSpace(command)
-	if len(shortCmd) > 80 {
-		shortCmd = shortCmd[:77] + "..."
-	}
-	return fmt.Sprintf(
-		"*SparkWA* [SUBMITTED]\n\n"+
-			"*ID:* `%s`\n"+
-			"*Task:* %s\n\n"+
-			"_Forwarded to Gemini Spark. Processing..._",
-		taskID,
-		shortCmd,
-	)
+	return ""
 }
 
-// FormatCompletion formats the successful result received from Gemini Spark.
+// FormatCompletion returns the direct result without any titles, IDs, or metadata wrappers.
 func FormatCompletion(taskID, resultText string) string {
-	return fmt.Sprintf(
-		"*SparkWA* [COMPLETED]\n\n"+
-			"*ID:* `%s`\n\n"+
-			"*Result:*\n%s",
-		taskID,
-		strings.TrimSpace(resultText),
-	)
+	return strings.TrimSpace(resultText)
 }
 
-// FormatApprovalNeeded formats an explicit agent action approval prompt.
+// FormatApprovalNeeded formats an explicit agent action approval prompt without robotic wrappers.
 func FormatApprovalNeeded(taskID, promptText string) string {
 	return fmt.Sprintf(
-		"⚠️ *SparkWA* [APPROVAL NEEDED]\n\n"+
-			"*ID:* `%s`\n\n"+
-			"Gemini Spark paused for your confirmation:\n\n"+
+		"⚠️ Gemini Spark requires your approval:\n\n"+
 			"%s\n\n"+
-			"_To confirm, reply with your decision or instruction quoting this task._",
-		taskID,
+			"_Reply with your confirmation or instruction to proceed._",
 		strings.TrimSpace(promptText),
 	)
 }
 
-// FormatFailure formats a failed task notification.
+// FormatFailure formats a failed task notification without robotic wrappers.
 func FormatFailure(taskID, errorMsg string) string {
-	return fmt.Sprintf(
-		"❌ *SparkWA* [FAILED]\n\n"+
-			"*ID:* `%s`\n"+
-			"*Error:* %s\n\n"+
-			"_Check VPS logs or run /status to diagnose._",
-		taskID,
-		errorMsg,
-	)
+	return fmt.Sprintf("❌ %s", strings.TrimSpace(errorMsg))
 }
 
-// FormatStatusReport formats the system status message for /status.
+// FormatStatusReport formats the system status message for /status with masked privacy.
 func FormatStatusReport(waConnected bool, botPhone string, authPhone string, gmailConnected bool, bridgeEmail string, sparkEmail string, capState config.CapabilityState, activeJobs int) string {
 	waStatus := "❌ Disconnected"
 	if waConnected {
-		waStatus = fmt.Sprintf("✅ Connected (%s)", botPhone)
+		waStatus = fmt.Sprintf("✅ Connected (%s)", identity.MaskPhone(botPhone))
 	}
 
 	gmailStatus := "❌ Disconnected"
 	if gmailConnected {
-		gmailStatus = fmt.Sprintf("✅ Active (%s ➔ %s)", bridgeEmail, sparkEmail)
+		gmailStatus = fmt.Sprintf("✅ Active (%s ➔ %s)", identity.MaskEmail(bridgeEmail), identity.MaskEmail(sparkEmail))
 	}
 
 	return fmt.Sprintf(
@@ -83,7 +58,7 @@ func FormatStatusReport(waConnected bool, botPhone string, authPhone string, gma
 			"• *Time:* %s UTC\n\n"+
 			"_Use /jobs to inspect recent tasks or /help for commands._",
 		waStatus,
-		authPhone,
+		identity.MaskPhone(authPhone),
 		gmailStatus,
 		string(capState),
 		activeJobs,

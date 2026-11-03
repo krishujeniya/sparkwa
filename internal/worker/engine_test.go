@@ -183,7 +183,7 @@ END SPARKWA RESPONSE`,
 	eng.processDiscoveredReply(ctx, reply)
 
 	last := wa.lastMessage()
-	if !strings.Contains(last, "COMPLETED") || !strings.Contains(last, "10 out of 10 milestones") {
+	if last != "Project is on track. 10 out of 10 milestones completed." {
 		t.Errorf("unexpected completion notification to WhatsApp: %s", last)
 	}
 
@@ -225,7 +225,7 @@ END SPARKWA RESPONSE`,
 	eng.processDiscoveredReply(ctx, reply)
 
 	last := wa.lastMessage()
-	if !strings.Contains(last, "APPROVAL NEEDED") || !strings.Contains(last, "delete 45 files permanently") {
+	if !strings.Contains(last, "requires your approval") || !strings.Contains(last, "delete 45 files permanently") {
 		t.Errorf("unexpected approval prompt sent to WhatsApp: %s", last)
 	}
 

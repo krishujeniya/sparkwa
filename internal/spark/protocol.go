@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/sparkwa/sparkwa/internal/identity"
 )
 
 var (
@@ -49,7 +51,7 @@ func FormatCommand(cmd *Command) (subject string, body string, err error) {
 			"Command: %s\n"+
 			"END SPARKWA COMMAND\n",
 		cmd.RequestID,
-		cmd.AuthorizedSender,
+		identity.MaskPhone(cmd.AuthorizedSender),
 		cmd.Timestamp.Format(time.RFC3339),
 		strings.TrimSpace(cmd.Content),
 	)

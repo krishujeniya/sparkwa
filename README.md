@@ -125,10 +125,10 @@ sparkwa
 
 ```text
 ┌─ SYSTEM HEALTH & INTEGRATION SNAPSHOT ─────────────────────────────────────────┐
-│  WhatsApp Bot (Number 1)    : +919510678362              [● CONNECTED]         │
-│  Authorized User (Number 2) : +918530483089              [● ALLOWLISTED]       │
-│  Gmail Bridge Mailbox       : aidrago0021@gmail.com      [● CONNECTED]         │
-│  Spark Agent Destination    : ukideashare0021@gmail.com  [● FULLY_VERIFIED]    │
+│  WhatsApp Bot (Number 1)    : +1 (555) ••••• 01          [● CONNECTED]         │
+│  Authorized User (Number 2) : +1 (555) ••••• 02          [● ALLOWLISTED]       │
+│  Gmail Bridge Mailbox       : br••••••ge@gmail.com       [● CONNECTED]         │
+│  Spark Agent Destination    : sp••••••rk@gmail.com       [● FULLY_VERIFIED]    │
 │  SQLite Persistent Queue    : 0 task(s) active in queue  [● HEALTHY]           │
 └────────────────────────────────────────────────────────────────────────────────┘
 

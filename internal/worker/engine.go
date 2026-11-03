@@ -282,9 +282,11 @@ func (e *Engine) submitTaskToGmail(ctx context.Context, task *store.Task) {
 
 	log.Printf("[Worker] Forwarded task %s to Gemini Spark via Gmail (%s -> %s, MsgID: %s)", task.ID, e.config.BridgeGmailAddress, e.config.SparkGmailAddress, msgID)
 
-	// Send submission acknowledgment back to WhatsApp Number 2
+	// Send submission acknowledgment back to WhatsApp Number 2 if non-empty
 	ackMsg := message.FormatSubmissionAck(task.ID, task.Command)
-	_ = e.waSender.SendTextMessage(ctx, task.SenderPhone, ackMsg)
+	if ackMsg != "" {
+		_ = e.waSender.SendTextMessage(ctx, task.SenderPhone, ackMsg)
+	}
 }
 
 func (e *Engine) pollingLoop(ctx context.Context) {
