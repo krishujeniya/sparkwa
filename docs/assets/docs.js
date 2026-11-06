@@ -101,6 +101,63 @@
   else if(e.key==='Escape'){if(overlay&&!overlay.hidden)closeSearch();else if(sidebar?.classList.contains('open')){setSidebar(false);sideToggle?.focus()}else if(mobile?.classList.contains('open')){setMobile(false);menu?.focus()}}
   else if(e.key==='/'&&!editing&&(!overlay||overlay.hidden)){e.preventDefault();openSearch()}
  });
+
+ /* Scroll state is decorative and never gates reading or click targets. */
+ const bar=$('.topbar');
+ const progress=d.createElement('div');
+ progress.className='reading-progress';
+ progress.setAttribute('aria-hidden','true');
+ bar?.after(progress);
+ let scrollFrame=0;
+ function syncScroll(){
+   scrollFrame=0;
+   const y=window.scrollY;
+   bar?.classList.toggle('is-scrolled',y>10);
+   if(!reduced.matches){
+     const total=Math.max(1,root.scrollHeight-window.innerHeight);
+     const ratio=Math.max(0,Math.min(1,y/total));
+     progress.style.transform='scaleX('+ratio.toFixed(4)+')';
+   }
+ }
+ function scheduleScroll(){if(!scrollFrame)scrollFrame=requestAnimationFrame(syncScroll)}
+ window.addEventListener('scroll',scheduleScroll,{passive:true});
+ window.addEventListener('resize',scheduleScroll,{passive:true});
+ reduced.addEventListener?.('change',scheduleScroll);
+ syncScroll();
+
+ /* Meaningful, one-shot editorial reveals on the marketing homepage only.
+    Docs pages are intentionally never hidden, even while JavaScript is loading. */
+ if($('.home-hero')&&'IntersectionObserver' in window&&!reduced.matches){
+   const reveal=$('.section-heading,.flow-step,.code-feature,.doc-card,.section .accordion');
+   for(const el of reveal){
+     el.classList.add('reveal-on-scroll');
+     if(el.matches('.flow-step,.doc-card')){
+       const index=[...el.parentElement.children].indexOf(el);
+       el.style.setProperty('--reveal-delay',Math.min(4,index)*70+'ms');
+     }
+   }
+   const observer=new IntersectionObserver(entries=>{
+     for(const entry of entries){
+       if(entry.isIntersecting){
+         entry.target.classList.add('is-in-view');
+         observer.unobserve(entry.target);
+       }
+     }
+   },{rootMargin:'0px 0px -35px 0px',threshold:0.08});
+   root.classList.add('motion-ready');
+   reveal.forEach(el=>observer.observe(el));
+ }
+
+ /* Keep the mobile drawer closed when switching to desktop, and dismiss it
+    on outside interaction without disrupting ordinary document scrolling. */
+ const desktopQuery=window.matchMedia('(min-width:901px)');
+ desktopQuery.addEventListener?.('change',event=>{
+   if(event.matches){setMobile(false);setSidebar(false)}
+ });
+ d.addEventListener('pointerdown',event=>{
+   if(mobile?.classList.contains('open')&&!mobile.contains(event.target)&&!menu?.contains(event.target))setMobile(false);
+   if(sidebar?.classList.contains('open')&&!sidebar.contains(event.target)&&!sideToggle?.contains(event.target))setSidebar(false);
+ });
  /* Failed assets are never replaced with misleading images. */
  $$('img').forEach(img=>img.addEventListener('error',()=>{img.style.display='none';announce('An optional image could not be loaded. The documentation is still available.')},{once:true}));
 })();

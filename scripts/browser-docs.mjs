@@ -31,6 +31,11 @@ try{
  const page=await ctx.newPage();
  page.on("pageerror",e=>errors.push("interactive: "+e.message));
  await page.goto(base,{waitUntil:"domcontentloaded"});
+ assert(await page.locator("#mobile-navigation").isHidden(),"Mobile navigation visible at desktop width");
+ assert(await page.locator(".topnav").isVisible(),"Desktop navigation not visible");
+ assert((await page.locator(".hero-h1").innerText()).includes("On WhatsApp."),"Hero headline did not update");
+ const animated=await page.locator(".hero-art").evaluate(el=>getComputedStyle(el,"::before").animationName);
+ assert(animated==="bridgeRings","Hero atmospheric animation missing");
  await page.keyboard.press("Control+k");
  await page.locator("#docs-search-box").waitFor();
  await page.locator("#docs-search-box").fill("OAuth");
@@ -56,12 +61,15 @@ try{
  await mobile.keyboard.press("Escape");
  assert(!(await mobile.locator(".docs-sidebar").evaluate(el=>el.classList.contains("open"))),"Escape did not close sidebar");
  await mobile.goto(base,{waitUntil:"domcontentloaded"});
+ assert(await mobile.locator("#mobile-navigation").isHidden(),"Mobile navigation visible before opening");
  await mobile.locator("[data-menu-button]").click();
  assert(await mobile.locator("#mobile-navigation").evaluate(el=>el.classList.contains("open")),"Mobile header menu failed");
  await mobile.keyboard.press("Escape");
  assert(!(await mobile.locator("#mobile-navigation").evaluate(el=>el.classList.contains("open"))),"Mobile menu Escape failed");
  const motion=await mobile.locator(".hero-h1").evaluate(e=>getComputedStyle(e).animationDuration);
  assert(motion==="0s"||motion==="0.01ms","Reduced motion not honored: "+motion);
+ const rings=await mobile.locator(".hero-art").evaluate(el=>getComputedStyle(el,"::before").animationName);
+ assert(rings==="none","Continuous hero animation not disabled under reduced motion");
  await side.close();
  const noJS=await browser.newContext({javaScriptEnabled:false});
  const pageNoJS=await noJS.newPage();

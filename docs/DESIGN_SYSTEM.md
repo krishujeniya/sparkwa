@@ -8,6 +8,13 @@
 - **Evidence labels:** The attached brief reports Antigravity and Flow observations/design confirmations. Those labels are retained in the table; underlying websites and design source files were **not independently confirmed** for this audit.
 - **Existing functionality:** The Go executable, OAuth, Gmail, WhatsApp and service logic are untouched. The original single-page docs are at `reference/complete-guide.html`.
 
+## 2026-11-06 responsive header and motion refinement
+- Fixed mobile navigation appearing as an unstyled duplicate row at desktop widths by providing explicit default hidden styling, a >=901px hard hide and a breakpoint-specific animated mobile drawer. The navigation still works with the native link list and is controlled by the menu button.
+- Refined hero typography into two intentional lines ("Your agent." / "On WhatsApp.") for desktop and small screen widths.
+- Implemented meaningful, small animations: hover and focus states on header links, cards and workflow steps; an ambient original CSS ring/aura on the real project artwork; one-shot scroll reveals on homepage editorial components; a progress indicator and a scrolled header surface.
+- Animations default to disabled for `prefers-reduced-motion: reduce`; the site keeps all technical guide bodies visible and uses no autoplay media. The original SparkWA branding and documentation content stay intact.
+- Responsive navigation uses 900px as the compact-header breakpoint; the mobile drawer closes when resizing to desktop or tapping outside it.
+
 ## Visual tokens
 The source of truth is `docs/assets/docs.css`: paper `#fcfbf9`, white `#fff`, dark ink `#161719`, soft surface `#f5f4f0`, readable muted text `#60656c`, spark-orange accent `#d96036`, black terminal `#131416`, gentle borders `#e6e5e2`. User-chosen dark mode uses matching contrast-oriented tokens. Preferred font stack is system sans + system monospace, no copied/private Google fonts.
 
