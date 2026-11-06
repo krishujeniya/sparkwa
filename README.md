@@ -12,6 +12,23 @@
 ╚════════════════════════════════════════════════════════════════════════════════╝
 ```
 
+
+## Official Documentation Site
+
+The official, SparkWA-only documentation portal is published at **https://krishujeniya.github.io/sparkwa/**. It includes a light-first reading interface with dark-mode toggle, keyboard documentation search, structured getting-started/connect/operate guides, and a full original reference.
+
+- [Documentation overview](https://krishujeniya.github.io/sparkwa/docs/)
+- [VPS installation](https://krishujeniya.github.io/sparkwa/docs/vps-install/)
+- [Gemini Spark configuration](https://krishujeniya.github.io/sparkwa/docs/spark-setup/)
+- [Gmail OAuth setup](https://krishujeniya.github.io/sparkwa/docs/gmail-oauth/)
+- [Security guide](https://krishujeniya.github.io/sparkwa/docs/security/)
+- [Troubleshooting](https://krishujeniya.github.io/sparkwa/docs/troubleshooting/)
+- [Original complete documentation](https://krishujeniya.github.io/sparkwa/reference/complete-guide.html)
+
+Website implementation details: [Design system](docs/DESIGN_SYSTEM.md) · [Content inventory](docs/PRODUCT_INVENTORY.md) · [QA status](docs/QA_REPORT.md). The GitHub Pages site remains a static documentation presentation; it does not modify or expose agent credentials or the Go application's runtime.
+
+---
+
 # SparkWA: WhatsApp Bridge for Google Gemini Spark
 
 **The Headless WhatsApp to Google Gemini Spark Bridge**  

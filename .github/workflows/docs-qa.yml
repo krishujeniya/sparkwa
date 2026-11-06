@@ -1,0 +1,54 @@
+name: Documentation Quality Assurance
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'scripts/verify-docs.mjs'
+      - 'scripts/browser-docs.mjs'
+      - '.github/workflows/docs-qa.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'scripts/verify-docs.mjs'
+      - 'scripts/browser-docs.mjs'
+      - '.github/workflows/docs-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate static docs
+        run: node scripts/verify-docs.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser tooling (QA-only)
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve static documentation
+        run: |
+          python3 -m http.server 4173 --directory docs >/tmp/sparkwa-qa-server.log 2>&1 &
+          echo $! > /tmp/sparkwa-qa-server.pid
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/ >/dev/null && break || sleep 1; done
+      - name: Exercise browser behavior and capture all widths
+        run: node scripts/browser-docs.mjs
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sparkwa-docs-viewport-evidence
+          path: docs/audit/site-v2/
+          if-no-files-found: ignore

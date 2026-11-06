@@ -1,0 +1,157 @@
+<!doctype html><html lang="en" data-base="../../" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#fcfbf9">
+ <meta name="description" content="Deploy SparkWA, pair WhatsApp, and run it as a service."><meta name="author" content="Krish Ujeniya"><meta property="og:type" content="article"><meta property="og:title" content="Install on a VPS — SparkWA Docs"><meta property="og:description" content="Deploy SparkWA, pair WhatsApp, and run it as a service."><meta property="og:url" content="https://krishujeniya.github.io/sparkwa/docs/vps-install/">
+ <meta property="og:image" content="https://krishujeniya.github.io/sparkwa/assets/sparkwa-banner.png"><meta name="twitter:card" content="summary_large_image">
+ <link rel="canonical" href="https://krishujeniya.github.io/sparkwa/docs/vps-install/"><link rel="icon" href="../../assets/sparkwa-mark.svg" type="image/svg+xml"><link rel="stylesheet" href="../../assets/docs.css">
+ <script>try{document.documentElement.dataset.theme=localStorage.getItem('sparkwa_docs_theme')==='dark'?'dark':'light'}catch{document.documentElement.dataset.theme='light'}</script><script src="../../assets/search-index.js" defer></script><script src="../../assets/docs.js" defer></script><title>Install on a VPS — SparkWA Docs</title></head><body><a class="skip" href="#main">Skip to content</a>
+ <header class="topbar"><div class="shell topbar-inner">
+ <a class="logo" href="../../" aria-label="SparkWA home"><img class="logo-icon" src="../../assets/sparkwa-mark.svg" width="34" height="34" alt=""><span class="logo-name">SparkWA<small>Documentation</small></span></a>
+ <nav class="topnav" aria-label="Main navigation"><a href="../../" >Overview</a><a href="../../docs/" aria-current="page">Documentation</a><a href="../../#architecture">Architecture</a><a href="https://github.com/krishujeniya/sparkwa/releases" target="_blank" rel="noopener noreferrer">Releases ↗</a></nav>
+ <div class="header-actions">
+ <button class="search-shortcut js-only" type="button" data-search-trigger aria-label="Search documentation"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.6" cy="10.6" r="6.3"/><path d="m15.4 15.4 5.1 5.1"/></svg><span class="search-label">Search docs</span><kbd>⌘K</kbd></button>
+ <button class="icon-button" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false" title="Toggle theme">◐</button>
+ <a class="btn repo-header-link" href="https://github.com/krishujeniya/sparkwa" target="_blank" rel="noopener noreferrer" style="min-height:42px;padding:9px 15px;font-size:12px">GitHub ↗</a>
+ <button type="button" class="mobile-nav-trigger js-only" data-menu-button aria-label="Open menu" aria-controls="mobile-navigation" aria-expanded="false">☰</button>
+ </div></div></header>
+ <nav id="mobile-navigation" class="mobile-nav" aria-label="Mobile navigation"><a href="../../">Overview</a><a href="../../docs/">Documentation</a><a href="../../#architecture">Architecture</a><a href="https://github.com/krishujeniya/sparkwa" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="https://github.com/krishujeniya/sparkwa/releases" target="_blank" rel="noopener noreferrer">Releases ↗</a></nav><main id="main"><div class="docs-shell docs-grid"><nav class="docs-sidebar" id="docs-sidebar" aria-label="Documentation sidebar"><div class="sidebar-label">GET STARTED</div><a class="sidebar-link" href="../../docs/"  >Documentation overview</a><a class="sidebar-link" href="../../docs/vps-install/" aria-current="page" >Install on a VPS</a><div class="sidebar-label">CONNECT</div><a class="sidebar-link" href="../../docs/spark-setup/"  >Gemini Spark setup</a><a class="sidebar-link" href="../../docs/gmail-oauth/"  >Gmail OAuth setup</a><div class="sidebar-label">OPERATE</div><a class="sidebar-link" href="../../docs/security/"  >Security &amp; permissions</a><a class="sidebar-link" href="../../docs/troubleshooting/"  >Troubleshooting</a><div class="sidebar-label">REFERENCE</div><a class="sidebar-link" href="../../reference/complete-guide.html"  >Complete reference</a><a class="sidebar-link" href="https://github.com/krishujeniya/sparkwa"  target="_blank" rel="noopener noreferrer">GitHub source</a></nav><div class="docs-main"><button type="button" class="mobile-sidebar-button js-only" data-sidebar-toggle aria-controls="docs-sidebar" aria-expanded="false">☰ Browse documentation</button><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../../">SparkWA</a><span aria-hidden="true">/</span><a href="../../docs/">Docs</a><span aria-hidden="true">/</span><span aria-current="page">Install on a VPS</span></nav><div class="docs-eyebrow">Get started</div><h1 class="docs-title">Install on a VPS</h1><p class="docs-description">Deploy SparkWA, pair WhatsApp, and run it as a service.</p><div class="docs-meta"><span>Source-backed documentation</span><span>Public reference</span><span>Copy-ready examples</span></div><article class="article" id="article-content"><p>This guide describes the complete workflow to deploy <strong>SparkWA</strong> to a headless Ubuntu VPS (Ubuntu 24.04 LTS / 22.04 LTS / Debian).</p>
+<p>The application runs headlessly as a native background service using systemd.</p>
+<hr>
+<h2 id="1-system-requirements">1. System Requirements<a class="heading-anchor" href="#1-system-requirements" aria-label="Link to 1. System Requirements">#</a></h2>
+<ul>
+<li><strong>Operating System:</strong> Ubuntu 24.04 LTS or 22.04 LTS (x86_64 or aarch64).</li>
+<li><strong>Compute:</strong> 1 vCPU, 512 MB to 1 GB RAM.</li>
+<li><strong>Disk:</strong> 50 MB free disk space.</li>
+<li><strong>Network:</strong> Direct outbound HTTPS (port 443) and WhatsApp TCP (ports 443 / 5222).</li>
+<li><strong>Runtime:</strong> Zero dependencies (No Node.js, Python, Docker, Chromium, or desktop required).</li>
+</ul>
+<hr>
+<h2 id="2-step-1-upload-archive-to-vps">2. Step 1: Upload Archive to VPS<a class="heading-anchor" href="#2-step-1-upload-archive-to-vps" aria-label="Link to 2. Step 1: Upload Archive to VPS">#</a></h2>
+<p>From your local machine where you built or downloaded the release archive:</p>
+<div class="code-block"><div class="code-head"><span>bash</span></div><pre tabindex="0" role="region" aria-label="bash code example"><code># Upload release archive and credentials JSON to your VPS
+scp sparkwa-v1.0.0-linux-amd64.tar.gz user@your-vps-ip:/tmp/
+scp credentials.json user@your-vps-ip:/tmp/</code></pre></div>
+<hr>
+<h2 id="3-step-2-ssh-into-vps-and-extract">3. Step 2: SSH into VPS and Extract<a class="heading-anchor" href="#3-step-2-ssh-into-vps-and-extract" aria-label="Link to 3. Step 2: SSH into VPS and Extract">#</a></h2>
+<div class="code-block"><div class="code-head"><span>bash</span></div><pre tabindex="0" role="region" aria-label="bash code example"><code>ssh user@your-vps-ip
+
+# Navigate to /tmp and extract package
+cd /tmp
+tar -xzf sparkwa-v1.0.0-linux-amd64.tar.gz
+cd sparkwa</code></pre></div>
+<hr>
+<h2 id="4-step-3-run-the-automated-installer">4. Step 3: Run the Automated Installer<a class="heading-anchor" href="#4-step-3-run-the-automated-installer" aria-label="Link to 4. Step 3: Run the Automated Installer">#</a></h2>
+<p>Run the installer with root privileges:</p>
+<div class="code-block"><div class="code-head"><span>bash</span></div><pre tabindex="0" role="region" aria-label="bash code example"><code>sudo ./scripts/install.sh</code></pre></div>
+<p>The installer automatically:</p>
+<ol>
+<li>Detects system architecture (<code>amd64</code> or <code>arm64</code>).</li>
+<li>Creates the dedicated non-login system user <code>sparkwa</code>.</li>
+<li>Installs the single static binary to <code>/usr/local/bin/sparkwa</code>.</li>
+<li>Creates protected directory <code>/var/lib/sparkwa</code> with mode <code>0700</code>.</li>
+<li>Creates configuration directory <code>/etc/sparkwa</code> with mode <code>0750</code>.</li>
+<li>Installs and enables the hardened <code>sparkwa.service</code> systemd unit.</li>
+</ol>
+<hr>
+<h2 id="5-step-4-configure-phone-numbers-gmail">5. Step 4: Configure Phone Numbers &amp; Gmail<a class="heading-anchor" href="#5-step-4-configure-phone-numbers-gmail" aria-label="Link to 5. Step 4: Configure Phone Numbers &amp; Gmail">#</a></h2>
+<p>Move your Google Cloud OAuth credentials into place:</p>
+<div class="code-block"><div class="code-head"><span>bash</span></div><pre tabindex="0" role="region" aria-label="bash code example"><code>sudo mv /tmp/credentials.json /etc/sparkwa/credentials.json
+sudo chown root:sparkwa /etc/sparkwa/credentials.json
+sudo chmod 0600 /etc/sparkwa/credentials.json</code></pre></div>
+<p>Edit the configuration file:</p>
+<div class="code-block"><div class="code-head"><span>bash</span></div><pre tabindex="0" role="region" aria-label="bash code example"><code>sudo nano /etc/sparkwa/config.env</code></pre></div>
+<p>Ensure the following variables are set:</p>
+<div class="code-block"><div class="code-head"><span>env</span></div><pre tabindex="0" role="region" aria-label="env code example"><code># E.164 phone numbers
+BOT_PHONE_NUMBER=&quot;+1234567890&quot;        # Number 1 (the bot account)
+AUTHORIZED_PHONE_NUMBER=&quot;+1987654321&quot; # Number 2 (the only allowed user)
+
+# Gmail Mailboxes
+BRIDGE_GMAIL_ADDRESS=&quot;bot-bridge@gmail.com&quot;
+SPARK_GMAIL_ADDRESS=&quot;personal-spark@gmail.com&quot;
+
+# Paths
+DATA_DIR=&quot;/var/lib/sparkwa&quot;
+GMAIL_CREDENTIALS_FILE=&quot;/etc/sparkwa/credentials.json&quot;
+GMAIL_TOKEN_FILE=&quot;/var/lib/sparkwa/token.json&quot;
+
+# Timing
+GMAIL_POLL_INTERVAL=&quot;45s&quot;
+TASK_TIMEOUT=&quot;15m&quot;
+LOG_LEVEL=&quot;info&quot;</code></pre></div>
+<p>Save and exit (<code>Ctrl+O</code>, <code>Enter</code>, <code>Ctrl+X</code>).</p>
+<hr>
+<h2 id="6-step-5-authorize-gmail-api-oauth-20">6. Step 5: Authorize Gmail API (OAuth 2.0)<a class="heading-anchor" href="#6-step-5-authorize-gmail-api-oauth-20" aria-label="Link to 6. Step 5: Authorize Gmail API (OAuth 2.0)">#</a></h2>
+<p>Run the Gmail authorization helper as the <code>sparkwa</code> service user:</p>
+<div class="code-block"><div class="code-head"><span>bash</span></div><pre tabindex="0" role="region" aria-label="bash code example"><code>sudo -u sparkwa sparkwa gmail-auth --config /etc/sparkwa/config.env</code></pre></div>
+<p>Follow the on-screen instructions (see <a href="../../docs/gmail-oauth/">GMAIL_OAUTH_SETUP.md</a> for details):</p>
+<ul>
+<li>Either forward port 8085 (<code>ssh -L 8085:127.0.0.1:8085 user@your-vps-ip</code>)</li>
+<li>Or paste the redirect code directly into the terminal prompt.</li>
+</ul>
+<hr>
+<h2 id="7-step-6-pair-whatsapp-number-1-terminal-qr-code">7. Step 6: Pair WhatsApp Number 1 (Terminal QR Code)<a class="heading-anchor" href="#7-step-6-pair-whatsapp-number-1-terminal-qr-code" aria-label="Link to 7. Step 6: Pair WhatsApp Number 1 (Terminal QR Code)">#</a></h2>
+<p>Pair the WhatsApp account for Number 1 directly in your SSH terminal:</p>
+<div class="code-block"><div class="code-head"><span>bash</span></div><pre tabindex="0" role="region" aria-label="bash code example"><code>sudo -u sparkwa sparkwa login --config /etc/sparkwa/config.env</code></pre></div>
+<ol>
+<li>An ASCII QR code will be displayed directly inside your SSH terminal.</li>
+<li>Open WhatsApp on phone <strong>Number 1</strong>.</li>
+<li>Tap <strong>Settings</strong> &gt; <strong>Linked Devices</strong> &gt; <strong>Link a Device</strong>.</li>
+<li>Point your camera at the SSH terminal QR code.</li>
+<li>The terminal will output:</li>
+</ol>
+<div class="code-block"><div class="code-head"><span>text</span></div><pre tabindex="0" role="region" aria-label="text code example"><code>   ✓ WhatsApp device pairing successful!
+   ✓ WhatsApp pairing complete. Session saved in SQLite database.</code></pre></div>
+<hr>
+<h2 id="8-step-7-run-system-diagnostics-doctor">8. Step 7: Run System Diagnostics (Doctor)<a class="heading-anchor" href="#8-step-7-run-system-diagnostics-doctor" aria-label="Link to 8. Step 7: Run System Diagnostics (Doctor)">#</a></h2>
+<p>Run the diagnostic check to ensure all subsystems are ready:</p>
+<div class="code-block"><div class="code-head"><span>bash</span></div><pre tabindex="0" role="region" aria-label="bash code example"><code>sudo -u sparkwa sparkwa doctor --config /etc/sparkwa/config.env</code></pre></div>
+<p>Verify that all critical checks report <code>[✓ PASS]</code>:</p>
+<ul>
+<li>Configuration Validation</li>
+<li>Filesystem Permissions (0700 data dir, 0600 token &amp; config)</li>
+<li>SQLite Database Integrity</li>
+<li>WhatsApp Pairing Status</li>
+<li>Gmail API Connectivity</li>
+</ul>
+<hr>
+<h2 id="9-step-8-start-the-systemd-background-service">9. Step 8: Start the systemd Background Service<a class="heading-anchor" href="#9-step-8-start-the-systemd-background-service" aria-label="Link to 9. Step 8: Start the systemd Background Service">#</a></h2>
+<p>Start the service and enable it to persist across VPS reboots:</p>
+<div class="code-block"><div class="code-head"><span>bash</span></div><pre tabindex="0" role="region" aria-label="bash code example"><code>sudo systemctl start sparkwa
+sudo systemctl status sparkwa</code></pre></div>
+<p>Check live logs via <code>journalctl</code>:</p>
+<div class="code-block"><div class="code-head"><span>bash</span></div><pre tabindex="0" role="region" aria-label="bash code example"><code>sudo journalctl -u sparkwa -f</code></pre></div>
+<hr>
+<h2 id="10-step-9-send-your-first-whatsapp-command">10. Step 9: Send Your First WhatsApp Command<a class="heading-anchor" href="#10-step-9-send-your-first-whatsapp-command" aria-label="Link to 10. Step 9: Send Your First WhatsApp Command">#</a></h2>
+<p>From phone <strong>Number 2</strong>, send a WhatsApp message to phone <strong>Number 1</strong>:</p>
+<div class="code-block"><div class="code-head"><span>text</span></div><pre tabindex="0" role="region" aria-label="text code example"><code>/ping</code></pre></div>
+<p>The bot will reply within seconds:</p>
+<div class="code-block"><div class="code-head"><span>text</span></div><pre tabindex="0" role="region" aria-label="text code example"><code>*Pong!*
+
+SparkWA is responsive.
+Timestamp: 2026-10-31T18:00:00Z UTC</code></pre></div>
+<p>Next, test status:</p>
+<div class="code-block"><div class="code-head"><span>text</span></div><pre tabindex="0" role="region" aria-label="text code example"><code>/status</code></pre></div>
+<p>Then submit your first task:</p>
+<div class="code-block"><div class="code-head"><span>text</span></div><pre tabindex="0" role="region" aria-label="text code example"><code>Please summarize my upcoming meetings for this week.</code></pre></div>
+<p>SparkWA will return:</p>
+<div class="code-block"><div class="code-head"><span>text</span></div><pre tabindex="0" role="region" aria-label="text code example"><code>*SparkWA* [SUBMITTED]
+
+*ID:* `d3b07384`
+*Task:* Please summarize my upcoming meetings for this week.
+
+_Forwarded to Gemini Spark via Gmail monitor. Waiting for agent processing._</code></pre></div>
+<p>Once your Gemini Spark agent processes the command, the result is forwarded back to your WhatsApp chat!</p>
+<hr>
+<h2 id="11-maintenance-and-useful-commands">11. Maintenance and Useful Commands<a class="heading-anchor" href="#11-maintenance-and-useful-commands" aria-label="Link to 11. Maintenance and Useful Commands">#</a></h2>
+<div class="code-block"><div class="code-head"><span>bash</span></div><pre tabindex="0" role="region" aria-label="bash code example"><code># View live logs
+sudo journalctl -u sparkwa -f
+
+# Check recent tasks and capability status
+sudo -u sparkwa sparkwa status --config /etc/sparkwa/config.env
+
+# Stop service
+sudo systemctl stop sparkwa
+
+# Restart service
+sudo systemctl restart sparkwa
+
+# Create automated backup
+sudo /usr/local/bin/sparkwa-backup # (or /tmp/sparkwa/scripts/backup.sh)</code></pre></div></article><div class="article-bottom"><nav class="page-pager" aria-label="Documentation pagination"><a href="../"><small>← PREVIOUS</small>Documentation home</a><a href="../spark-setup/"><small>NEXT →</small>Connect Gemini Spark</a></nav></div><p style="font-size:12px;color:var(--subtle);margin-top:25px">Source: <a href="https://github.com/krishujeniya/sparkwa/blob/main/docs/VPS_INSTALL.md" target="_blank" rel="noopener noreferrer">VPS_INSTALL.md ↗</a></p></div><nav class="docs-toc" aria-label="On this page"><div class="toc-title">On this page</div><a class="toc-link " href="#1-system-requirements">1. System Requirements</a><a class="toc-link " href="#2-step-1-upload-archive-to-vps">2. Step 1: Upload Archive to VPS</a><a class="toc-link " href="#3-step-2-ssh-into-vps-and-extract">3. Step 2: SSH into VPS and Extract</a><a class="toc-link " href="#4-step-3-run-the-automated-installer">4. Step 3: Run the Automated Installer</a><a class="toc-link " href="#5-step-4-configure-phone-numbers-gmail">5. Step 4: Configure Phone Numbers &amp; Gmail</a><a class="toc-link " href="#6-step-5-authorize-gmail-api-oauth-20">6. Step 5: Authorize Gmail API (OAuth 2.0)</a><a class="toc-link " href="#7-step-6-pair-whatsapp-number-1-terminal-qr-code">7. Step 6: Pair WhatsApp Number 1 (Terminal QR Code)</a><a class="toc-link " href="#8-step-7-run-system-diagnostics-doctor">8. Step 7: Run System Diagnostics (Doctor)</a><a class="toc-link " href="#9-step-8-start-the-systemd-background-service">9. Step 8: Start the systemd Background Service</a><a class="toc-link " href="#10-step-9-send-your-first-whatsapp-command">10. Step 9: Send Your First WhatsApp Command</a><a class="toc-link " href="#11-maintenance-and-useful-commands">11. Maintenance and Useful Commands</a></nav></div></main><footer class="site-footer"><div class="shell"><div class="footer-grid"><div><a class="logo" href="../../" aria-label="SparkWA home"><img class="logo-icon" src="../../assets/sparkwa-mark.svg" width="34" height="34" alt=""><span class="logo-name">SparkWA<small>Documentation</small></span></a><p>The headless WhatsApp to Gemini Spark bridge. Built by Krish Ujeniya. Independent open-source software; not affiliated with WhatsApp or Google.</p><button type="button" class="btn btn-secondary js-only" data-copy-logo style="min-height:38px;font-size:12px">Copy logo SVG</button></div><nav class="footer-links" aria-label="Footer"><a href="../../docs/">Documentation</a><a href="../../docs/security/">Security guide</a><a href="../../docs/troubleshooting/">Troubleshooting</a><a href="../../reference/complete-guide.html">Complete reference</a><a href="https://github.com/krishujeniya/sparkwa" target="_blank" rel="noopener noreferrer">Source repository</a><a href="https://github.com/krishujeniya/sparkwa/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></nav></div><div class="footer-bottom"><span>© 2026 SparkWA · Independent software project</span><span>Built for reading, not for distraction.</span></div></div></footer></body></html>
