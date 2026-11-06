@@ -45,7 +45,7 @@ try{
  assert(await page.locator("#faq details").first().evaluate(e=>e.open),"FAQ did not expand");
  await page.goto(base+"docs/gmail-oauth/",{waitUntil:"domcontentloaded"});
  await page.locator(".code-head button").first().click();
- assert((await page.locator("#status-announcement").textContent()).includes("Copied"),"Copy feedback missing");
+ await page.waitForFunction(()=>document.querySelector("#status-announcement")?.textContent?.includes("Copied"),null,{timeout:3000});
  await page.goto(base+"docs/vps-install/",{waitUntil:"domcontentloaded"});
  assert(await page.locator(".docs-toc a").count()>0,"TOC absent");
  const side=await browser.newContext({viewport:{width:390,height:844},reducedMotion:"reduce"});
