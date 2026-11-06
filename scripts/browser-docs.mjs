@@ -33,9 +33,9 @@ try{
  await page.goto(base,{waitUntil:"domcontentloaded"});
  assert(await page.locator("#mobile-navigation").isHidden(),"Mobile navigation visible at desktop width");
  assert(await page.locator(".topnav").isVisible(),"Desktop navigation not visible");
- assert((await page.locator(".hero-h1").innerText()).includes("On WhatsApp."),"Hero headline did not update");
- const animated=await page.locator(".hero-art").evaluate(el=>getComputedStyle(el,"::before").animationName);
- assert(animated==="bridgeRings","Hero atmospheric animation missing");
+ assert((await page.locator(".hero-h1").innerText()).includes("Spark agent from WhatsApp"),"Hero headline did not update");
+ assert((await page.locator(".hero-process li").count())===3,"Product message flow is missing");
+ assert(await page.locator(".hero-process a[href*=spark-setup]").isVisible(),"Setup guide link missing");
  await page.keyboard.press("Control+k");
  await page.locator("#docs-search-box").waitFor();
  await page.locator("#docs-search-box").fill("OAuth");
@@ -68,8 +68,8 @@ try{
  assert(!(await mobile.locator("#mobile-navigation").evaluate(el=>el.classList.contains("open"))),"Mobile menu Escape failed");
  const motion=await mobile.locator(".hero-h1").evaluate(e=>getComputedStyle(e).animationDuration);
  assert(motion==="0s"||motion==="0.01ms","Reduced motion not honored: "+motion);
- const rings=await mobile.locator(".hero-art").evaluate(el=>getComputedStyle(el,"::before").animationName);
- assert(rings==="none","Continuous hero animation not disabled under reduced motion");
+ assert(await mobile.locator(".hero-process").isVisible(),"Documentation flow missing on mobile");
+ assert((await mobile.locator(".hero-process li").count())===3,"Mobile product flow incomplete");
  await side.close();
  const noJS=await browser.newContext({javaScriptEnabled:false});
  const pageNoJS=await noJS.newPage();
@@ -77,7 +77,7 @@ try{
  assert(await pageNoJS.locator(".article h2").count()>0,"No-JS article unavailable");
  await noJS.close();
  const slow=await browser.newContext({viewport:{width:390,height:844}});
- await slow.route("**/assets/sparkwa-banner.png",async route=>{await new Promise(r=>setTimeout(r,2500));await route.abort()});
+ await slow.route("**/assets/sparkwa-mark.svg",async route=>{await new Promise(r=>setTimeout(r,2500));await route.abort()});
  const slowPage=await slow.newPage();
  await slowPage.goto(base,{waitUntil:"domcontentloaded"});
  assert(await slowPage.locator("h1").isVisible(),"Slow media blocked text content");
