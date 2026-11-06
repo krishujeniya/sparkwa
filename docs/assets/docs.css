@@ -158,3 +158,32 @@ button.btn,a.btn{display:inline-flex;align-items:center;justify-content:center;g
   .motion-ready .reveal-on-scroll{opacity:1!important;filter:none!important;transform:none!important;transition:none!important}
 }
 @media print{.reading-progress{display:none!important}}
+
+
+/* Hallmark v2 | documentation-first design: real message journey replaces AI-shaped hero art. */
+html,body{overflow-x:clip}
+.home-hero{padding:clamp(60px,9vh,110px) 0;background:var(--paper);border-bottom:1px solid var(--line);overflow:clip}
+.home-hero .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:clamp(28px,6vw,100px);align-items:center}
+.hero-copy{min-width:0}
+.home-hero .hero-h1{font-size:clamp(3.2rem,6.4vw,7rem);line-height:1.04;letter-spacing:-.068em;font-weight:650;max-width:800px;margin:0 0 26px;overflow-wrap:break-word}
+.home-hero .hero-intro{font-size:clamp(1rem,1.45vw,1.25rem);line-height:1.65;max-width:630px;margin-bottom:29px}
+.hero-process{min-width:0;border:1px solid var(--line);border-radius:14px;background:var(--white);padding:clamp(23px,3vw,39px)}
+.hero-process header{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding-bottom:21px}
+.hero-process header img{width:30px;height:30px;flex-shrink:0}
+.hero-process header div{display:grid;gap:3px}
+.hero-process header strong{font-size:17px;font-weight:750;letter-spacing:-.04em}
+.hero-process header span{font-size:12px;color:var(--muted)}
+.hero-process ol{list-style:none;padding:0;margin:0}
+.hero-process li{display:flex;align-items:start;gap:18px;padding:23px 0;border-bottom:1px solid var(--line)}
+.hero-process li:last-child{border-bottom:0}
+.process-step{font-size:12px;font-weight:700;color:var(--brand-deep);padding-top:3px;flex-shrink:0}
+.hero-process li strong{font-size:17px;letter-spacing:-.02em;font-weight:650}
+.hero-process li p{font-size:13px;color:var(--muted);line-height:1.55;margin:7px 0 0}
+.process-more{display:inline-flex;color:var(--brand-deep);font-size:13px;font-weight:650;text-underline-offset:4px;margin-top:12px}
+.kicker,.doc-card-index,.hero-art-top,.hero-art-bottom,.stats-row span{letter-spacing:0;text-transform:none;font-size:12px}
+.kicker::before{display:none}
+.hero-h1 em,.section-title em{font-style:normal;font-family:inherit;font-weight:inherit;color:inherit}
+.home-hero .btn{font-size:14px}
+@media(max-width:960px){.home-hero .hero-grid{grid-template-columns:minmax(0,1fr);gap:42px}.hero-process{max-width:740px}.home-hero .hero-h1{max-width:750px}}
+@media(max-width:600px){.home-hero{padding-block:54px 70px}.shell{width:calc(100% - 36px)}.home-hero .hero-h1{font-size:clamp(3rem,11vw,4.7rem)}.hero-process{padding:21px}.hero-process li{padding:18px 0}}
+@media(prefers-reduced-motion:reduce){.home-hero *{animation:none!important;transform:none!important;transition:none!important}}
