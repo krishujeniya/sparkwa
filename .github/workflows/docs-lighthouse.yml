@@ -1,0 +1,54 @@
+name: Documentation Lighthouse Audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/docs-lighthouse.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Lighthouse (QA-only)
+        run: npm install --no-save --no-package-lock lighthouse@12.8.2
+      - name: Serve documentation
+        run: |
+          python3 -m http.server 4173 --directory docs >/tmp/sparkwa-lighthouse.log 2>&1 &
+          for i in $(seq 1 25); do curl -fsS http://127.0.0.1:4173/ >/dev/null && break || sleep 1; done
+      - name: Measure mobile home
+        run: npx lighthouse http://127.0.0.1:4173/ --chrome-flags="--headless --no-sandbox --disable-gpu" --output=json --output-path=docs/audit/lighthouse-mobile-home.json --quiet
+      - name: Measure desktop home
+        run: npx lighthouse http://127.0.0.1:4173/ --preset=desktop --chrome-flags="--headless --no-sandbox --disable-gpu" --output=json --output-path=docs/audit/lighthouse-desktop-home.json --quiet
+      - name: Measure mobile documentation
+        run: npx lighthouse http://127.0.0.1:4173/docs/vps-install/ --chrome-flags="--headless --no-sandbox --disable-gpu" --output=json --output-path=docs/audit/lighthouse-mobile-guide.json --quiet
+      - name: Measure desktop documentation
+        run: npx lighthouse http://127.0.0.1:4173/docs/vps-install/ --preset=desktop --chrome-flags="--headless --no-sandbox --disable-gpu" --output=json --output-path=docs/audit/lighthouse-desktop-guide.json --quiet
+      - name: Summarize real lab results
+        if: always()
+        run: |
+          node --input-type=module <<'EOF'
+          import {readFileSync,existsSync} from "node:fs";
+          const files=["mobile-home","desktop-home","mobile-guide","desktop-guide"];
+          for (const file of files) {
+            const p="docs/audit/lighthouse-"+file+".json";
+            if(!existsSync(p)){console.log(file+": not measured");continue}
+            const a=JSON.parse(readFileSync(p,"utf8"));
+            const categories=Object.fromEntries(Object.entries(a.categories).map(([k,v])=>[k,Math.round(v.score*100)]));
+            const metric=k=>a.audits[k]?.displayValue||"not available";
+            console.log(JSON.stringify({page:file,score:categories,LCP:metric("largest-contentful-paint"),CLS:metric("cumulative-layout-shift"),TBT:metric("total-blocking-time"),FCP:metric("first-contentful-paint")}));
+          }
+          EOF
+      - name: Publish Lighthouse report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sparkwa-lighthouse-lab-results
+          path: docs/audit/lighthouse-*.json
+          if-no-files-found: ignore
