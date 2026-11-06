@@ -1405,6 +1405,24 @@
         padding: 10px 16px;
       }
     }
+  
+    /* Hallmark v2 | reference documentation: prioritize readable facts over visual decoration. */
+    html,body{overflow-x:clip!important;max-width:none!important}
+    .hero{padding:clamp(65px,8vh,100px) 0;background:var(--bg);min-height:0}
+    .hero-logo-wrapper,.hero-meta{display:none!important}
+    .hero-title{font-family:var(--font-sans);font-size:clamp(2.7rem,5.4vw,5.5rem);font-weight:650;letter-spacing:-.064em;line-height:1.08;max-width:800px;margin:0 0 25px;overflow-wrap:break-word}
+    .hero-subtitle{font-family:var(--font-sans);font-size:clamp(1rem,1.4vw,1.22rem);line-height:1.7;max-width:780px}
+    .section-eyebrow,.meta-tag{letter-spacing:0;text-transform:none;font-family:var(--font-sans);font-size:13px;font-weight:500}
+    .section-eyebrow{display:none}
+    .card-node-badge,.fast-install-title{letter-spacing:0;text-transform:none;font-family:var(--font-sans)}
+    header.site-header,[data-theme="light"] header.site-header{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg);border-bottom:1px solid var(--border)}
+    .doc-section{scroll-margin-top:90px}
+    .container{max-width:1080px}
+    .command-box,.pipeline-card{box-shadow:none}
+    :focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+    @media(max-width:680px){.hero{padding-block:52px 70px}.hero-title{font-size:clamp(2.7rem,10vw,4.4rem)}.container{padding-inline:18px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+
   </style>
 </head>
 <body>
@@ -1450,18 +1468,12 @@
           <img src="../assets/sparkwa-banner.png" alt="SparkWA — The Headless WhatsApp to Google Gemini Spark Bridge" class="hero-logo-img" width="800" height="220" fetchpriority="high">
         </div>
 
-        <h1 class="hero-title">The Headless WhatsApp Bridge for Google Gemini Spark</h1>
+        <h1 class="hero-title">SparkWA technical reference</h1>
         <p class="hero-subtitle">
-          Connect your personal WhatsApp directly to your autonomous Google Gemini Spark agent via event-driven Gmail triggers. Runs as a single native Go binary on any 512 MB Linux server with zero runtime dependencies.
+          SparkWA routes authorized WhatsApp messages through a self-hosted Go bridge and Gmail to a configured Gemini Spark workflow. This reference documents setup, operation, and security considerations.
         </p>
 
-        <div class="hero-meta">
-          <span class="meta-tag">GO 1.24+</span>
-          <span class="meta-tag">~30 MB RAM</span>
-          <span class="meta-tag">0.0% IDLE CPU</span>
-          <span class="meta-tag">PURE MONOCHROME</span>
-          <span class="meta-tag">AUTHOR: KRISH UJENIYA</span>
-        </div>
+        
 
         <!-- 1-Line Fast Install -->
         <div class="fast-install" id="install">
@@ -1487,10 +1499,10 @@
     <section class="doc-section" id="pipeline">
       <div class="container">
         <div class="section-header">
-          <div class="section-eyebrow">Zero Privacy Leaks</div>
+          <div class="section-eyebrow">Security boundaries</div>
           <h2 class="section-title">System Integration Pipeline</h2>
           <p class="section-desc">
-            SparkWA is designed with total privacy abstraction. The terminal user interface (TUI) and system logs never reveal your phone numbers, emails, or message bodies. Instead, actions are tracked through a deterministic 4-node flow.
+            SparkWA uses sender validation, task correlation, and scoped OAuth access. Review the security guide and deployment configuration before handling sensitive messages.
           </p>
         </div>
 
@@ -2468,7 +2480,7 @@ END SPARKWA RESPONSE</pre>
       }, 2400);
     }
 
-    // Theme Toggle (Pure Monochrome Dark/Light)
+    // Theme Toggle (Dark/Light)
     const themeBtn = document.getElementById('themeBtn');
     const themeLabel = document.getElementById('themeLabel');
 
