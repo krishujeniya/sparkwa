@@ -8,7 +8,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const docs=path.join(root,"docs");
 const routes=["","docs/","docs/vps-install/","docs/spark-setup/","docs/gmail-oauth/","docs/security/","docs/troubleshooting/","reference/complete-guide.html"];
 const assets=["assets/docs.css","assets/docs.js","assets/search-index.js","assets/sparkwa-mark.svg","assets/sparkwa-banner.png"];
-function localFile(route){return path.join(docs,route.endsWith("/")?route+"index.html":route)}
+function localFile(route){return path.join(docs,!route?"index.html":route.endsWith("/")?route+"index.html":route)}
 for(const src of ["assets/docs.js","assets/search-index.js"])execFileSync(process.execPath,["--check",path.join(docs,src)],{stdio:"inherit"});
 for(const route of routes){assert(existsSync(localFile(route)),"Missing route "+route)}
 for(const asset of assets){assert(existsSync(path.join(docs,asset)),"Missing required asset "+asset)}
