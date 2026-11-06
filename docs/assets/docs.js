@@ -128,7 +128,7 @@
  /* Meaningful, one-shot editorial reveals on the marketing homepage only.
     Docs pages are intentionally never hidden, even while JavaScript is loading. */
  if($('.home-hero')&&'IntersectionObserver' in window&&!reduced.matches){
-   const reveal=$('.section-heading,.flow-step,.code-feature,.doc-card,.section .accordion');
+   const reveal=$$('.section-heading,.flow-step,.code-feature,.doc-card,.section .accordion');
    for(const el of reveal){
      el.classList.add('reveal-on-scroll');
      if(el.matches('.flow-step,.doc-card')){
