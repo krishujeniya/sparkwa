@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 const base="http://127.0.0.1:4173/";
 const sizes=[320,360,390,768,1024,1280,1440,1920];
 const out="docs/audit/site-v2";mkdirSync(out,{recursive:true});
-const browser=await chromium.launch({headless:true,args:["--no-sandbox"]});
+const browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{}),args:["--no-sandbox"]});
 const errors=[],results=[];
 async function check(page,label){
  const {scrollWidth,innerWidth}=await page.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth}));

@@ -34,10 +34,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install browser tooling (QA-only)
+      - name: Install QA client (no site runtime dependencies)
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Use preinstalled Chrome or install fallback
         run: |
-          npm install --no-save --no-package-lock playwright@1.56.1
-          npx playwright install --with-deps chromium
+          CHROME=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)
+          if [ -n "$CHROME" ]; then
+            echo "CHROME_PATH=$CHROME" >> "$GITHUB_ENV"
+            echo "Using runner Chrome: $CHROME"
+          else
+            npx playwright install --with-deps chromium
+          fi
       - name: Serve static documentation
         run: |
           python3 -m http.server 4173 --directory docs >/tmp/sparkwa-qa-server.log 2>&1 &
