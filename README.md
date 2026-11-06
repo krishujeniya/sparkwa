@@ -12,13 +12,26 @@
 ╚════════════════════════════════════════════════════════════════════════════════╝
 ```
 
+
+## Project Ecosystem Website & New Brand Mark
+
+The GitHub Pages homepage now features **KRISH / LAB**, a source-backed showcase of AI agents, developer tools, applied AI research, and applications by Krish Ujeniya. The site uses a new original visual identity at `docs/assets/krish-lab-mark.svg`.
+
+- [Explore the ecosystem](https://krishujeniya.github.io/sparkwa/)
+- [Read the original SparkWA documentation](https://krishujeniya.github.io/sparkwa/sparkwa-docs.html)
+- [Website design system](docs/DESIGN_SYSTEM.md) · [Product inventory and evidence](docs/PRODUCT_INVENTORY.md) · [QA report](docs/QA_REPORT.md)
+
+The existing Go application, APIs, installation scripts, and technical documentation remain intact. This website is a portfolio of independently documented projects; it does not imply a shared runtime, subscription, or integration.
+
+---
+
 # SparkWA: WhatsApp Bridge for Google Gemini Spark
 
 **The Headless WhatsApp to Google Gemini Spark Bridge**  
 *By Krish Ujeniya*
 
 [![Go Version](https://img.shields.io/badge/Go-1.23%2B-black.svg?style=for-the-badge&logo=go)](https://golang.org)
-[![Documentation](https://img.shields.io/badge/Docs-krishujeniya.github.io%2Fsparkwa-black.svg?style=for-the-badge)](https://krishujeniya.github.io/sparkwa/)
+[![Documentation](https://img.shields.io/badge/Docs-krishujeniya.github.io%2Fsparkwa-black.svg?style=for-the-badge)](https://krishujeniya.github.io/sparkwa/sparkwa-docs.html)
 [![Platform](https://img.shields.io/badge/Platform-Ubuntu%20%2F%20Debian%20%2F%20macOS-black.svg?style=for-the-badge&logo=linux)]()
 [![Memory Usage](https://img.shields.io/badge/RAM-~30%20MB-black.svg?style=for-the-badge)]()
 [![Interface](https://img.shields.io/badge/Interface-Black%20%26%20White%20TUI-black.svg?style=for-the-badge)]()
