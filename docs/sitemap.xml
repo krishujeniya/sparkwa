@@ -1,25 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://krishujeniya.github.io/sparkwa/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/hadron/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/agyos/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/amberclaw/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/sparkwa/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/sureword/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/seva-setu/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/waferguard/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/vemy/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/hajree/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/wanderlust/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/mostlyoutlier/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/snaptext/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/netsweep/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/fitness-tracker/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/stress-prediction/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/drug-effectiveness/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/studentportify/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/comune/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/echonest/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/products/coursly/</loc><lastmod>2026-11-06</lastmod></url>
-<url><loc>https://krishujeniya.github.io/sparkwa/sparkwa-docs.html</loc><lastmod>2026-11-06</lastmod></url>
+  <url>
+    <loc>https://krishujeniya.github.io/sparkwa/</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://krishujeniya.github.io/sparkwa/SPARK_SETUP.md</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://krishujeniya.github.io/sparkwa/VPS_INSTALL.md</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://krishujeniya.github.io/sparkwa/GMAIL_OAUTH_SETUP.md</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://krishujeniya.github.io/sparkwa/TROUBLESHOOTING.md</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://krishujeniya.github.io/sparkwa/SECURITY.md</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>

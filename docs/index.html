@@ -1,82 +1,2502 @@
-<!doctype html>
-<html lang="en" data-base="./">
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#060709">
-  <meta name="description" content="Explore the AI agents, applied intelligence, developer tools, and applications built by Krish Ujeniya. Genuine projects, real source code, and documented work.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SparkWA — Headless WhatsApp to Google Gemini Spark Bridge | Documentation</title>
+  <meta name="description" content="Official documentation for SparkWA: a lightweight, single-binary bridge connecting WhatsApp to Google Gemini Spark via Gmail. Pure Go, 30MB RAM, zero dependencies. By Krish Ujeniya.">
   <meta name="author" content="Krish Ujeniya">
+  <meta name="theme-color" content="#000000">
+
+  <!-- SparkWA branding and search preview -->
+  <meta property="og:image" content="https://krishujeniya.github.io/sparkwa/assets/sparkwa-banner.png">
+  <!-- Open Graph / SEO -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="KRISH / LAB — Independent Intelligence">
-  <meta property="og:description" content="One builder. Many directions. Explore real AI agents, product experiments, developer tools, and research.">
+  <meta property="og:title" content="SparkWA — Headless WhatsApp to Google Gemini Spark Bridge">
+  <meta property="og:description" content="Connect your personal WhatsApp directly to your Google Gemini Spark autonomous agent. Single native binary, fail-closed security, ~30 MB memory. By Krish Ujeniya.">
   <meta property="og:url" content="https://krishujeniya.github.io/sparkwa/">
-  <meta property="og:image" content="https://krishujeniya.github.io/sparkwa/assets/krish-lab-cover.svg">
-  <meta name="twitter:card" content="summary_large_image">
+  <!-- Preload Theme to Prevent Flash of Unstyled Content (FOUC) -->
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('sparkwa_theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+
   <link rel="canonical" href="https://krishujeniya.github.io/sparkwa/">
-  <link rel="icon" type="image/svg+xml" href="./assets/krish-lab-mark.svg">
-  <link rel="preload" as="image" href="https://raw.githubusercontent.com/krishujeniya/Hadron/main/docs/visual_audit/transformed-desktop-1280.png">
-  <link rel="stylesheet" href="./assets/ecosystem.css">
-  <title>KRISH / LAB — AI Products, Agents & Developer Tools</title>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"KRISH / LAB — Independent Intelligence","url":"https://krishujeniya.github.io/sparkwa/","author":{"@type":"Person","name":"Krish Ujeniya","url":"https://github.com/krishujeniya"},"description":"Verified products, research projects, and developer tools by Krish Ujeniya."}</script>
-  <script type="module" src="./assets/ecosystem.js"></script>
+  <link rel="icon" type="image/svg+xml" href="assets/sparkwa-mark.svg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SparkWA — Headless WhatsApp to Google Gemini Spark Bridge">
+  <meta name="twitter:description" content="Connect your personal WhatsApp directly to your Google Gemini Spark autonomous agent. Single native binary, fail-closed security, ~30 MB memory. By Krish Ujeniya.">
+
+  <!-- JSON-LD Structured Data for Search Engines -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SparkWA",
+    "operatingSystem": "Linux, Ubuntu, Debian",
+    "applicationCategory": "DeveloperApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "Headless WhatsApp to Google Gemini Spark bridge via Gmail triggers. Pure Go, single native binary, fail-closed security, ~30 MB memory.",
+    "author": {
+      "@type": "Person",
+      "name": "Krish Ujeniya",
+      "url": "https://github.com/krishujeniya"
+    },
+    "url": "https://krishujeniya.github.io/sparkwa/"
+  }
+  </script>
+
+
+  <style>
+    /* ==========================================================================
+       STRICT MONOCHROME HIGH-CONTRAST DESIGN SYSTEM — BY KRISH UJENIYA
+       ========================================================================== */
+    :root {
+      --bg: #000000;
+      --fg: #ffffff;
+      --panel: #0c0c0c;
+      --panel-alt: #141414;
+      --border: #2c2c2c;
+      --border-bright: #666666; /* 3.8:1 contrast on #000000, passes WCAG 2.1 Non-text Contrast SC 1.4.11 (>=3.0:1) */
+      --muted: #a0a0a0;        /* 8.0:1 contrast on #000000, passes WCAG AAA (>=7.0:1) */
+      --code-bg: #101010;
+      --btn-bg: #ffffff;
+      --btn-fg: #000000;
+      --focus: #ffffff;
+      --font-mono: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", -apple-system-headline, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --container: 1040px;
+    }
+
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --fg: #000000;
+      --panel: #f8f8f8;
+      --panel-alt: #eeeeee;
+      --border: #d0d0d0;
+      --border-bright: #767676; /* 4.54:1 contrast on #ffffff, passes WCAG AA & Non-text Contrast */
+      --muted: #4a4a4a;        /* 8.86:1 contrast on #ffffff, passes WCAG AAA */
+      --code-bg: #f2f2f2;
+      --btn-bg: #000000;
+      --btn-fg: #ffffff;
+      --focus: #000000;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+      max-width: 100vw;
+      width: 100%;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      max-width: 100vw;
+      width: 100%;
+      position: relative;
+    }
+
+    /* Accessibility Skip Link */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 10px;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      padding: 8px 16px;
+      text-decoration: none;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      z-index: 1000;
+      transition: top 0.2s;
+    }
+    .skip-link:focus {
+      top: 10px;
+      outline: 2px solid var(--focus);
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Apple Glassmorphic Navigation Bar */
+    header.site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.76);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+    [data-theme="light"] header.site-header {
+      background: rgba(255, 255, 255, 0.82);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .logo-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--fg);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: clamp(1rem, 4vw, 1.18rem);
+      letter-spacing: -0.5px;
+      flex-shrink: 0;
+      min-width: 0;
+      white-space: nowrap;
+    }
+
+    nav.nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    nav.nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-family: var(--font-mono);
+      transition: color 0.15s;
+    }
+
+    nav.nav-links a:hover {
+      color: var(--fg);
+    }
+
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border-bright);
+      color: var(--fg);
+      padding: 8px 16px;
+      min-height: 44px;
+      min-width: 44px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    .theme-toggle:hover {
+      background: var(--panel-alt);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 56px 0 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-logo-wrapper {
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 32px;
+      overflow: hidden !important;
+      display: flex;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .hero-logo-img {
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+      display: block;
+      border-radius: 16px;
+      border: 1px solid var(--border-bright);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+      object-fit: contain;
+    }
+
+    .hero-title {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      margin-bottom: 32px;
+    }
+
+    .meta-tag {
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Fast Install Box */
+    .fast-install-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .fast-install-title {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .fast-install {
+      background: var(--panel);
+      border: 1px solid var(--border-bright);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .command-box {
+      display: flex;
+      align-items: stretch;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      overflow: hidden;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .command-text {
+      flex: 1;
+      min-width: 0; /* CRITICAL: prevents flex item blowout */
+      padding: 14px 16px;
+      overflow-x: auto;
+      white-space: nowrap;
+      user-select: all;
+      color: var(--fg);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .btn-copy {
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      border: none;
+      padding: 0 20px;
+      min-height: 44px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s;
+    }
+    .btn-copy:hover {
+      opacity: 0.85;
+    }
+
+    .install-hint {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    /* Section Styling */
+    section.doc-section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-header {
+      margin-bottom: 32px;
+    }
+
+    .section-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 1.85rem;
+      font-weight: 700;
+      letter-spacing: -0.75px;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-top: 8px;
+      max-width: 780px;
+    }
+
+    /* Node Pipeline Cards */
+    .pipeline-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .pipeline-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      position: relative;
+      min-width: 0;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .card-node-badge {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      background: var(--fg);
+      color: var(--bg);
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card-body {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .flow-bar {
+      background: var(--code-bg);
+      border: 1px solid var(--border-bright);
+      padding: 16px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .flow-step {
+      font-weight: 700;
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    .flow-arrow {
+      color: var(--muted);
+    }
+
+    /* Master Prompt Section */
+    .prompt-container {
+      background: var(--code-bg);
+      border: 1px solid var(--border-bright);
+      position: relative;
+      margin-top: 16px;
+    }
+
+    .prompt-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .prompt-content {
+      padding: 20px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.55;
+      overflow-x: auto;
+      max-height: 480px;
+      user-select: all;
+      color: var(--fg);
+      white-space: pre;
+    }
+
+    /* Command Table */
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    table.data-table th {
+      background: var(--code-bg);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.5px;
+    }
+
+    table.data-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    table.data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.data-table code {
+      font-family: var(--font-mono);
+      background: var(--code-bg);
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+
+    /* Security Grid */
+    .sec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .sec-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 20px;
+    }
+
+    .sec-card h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+    }
+
+    .sec-card p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Prompt Examples Grid (Apple HIG responsive squircle cards) */
+    .prompt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+      gap: 20px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .prompt-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+      max-width: 100%;
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .prompt-card:hover {
+      border-color: var(--border-bright);
+    }
+
+    .prompt-user-bubble {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--fg);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .prompt-bubble-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .prompt-user-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    .btn-copy-prompt {
+      background: var(--panel-alt);
+      border: 1px solid var(--border-bright);
+      color: var(--fg);
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      min-height: 32px;
+      border-radius: 9999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-copy-prompt:hover {
+      background: var(--fg);
+      color: var(--bg);
+    }
+    .btn-copy-prompt:active {
+      transform: scale(0.94);
+    }
+
+    .prompt-quote-text {
+      color: var(--fg);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    /* Command Pills in Slash Commands Table */
+    .cmd-pill-btn {
+      background: var(--code-bg);
+      border: 1px solid var(--border-bright);
+      color: var(--fg);
+      padding: 6px 12px;
+      min-height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cmd-pill-btn:hover {
+      background: var(--fg);
+      color: var(--bg);
+    }
+    .cmd-pill-btn:active {
+      transform: scale(0.95);
+    }
+    .cmd-pill-btn code {
+      background: transparent !important;
+      padding: 0 !important;
+      border: none !important;
+      color: inherit !important;
+    }
+    .cmd-pill-icon {
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    .prompt-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .prompt-category-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    .prompt-action-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .prompt-user-bubble {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--fg);
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .prompt-user-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .prompt-execution {
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .prompt-execution strong {
+      color: var(--fg);
+    }
+
+    .prompt-approval-box {
+      background: var(--code-bg);
+      border: 1px dashed var(--border);
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--fg);
+      line-height: 1.4;
+    }
+
+    /* FAQ Details */
+    .faq-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    details.faq-item {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      cursor: pointer;
+    }
+
+    details.faq-item[open] {
+      border-color: var(--border-bright);
+    }
+
+    details.faq-item summary {
+      font-weight: 700;
+      font-size: 1rem;
+      outline: none;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    details.faq-item summary::after {
+      content: "+";
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+    }
+
+    details.faq-item[open] summary::after {
+      content: "−";
+    }
+
+    details.faq-item p {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    /* Footer */
+    footer.site-footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+      margin-top: auto;
+      background: var(--panel);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .footer-credits {
+      color: var(--muted);
+    }
+
+    .footer-credits strong {
+      color: var(--fg);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .footer-links a:hover {
+      color: var(--fg);
+      text-decoration: underline;
+    }
+
+    
+    /* Respect Reduced Motion Preferences */
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto !important;
+      }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* Screen Reader Only Utility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    /* Focus indicators for scrollable regions */
+    .command-text:focus-visible,
+    .prompt-content:focus-visible,
+    .table-wrapper:focus-visible,
+    .arch-flow-ascii:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: -2px;
+    }
+
+    /* Nav Actions & Mobile Menu Toggle Button */
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--border-bright);
+      color: var(--fg);
+      min-width: 44px;
+      min-height: 44px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+    .mobile-menu-btn:hover {
+      background: var(--panel-alt);
+    }
+
+    /* Documentation Guides Grid */
+    .guides-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .guide-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      text-decoration: none;
+      color: var(--fg);
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+    .guide-card:hover {
+      border-color: var(--border-bright);
+      background-color: var(--panel-alt);
+    }
+
+    .guide-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .guide-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    .guide-ext {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .guide-card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-top: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .guide-card-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-top: 6px;
+    }
+
+    .guide-card-footer {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .guide-card-footer code {
+      background: var(--code-bg);
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+    }
+
+    .prompt-card-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--fg);
+    }
+
+    /* Apple Floating Dynamic Island HUD Toast */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translate(-50%, -100px) scale(0.9);
+      background: rgba(18, 18, 18, 0.94);
+      color: #ffffff;
+      padding: 12px 24px;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(24px) saturate(190%);
+      -webkit-backdrop-filter: blur(24px) saturate(190%);
+      z-index: 99999;
+      opacity: 0;
+      pointer-events: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    }
+    [data-theme="light"] .toast {
+      background: rgba(255, 255, 255, 0.94);
+      color: #000000;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    }
+    .toast.show {
+      transform: translate(-50%, 0) scale(1);
+      opacity: 1;
+    }
+    .toast-icon {
+      font-size: 1rem;
+    }
+
+    /* Architecture Diagram Component */
+
+
+    .arch-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .arch-title-group h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .arch-title-group p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .arch-toggle {
+      display: flex;
+      border: 1px solid var(--border-bright);
+      background: var(--code-bg);
+    }
+
+    .arch-toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 8px 16px;
+      min-height: 44px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .arch-toggle-btn.active {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    .arch-flow-visual {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+
+
+    .arch-node-main {
+      border-width: 2px;
+    }
+
+    .arch-node-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .arch-node-tag {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    .arch-node-status {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+
+    .arch-node-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .arch-node-subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    .arch-bullet-list {
+      list-style: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .arch-bullet-list li {
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      color: var(--fg);
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .arch-bullet-list li::before {
+      content: "•";
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .arch-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding: 8px 0;
+    }
+
+    .arch-line {
+      width: 2px;
+      height: 24px;
+      background: var(--border-bright);
+    }
+
+    .arch-pill {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: var(--panel);
+      border: 1px solid var(--border-bright);
+      padding: 4px 14px;
+      margin: 4px 0;
+      color: var(--fg);
+      letter-spacing: 0.2px;
+      text-align: center;
+    }
+
+    .arch-arrow-down {
+      font-size: 0.9rem;
+      line-height: 1;
+      color: var(--fg);
+    }
+
+
+
+    .arch-diagram-wrapper {
+      margin-top: 36px;
+      background: var(--panel);
+      border: 1px solid var(--border-bright);
+      border-radius: 16px;
+      padding: 32px 24px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .arch-node {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      padding: 16px 20px;
+      position: relative;
+      min-width: 0;
+    }
+
+    .arch-subflow-box {
+      margin-top: 14px;
+      background: var(--code-bg);
+      border: 1px dashed var(--border-bright);
+      border-radius: 12px;
+      padding: 16px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .arch-subflow-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .arch-flex-arrow {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      min-width: 24px;
+      max-width: 140px;
+      margin: 0 8px;
+      color: var(--muted);
+    }
+    .arch-flex-arrow .arrow-line {
+      flex: 1;
+      height: 2px;
+      background: var(--border-bright);
+    }
+    .arch-flex-arrow .arrow-head {
+      font-size: 0.75rem;
+      line-height: 1;
+      color: var(--fg);
+      margin-left: -2px;
+    }
+    .arch-flex-arrow.reverse .arrow-head {
+      margin-left: 0;
+      margin-right: -2px;
+    }
+
+    .arch-subflow-inner {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      margin: 6px 0 6px 20px;
+    }
+
+    .arch-flow-ascii-wrapper {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .arch-flow-ascii {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 20px;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.35;
+      white-space: pre;
+      user-select: all;
+      color: var(--fg);
+    }
+
+    /* Apple Responsive Layout & Zero Overflow Engine */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.1rem;
+      }
+      .mobile-menu-btn {
+        display: inline-flex;
+      }
+      nav.nav-links {
+        display: none;
+      }
+      nav.nav-links.is-open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: var(--bg);
+        border-bottom: 2px solid var(--border-bright);
+        padding: 16px 24px;
+        gap: 4px;
+        z-index: 1000;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      nav.nav-links.is-open a {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-height: 44px;
+        border-bottom: 1px solid var(--border);
+        font-size: 1rem;
+        padding: 6px 0;
+      }
+      nav.nav-links.is-open a:last-child {
+        border-bottom: none;
+      }
+      .command-box {
+        flex-direction: column;
+      }
+      .btn-copy {
+        padding: 12px;
+        justify-content: center;
+        border-top: 1px solid var(--border);
+      }
+
+      .prompt-grid {
+        grid-template-columns: 1fr;
+      }
+      .guides-grid {
+        grid-template-columns: 1fr;
+      }
+      .sec-grid {
+        grid-template-columns: 1fr;
+      }
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 16px;
+      }
+      .hero {
+        padding: 40px 0 28px;
+      }
+      .hero-title {
+        font-size: 1.85rem;
+        letter-spacing: -1px;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        line-height: 1.45;
+      }
+
+      .fast-install {
+        padding: 16px;
+      }
+      .prompt-card,
+      .guide-card,
+      .sec-card,
+      .pipeline-card {
+        padding: 18px 16px;
+      }
+      .arch-diagram-wrapper {
+        padding: 20px 14px;
+      }
+      .arch-node {
+        padding: 14px 16px;
+      }
+      .arch-subflow-inner {
+        margin: 6px 0 6px 8px;
+        padding: 10px 12px;
+      }
+      .arch-subflow-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+      .arch-flex-arrow {
+        transform: rotate(90deg);
+        margin: 6px 0;
+        align-self: center;
+      }
+      .toast {
+        width: calc(100% - 32px);
+        max-width: 360px;
+        justify-content: center;
+        padding: 10px 16px;
+      }
+    }
+  </style>
 </head>
-<body data-page="home" id="top">
-  <a class="skip" href="#main">Skip to content</a>
-  <header class="site-header" id="site-header"></header>
-  <main id="main">
-    <section class="hero" aria-labelledby="hero-heading">
-      <div class="hero-grid" aria-hidden="true"></div>
-      <div class="shell hero-inner">
-        <div class="hero-copy">
-          <div class="eyebrow">INDEPENDENT INTELLIGENCE / AN OPEN COLLECTION</div>
-          <h1 class="hero-title" id="hero-heading"><span class="line">One mind.</span><span class="line accent">Many</span><span class="line">systems.</span></h1>
-          <p class="hero-desc">AI agents. Useful tools. Experimental ideas turned into working code. A collection of things built to move the world, even a little.</p>
-          <div class="hero-actions"><a class="btn" href="#explore">Explore the work <span class="arrow" aria-hidden="true">↗</span></a><a class="btn btn-outline" href="#stories">See real demos <span class="arrow" aria-hidden="true">↘</span></a></div>
+<body>
+  <!-- Screen reader skip link -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="#main" class="logo-brand" aria-label="SparkWA documentation home">
+        <img src="assets/sparkwa-mark.svg" alt="" width="29" height="29" decoding="async" style="width:29px;height:29px;flex:none;border-radius:7px">
+        <span>SPARKWA</span>
+      </a>
+
+      <nav class="nav-links" id="navLinks" aria-label="Documentation Navigation">
+        <a href="#install">Install</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#prompt">Spark Prompt</a>
+        <a href="#commands">Commands</a>
+        <a href="#examples">Examples</a>
+        <a href="#guides">Guides</a>
+        <a href="#security">Security</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeBtn" aria-label="Toggle monochrome color theme" aria-pressed="false">
+          <span id="themeLabel">LIGHT MODE</span>
+        </button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">
+          <span class="menu-icon" aria-hidden="true">☰</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main" tabindex="-1">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="container">
+        <div class="hero-logo-wrapper" id="heroLogoWrapper">
+          <img src="assets/sparkwa-banner.png" alt="SparkWA — The Headless WhatsApp to Google Gemini Spark Bridge" class="hero-logo-img" width="800" height="220" fetchpriority="high">
         </div>
-        <div class="hero-visual" aria-label="Repository screenshots from featured projects">
-          <div class="hero-aura" aria-hidden="true"></div>
-          <div class="hero-screen">
-            <div class="screen-bar" aria-hidden="true"><span class="screen-dot"></span><span class="screen-dot"></span><span class="screen-dot"></span><span class="screen-location">REAL PROJECT / REPOSITORY MEDIA</span></div>
-            <div class="screen-media"><img id="hero-image" alt="Hadron dashboard screenshot from its repository" src="https://raw.githubusercontent.com/krishujeniya/Hadron/main/docs/visual_audit/transformed-desktop-1280.png" width="1280" height="800" fetchpriority="high"><div class="screen-caption"><span id="hero-kind">Developer tools</span><strong id="hero-project">Hadron</strong></div></div>
+
+        <h1 class="hero-title">The Headless WhatsApp Bridge for Google Gemini Spark</h1>
+        <p class="hero-subtitle">
+          Connect your personal WhatsApp directly to your autonomous Google Gemini Spark agent via event-driven Gmail triggers. Runs as a single native Go binary on any 512 MB Linux server with zero runtime dependencies.
+        </p>
+
+        <div class="hero-meta">
+          <span class="meta-tag">GO 1.24+</span>
+          <span class="meta-tag">~30 MB RAM</span>
+          <span class="meta-tag">0.0% IDLE CPU</span>
+          <span class="meta-tag">PURE MONOCHROME</span>
+          <span class="meta-tag">AUTHOR: KRISH UJENIYA</span>
+        </div>
+
+        <!-- 1-Line Fast Install -->
+        <div class="fast-install" id="install">
+          <div class="fast-install-header">
+            <span class="fast-install-title">Fast 1-Line Installation &amp; Runner</span>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted);">UBUNTU / DEBIAN / LINUX</span>
           </div>
-          <div class="hero-pins" id="hero-pins" aria-label="Choose a featured project image"></div>
+
+          <div class="command-box">
+            <div class="command-text" id="installCmd" role="region" aria-label="1-Line installation command" tabindex="0">curl -fsSL https://raw.githubusercontent.com/krishujeniya/sparkwa/main/scripts/setup-apt.sh | sudo bash</div>
+            <button class="btn-copy" onclick="copySnippet('installCmd', this)" aria-label="Copy 1-line installation command">
+              <span>COPY</span>
+            </button>
+          </div>
+          <div class="install-hint">
+            Automatically installs SparkWA via <code>apt</code> and immediately launches the interactive TUI dashboard. Reopen anytime with <code>sparkwa</code>.
+          </div>
         </div>
       </div>
-      <div class="shell hero-bottom"><span>BY KRISH UJENIYA — EST. IN CURIOSITY</span><a class="scroll-mark" href="#manifesto">SCROLL TO EXPLORE</a></div>
-    </section>
-    <div class="ticker" aria-label="Areas of work"><div class="ticker-line" aria-hidden="true"><strong>AI AGENTS</strong><em>✳</em><strong>RESEARCH</strong><em>✳</em><strong>DEVELOPER TOOLS</strong><em>✳</em><strong>APPLIED INTELLIGENCE</strong><em>✳</em><strong>REAL PRODUCTS</strong><em>✳</em><strong>AI AGENTS</strong><em>✳</em><strong>RESEARCH</strong><em>✳</em><strong>DEVELOPER TOOLS</strong><em>✳</em><strong>APPLIED INTELLIGENCE</strong><em>✳</em><strong>REAL PRODUCTS</strong><em>✳</em></div></div>
-    <section class="manifesto" id="manifesto" aria-labelledby="manifesto-heading">
-      <div class="shell manifesto-grid">
-        <div class="section-kicker"><span></span>THE POINT OF IT ALL</div>
-        <div class="reveal"><h2 class="manifesto-quote" id="manifesto-heading">The future isn't one big idea. It's a thousand <i>considered</i> decisions, made real.</h2><div class="manifesto-foot"><p>From systems that reason over code to tools that interpret signals and simplify everyday work, each project begins with a question worth exploring. This is a portfolio of independent builds—not a claim that every product works as one platform.</p><div class="manifesto-orbit" aria-hidden="true"></div></div></div>
+    </div>
+
+    <!-- Integration Pipeline -->
+    <section class="doc-section" id="pipeline">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">Zero Privacy Leaks</div>
+          <h2 class="section-title">System Integration Pipeline</h2>
+          <p class="section-desc">
+            SparkWA is designed with total privacy abstraction. The terminal user interface (TUI) and system logs never reveal your phone numbers, emails, or message bodies. Instead, actions are tracked through a deterministic 4-node flow.
+          </p>
+        </div>
+
+        <div class="pipeline-grid">
+          <div class="pipeline-card">
+            <span class="card-node-badge">NODE [1]</span>
+            <h3 class="card-title">WhatsApp Bot</h3>
+            <p class="card-body">Dedicated secondary WhatsApp SIM account. Connects headlessly via terminal QR code.</p>
+          </div>
+
+          <div class="pipeline-card">
+            <span class="card-node-badge">NODE [2]</span>
+            <h3 class="card-title">Authorized User</h3>
+            <p class="card-body">Your personal WhatsApp number. Only this number is permitted. Strangers are rejected.</p>
+          </div>
+
+          <div class="pipeline-card">
+            <span class="card-node-badge">NODE [E]</span>
+            <h3 class="card-title">Gmail Bridge</h3>
+            <p class="card-body">Secure Google Cloud OAuth 2.0 mailbox on VPS that delivers commands to Gemini Spark.</p>
+          </div>
+
+          <div class="pipeline-card">
+            <span class="card-node-badge">NODE [S]</span>
+            <h3 class="card-title">Gemini Spark</h3>
+            <p class="card-body">Your autonomous AI agent in Google Workspace with direct access to Docs, Drive &amp; Calendar.</p>
+          </div>
+        </div>
+
+        <div class="flow-bar">
+          <span style="color: var(--muted); font-size: 0.8rem; text-transform: uppercase;">DATA PIPELINE:</span>
+          <span class="flow-step">[2 ➔ 1] Inbound</span>
+          <span class="flow-arrow">➔</span>
+          <span class="flow-step">[1 ➔ E] Bridge Dispatch</span>
+          <span class="flow-arrow">➔</span>
+          <span class="flow-step">[E ➔ S] Spark Process</span>
+          <span class="flow-arrow">➔</span>
+          <span class="flow-step">[S ➔ E] Spark Reply</span>
+          <span class="flow-arrow">➔</span>
+          <span class="flow-step">[E ➔ 2] WhatsApp Delivery</span>
+        </div>
+
+        <!-- Architectural Message Flow Diagram Component -->
+        <div class="arch-diagram-wrapper">
+          <div class="arch-header">
+            <div class="arch-title-group">
+              <h3>Architectural Message Flow Diagram</h3>
+              <p>End-to-end execution path between your personal WhatsApp and Gemini Spark</p>
+            </div>
+            <div class="arch-actions">
+              <div class="arch-toggle" role="tablist" aria-label="Diagram display mode">
+                <button class="arch-toggle-btn active" id="btnArchVisual" onclick="toggleArchView('visual')" role="tab" aria-selected="true" aria-controls="archVisual" tabindex="0">VISUAL FLOW</button>
+                <button class="arch-toggle-btn" id="btnArchAscii" onclick="toggleArchView('ascii')" role="tab" aria-selected="false" aria-controls="archAscii" tabindex="-1">3D ISOMETRIC ART</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Visual Flow Layout -->
+          <div class="arch-flow-visual" id="archVisual" role="tabpanel" aria-labelledby="btnArchVisual" tabindex="0">
+            <!-- Node 2 -->
+            <div class="arch-node">
+              <div class="arch-node-header">
+                <span class="arch-node-tag">NODE [2]</span>
+                <span class="arch-node-status">[AUTHORIZED SENDER]</span>
+              </div>
+              <div class="arch-node-title">Your Personal WhatsApp (Number 2)</div>
+              <div class="arch-node-subtitle">The only allowlisted phone number permitted to issue instructions</div>
+            </div>
+
+            <!-- Connector 1 -->
+            <div class="arch-connector">
+              <div class="arch-line"></div>
+              <div class="arch-pill">(1) Send text message or command</div>
+              <div class="arch-line"></div>
+              <div class="arch-arrow-down">▼</div>
+            </div>
+
+            <!-- Node 1 -->
+            <div class="arch-node">
+              <div class="arch-node-header">
+                <span class="arch-node-tag">NODE [1]</span>
+                <span class="arch-node-status">[WHATSAPP BOT]</span>
+              </div>
+              <div class="arch-node-title">Dedicated WhatsApp Bot (Number 1)</div>
+              <div class="arch-node-subtitle">Dedicated SIM connected headlessly via whatsmeow multi-device protocol</div>
+            </div>
+
+            <!-- Connector 2 -->
+            <div class="arch-connector">
+              <div class="arch-line"></div>
+              <div class="arch-pill">(2) Read by SparkWA on your server</div>
+              <div class="arch-line"></div>
+              <div class="arch-arrow-down">▼</div>
+            </div>
+
+            <!-- Node E (Core Engine) -->
+            <div class="arch-node arch-node-main">
+              <div class="arch-node-header">
+                <span class="arch-node-tag">NODE [E]</span>
+                <span class="arch-node-status">[SPARKWA LOCAL ENGINE]</span>
+              </div>
+              <div class="arch-node-title">SparkWA Background Service (/var/lib/sparkwa)</div>
+              <div class="arch-node-subtitle">Fail-closed authorization, atomic state persistence, and RFC-2822 formatting</div>
+              <ul class="arch-bullet-list">
+                <li><span>Verifies sender matches Number 2 (strangers dropped silently)</span></li>
+                <li><span>Saves task to local SQLite database (/var/lib/sparkwa/sparkwa.db)</span></li>
+                <li><span>Formats email protocol RFC-2822: <code>[SPARKWA:TASK_ID]</code></span></li>
+                <li><span>Sends email via official Google Cloud OAuth 2.0 Gmail API</span></li>
+              </ul>
+            </div>
+
+            <!-- Connector 3 -->
+            <div class="arch-connector">
+              <div class="arch-line"></div>
+              <div class="arch-pill">(3) Outbound email via Gmail API</div>
+              <div class="arch-line"></div>
+              <div class="arch-arrow-down">▼</div>
+            </div>
+
+            <!-- Node S (Workspace) -->
+            <div class="arch-node arch-node-main">
+              <div class="arch-node-header">
+                <span class="arch-node-tag">NODE [S]</span>
+                <span class="arch-node-status">[GOOGLE WORKSPACE &amp; GEMINI SPARK]</span>
+              </div>
+              <div class="arch-node-title">Autonomous Cloud Execution Environment</div>
+              <div class="arch-node-subtitle">Bridge Gmail to Spark mailbox trigger with Google Workspace integration</div>
+              
+              <div class="arch-subflow-box">
+                <div class="arch-subflow-row">
+                  <span><strong>Bridge Gmail</strong></span>
+                  <span class="arch-flex-arrow" aria-hidden="true"><span class="arrow-line"></span><span class="arrow-head">►</span></span>
+                  <span><strong>Spark Gmail Inbox</strong></span>
+                </div>
+                <div class="arch-connector" style="padding: 2px 0;">
+                  <div class="arch-line" style="height: 14px;"></div>
+                  <div class="arch-pill" style="font-size: 0.75rem;">(4) Event trigger</div>
+                  <div class="arch-line" style="height: 14px;"></div>
+                  <div class="arch-arrow-down">▼</div>
+                </div>
+                <div class="arch-subflow-inner">
+                  <div style="font-weight: 700;">Gemini Spark Agent</div>
+                  <div style="font-size: 0.8rem; color: var(--muted); margin-top: 2px;">Runs task using Google tools (Drive, Docs, Sheets, Calendar) with standing approval</div>
+                </div>
+                <div class="arch-connector" style="padding: 2px 0;">
+                  <div class="arch-line" style="height: 14px;"></div>
+                  <div class="arch-pill" style="font-size: 0.75rem;">(5) Email reply or draft</div>
+                  <div class="arch-line" style="height: 14px;"></div>
+                  <div class="arch-arrow-down">▼</div>
+                </div>
+                <div class="arch-subflow-row">
+                  <span><strong>Bridge Gmail</strong></span>
+                  <span class="arch-flex-arrow reverse" aria-hidden="true"><span class="arrow-head">◄</span><span class="arrow-line"></span></span>
+                  <span><strong>Spark Gmail Outbox</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Connector 6 -->
+            <div class="arch-connector">
+              <div class="arch-line"></div>
+              <div class="arch-pill">(6) Discovered by SparkWA poller</div>
+              <div class="arch-line"></div>
+              <div class="arch-arrow-down">▼</div>
+            </div>
+
+            <!-- Node 2 (Delivery) -->
+            <div class="arch-node">
+              <div class="arch-node-header">
+                <span class="arch-node-tag">NODE [2]</span>
+                <span class="arch-node-status">[DELIVERY TO USER]</span>
+              </div>
+              <div class="arch-node-title">Your Personal WhatsApp (Number 2)</div>
+              <div class="arch-node-subtitle">Spark's synthesized answer delivered directly to your chat in clean conversational text</div>
+            </div>
+          </div>
+
+          <!-- ASCII Box Art View -->
+          <div class="arch-flow-ascii-wrapper" id="archAscii" style="display: none;" role="tabpanel" aria-labelledby="btnArchAscii" tabindex="0">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+              <button class="btn-copy" onclick="copySnippet('asciiDiagramCode', this)" aria-label="Copy 3D Isometric Architecture Diagram">
+                <span>COPY 3D DIAGRAM</span>
+              </button>
+            </div>
+            <div class="sr-only" id="asciiDiagramSummary">
+              Architectural diagram showing SparkWA end-to-end execution path: Node 2 (Authorized Personal WhatsApp) sends a command to Node 1 (Dedicated WhatsApp SIM Bot). The SparkWA Local Engine on Node E verifies sender authorization, saves the task to local SQLite (/var/lib/sparkwa/sparkwa.db), formats an RFC-2822 email, and sends it via Gmail API to Node S (Google Workspace &amp; Gemini Spark). Gemini Spark processes the task with Drive, Docs, Sheets, and Calendar, sending an email reply. SparkWA poller discovers the reply and delivers the answer directly back to Node 2 on WhatsApp.
+            </div>
+            <pre class="arch-flow-ascii" id="asciiDiagramCode" role="img" aria-describedby="asciiDiagramSummary" tabindex="0">      .─────────────────────────────────────────────────────────────.
+     /                                                             /│
+    ┌─────────────────────────────────────────────────────────────┐ │
+    │                NODE [2] : AUTHORIZED SENDER                 │ │
+    │              Your Personal WhatsApp (Number 2)              │ │
+    └─────────────────────────────────────────────────────────────┘/
+                                   │
+                                   │ (1) Send text message or command
+                                   ▼
+      .─────────────────────────────────────────────────────────────.
+     /                                                             /│
+    ┌─────────────────────────────────────────────────────────────┐ │
+    │                  NODE [1] : WHATSAPP BOT                    │ │
+    │             Dedicated WhatsApp SIM (Number 1)               │ │
+    └─────────────────────────────────────────────────────────────┘/
+                                   │
+                                   │ (2) Read by SparkWA on your server
+                                   ▼
+      .─────────────────────────────────────────────────────────────.
+     /                                                             /│
+    ┌─────────────────────────────────────────────────────────────┐ │
+    │               NODE [E] : SPARKWA LOCAL ENGINE               │ │
+    ├─────────────────────────────────────────────────────────────┤ │
+    │  • Verifies sender matches Number 2 (silent drop strangers) │ │
+    │  • Saves task to local SQLite database (/var/lib/sparkwa)   │ │
+    │  • Formats email protocol RFC-2822: [SPARKWA:TASK_ID]       │ │
+    │  • Sends email via official Google Gmail API (OAuth 2.0)    │ │
+    └─────────────────────────────────────────────────────────────┘/
+                                   │
+                                   │ (3) Outbound email via Gmail API
+                                   ▼
+      .─────────────────────────────────────────────────────────────.
+     /                                                             /│
+    ┌─────────────────────────────────────────────────────────────┐ │
+    │          NODE [S] : GOOGLE WORKSPACE &amp; GEMINI SPARK         │ │
+    ├─────────────────────────────────────────────────────────────┤ │
+    │   Bridge Gmail ─────────────────────► Spark Gmail Inbox     │ │
+    │                                             │               │ │
+    │                                             │ (4) Trigger   │ │
+    │                                             ▼               │ │
+    │                                    Gemini Spark Agent       │ │
+    │                                    (Drive, Docs, Calendar)  │ │
+    │                                             │               │ │
+    │                                             │ (5) Reply     │ │
+    │   Bridge Gmail ◄────────────────────────────┘               │ │
+    └─────────────────────────────────────────────────────────────┘/
+                                   │
+                                   │ (6) Discovered by SparkWA poller
+                                   ▼
+      .─────────────────────────────────────────────────────────────.
+     /                                                             /│
+    ┌─────────────────────────────────────────────────────────────┐ │
+    │                NODE [2] : AUTHORIZED SENDER                 │ │
+    │              Spark's answer delivered to chat               │ │
+    └─────────────────────────────────────────────────────────────┘/</pre>
+          </div>
+        </div>
       </div>
     </section>
-    <section class="chapter feature-wrap" id="work" aria-labelledby="featured-heading">
-      <div class="shell feature-head reveal"><div class="section-kicker"><span></span>01 / SELECTED WORK</div><h2 class="section-title" id="featured-heading">Made to <span class="serif">matter.</span></h2><p class="lead">A closer look at the tools, agents, and experiments shaping this collection. Every visual comes from the project or is explicitly identified as an editorial treatment.</p></div>
-      <div class="shell carousel-toolbar"><span class="carousel-label">SWIPE TO EXPLORE / USE ARROW KEYS</span><div class="carousel-controls"><button type="button" class="circle-control" id="carousel-prev" aria-label="Previous featured project">←</button><button type="button" class="circle-control" id="carousel-next" aria-label="Next featured project">→</button></div></div>
-      <div class="featured-track" id="featured-track" role="region" tabindex="0" aria-roledescription="carousel" aria-label="Featured products"></div>
-    </section>
-    <section class="chapter stage-section" id="approach" aria-labelledby="approach-heading">
-      <div class="shell"><div class="chapter-head reveal"><div><div class="section-kicker"><span></span>02 / THE PROCESS</div><h2 class="section-title" id="approach-heading">Question.<br><span class="serif">Create.</span> Share.</h2></div><p class="lead">A way of building, not an invented product integration. Each system stands on its own merits.</p></div>
-      <div class="stage-layout"><div class="stage-tabs" id="stage-tabs" role="tablist" aria-label="Project approach stages"><button role="tab" type="button" class="stage-tab" data-stage="0" aria-selected="true"><span>01</span><strong>Discover</strong></button><button role="tab" type="button" class="stage-tab" data-stage="1" aria-selected="false"><span>02</span><strong>Build</strong></button><button role="tab" type="button" class="stage-tab" data-stage="2" aria-selected="false"><span>03</span><strong>Deploy</strong></button></div><div class="stage-panel" id="stage-panel" role="tabpanel" aria-live="polite"><span class="smalltag">01 / FIND THE RIGHT QUESTION</span><div><h3>Start with the problem, not the hype.</h3><p>Projects are documented through their source repositories.</p></div></div></div>
+
+    <!-- Master Spark Prompt -->
+    <section class="doc-section" id="prompt">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">24/7 Autonomous Execution</div>
+          <h2 class="section-title">Master Gemini Spark System Prompt</h2>
+          <p class="section-desc">
+            Copy and paste this exact instruction into your Gemini Custom Instructions, Gem instructions, or Scheduled Task. It gives Spark permanent standing authorization so it never pauses to ask <em>"Should I send this email?"</em>, never echoes command envelopes, and always delivers the direct answer to your WhatsApp.
+          </p>
+        </div>
+
+        <div class="prompt-container">
+          <div class="prompt-toolbar">
+            <span>GEMINI SPARK MASTER INSTRUCTION</span>
+            <button class="btn-copy" onclick="copySnippet('sparkPrompt', this)" aria-label="Copy Spark Master Prompt">
+              <span>COPY PROMPT</span>
+            </button>
+          </div>
+          <pre class="prompt-content" id="sparkPrompt" role="region" aria-label="Master Gemini Spark System Prompt code" tabindex="0">You are an autonomous execution worker integrated with SparkWA. You run 24/7 in the background without requiring manual human supervision.
+
+You receive automated tasks via incoming emails with subjects formatted as:
+[SPARKWA:REQUEST_ID] &lt;Short Title&gt;
+
+The email body will follow this format:
+BEGIN SPARKWA COMMAND
+Request ID: &lt;REQUEST_ID&gt;
+Authorized sender: &lt;MASKED_PHONE&gt;
+Timestamp: &lt;ISO8601&gt;
+Command: &lt;USER_INSTRUCTION&gt;
+END SPARKWA COMMAND
+
+OPERATING PROTOCOL:
+1. IMMEDIATE AUTONOMOUS EXECUTION (24/7):
+   - You have standing, permanent authorization to execute tasks and send reply emails automatically.
+   - NEVER ask "Should I send this email?", "Do you want me to reply?", or "Shall I proceed?".
+   - NEVER pause or wait for user confirmation to send the email response. Send the email reply directly and immediately to the sender.
+
+2. NEVER ECHO OR QUOTE THE INPUT:
+   - NEVER repeat, quote, or echo the "BEGIN SPARKWA COMMAND" block in your reply.
+   - Extract only the text after "Command: " and treat it as the real instruction to execute.
+   - If the command is a conversational greeting (e.g., "Hi", "Hello"), reply directly and politely.
+   - If the command is a query, answer it thoroughly.
+   - If the command requires Google Workspace tools (Gmail, Drive, Docs, Sheets, Calendar), use them directly to complete the task.
+
+3. STRICT RESPONSE FORMAT:
+   Always reply directly to the email thread using this exact structure:
+
+BEGIN SPARKWA RESPONSE
+Request ID: &lt;REQUEST_ID&gt;
+Status: SUCCESS
+Result: &lt;YOUR DIRECT ANSWER, SUMMARY, OR OUTPUT&gt;
+END SPARKWA RESPONSE
+
+   - Replace &lt;REQUEST_ID&gt; with the exact Request ID from the incoming email.
+   - Put your actual answer or output after "Result: ".
+   - Do not include extra conversational text outside of this block.
+
+4. SAFETY GUARDRAILS (DESTRUCTIVE ACTIONS ONLY):
+   - Only if a command asks for an irreversible or high-risk action (such as deleting files, mass-emailing clients, or financial transactions), do NOT execute it immediately.
+   - Instead, respond with:
+
+BEGIN SPARKWA RESPONSE
+Request ID: &lt;REQUEST_ID&gt;
+Status: APPROVAL_REQUIRED
+Result: This action requires your confirmation: [brief description]. Reply YES to confirm.
+END SPARKWA RESPONSE</pre>
+        </div>
       </div>
     </section>
-    <section class="chapter explorer-section" id="explore" aria-labelledby="explore-heading">
-      <div class="shell"><div class="chapter-head reveal"><div><div class="section-kicker"><span></span>03 / THE ENTIRE COLLECTION</div><h2 class="section-title" id="explore-heading">Find your <span class="serif">next</span><br>curiosity.</h2></div><p class="lead">Explore a curated inventory of source-backed products and research. Filter by discipline or search for a capability.</p></div>
-        <div class="explorer-controls"><div class="search-wrap"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg><input type="search" id="product-search" placeholder="Search projects, ideas, technologies" aria-label="Search projects" autocomplete="off"></div><div id="category-filters" class="filters" role="group" aria-label="Filter projects by category"></div></div>
-        <div id="results-meta" class="results-meta" role="status" aria-live="polite">Explore source-backed projects</div><div class="product-grid" id="product-grid"><noscript><p>Enable JavaScript to browse the interactive directory, or view the <a href="https://github.com/krishujeniya?tab=repositories">GitHub repositories</a>.</p></noscript></div>
+
+    <!-- WhatsApp Commands -->
+    <section class="doc-section" id="commands">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">Real-Time Control</div>
+          <h2 class="section-title">WhatsApp Slash Commands</h2>
+          <p class="section-desc">
+            Send these commands from your authorized personal WhatsApp number directly to the bot account:
+          </p>
+        </div>
+
+        <div class="table-wrapper" role="region" aria-label="WhatsApp slash commands table" tabindex="0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Action</th>
+                <th>Expected Response</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <button class="cmd-pill-btn" onclick="copyDirectText('/ping', this)" aria-label="Copy /ping command">
+                    <code>/ping</code>
+                    <span class="cmd-pill-icon" aria-hidden="true">⎘</span>
+                  </button>
+                </td>
+                <td>Latency &amp; responsiveness diagnostic</td>
+                <td>Instant pong reply with server UTC timestamp</td>
+              </tr>
+              <tr>
+                <td>
+                  <button class="cmd-pill-btn" onclick="copyDirectText('/status', this)" aria-label="Copy /status command">
+                    <code>/status</code>
+                    <span class="cmd-pill-icon" aria-hidden="true">⎘</span>
+                  </button>
+                </td>
+                <td>System integration &amp; capability audit</td>
+                <td>Live health check for WhatsApp, Gmail, and Gemini Spark</td>
+              </tr>
+              <tr>
+                <td>
+                  <button class="cmd-pill-btn" onclick="copyDirectText('/jobs', this)" aria-label="Copy /jobs command">
+                    <code>/jobs</code>
+                    <span class="cmd-pill-icon" aria-hidden="true">⎘</span>
+                  </button>
+                </td>
+                <td>Inspect recent tasks in SQLite queue</td>
+                <td>Compact table of recent task IDs, flows, and states</td>
+              </tr>
+              <tr>
+                <td>
+                  <button class="cmd-pill-btn" onclick="copyDirectText('/job 1', this)" aria-label="Copy /job command example">
+                    <code>/job &lt;id&gt;</code>
+                    <span class="cmd-pill-icon" aria-hidden="true">⎘</span>
+                  </button>
+                </td>
+                <td>Inspect details of a specific task</td>
+                <td>Full execution timestamps, Gmail thread ID, and results</td>
+              </tr>
+              <tr>
+                <td>
+                  <button class="cmd-pill-btn" onclick="copyDirectText('/cancel 1', this)" aria-label="Copy /cancel command example">
+                    <code>/cancel &lt;id&gt;</code>
+                    <span class="cmd-pill-icon" aria-hidden="true">⎘</span>
+                  </button>
+                </td>
+                <td>Cancel an active pending task</td>
+                <td>Marks the task cancelled and cancels outbound worker dispatch</td>
+              </tr>
+              <tr>
+                <td>
+                  <button class="cmd-pill-btn" onclick="copyDirectText('/help', this)" aria-label="Copy /help command">
+                    <code>/help</code>
+                    <span class="cmd-pill-icon" aria-hidden="true">⎘</span>
+                  </button>
+                </td>
+                <td>Quick command cheatsheet</td>
+                <td>Displays the full operational command guide</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
-    <section class="chapter story-section" id="stories" aria-labelledby="stories-heading"><div class="shell"><div class="chapter-head reveal"><div><div class="section-kicker"><span></span>04 / PROOF IN THE DETAILS</div><h2 class="section-title" id="stories-heading">Built, not <span class="serif">imagined.</span></h2></div><p class="lead">Actual audit screenshots and repository visuals, linked to the source where the work can be inspected.</p></div><div class="story-grid" id="story-grid"></div></div></section>
-    <section class="chapter availability" id="access" aria-labelledby="access-heading"><div class="shell availability-grid"><div><div class="section-kicker"><span></span>05 / ACCESS & AVAILABILITY</div><h2 class="section-title" id="access-heading">Start with <span class="serif">the source.</span></h2><p class="lead">Each product has its own access model. Some link to web experiences; others provide code, instructions, or research materials. There is no invented unified subscription.</p><a class="inline-link" href="#explore">See individual availability ↗</a></div><div class="availability-panel"><h3>No made-up plans.<br>No mystery buttons.</h3><div class="availability-list"><div class="availability-line"><b>01</b> Public source links where available</div><div class="availability-line"><b>02</b> Hosted experiences only when documented</div><div class="availability-line"><b>03</b> Pricing shown only if published in source</div><div class="availability-line"><b>04</b> Project-specific setup and usage</div></div></div></div></section>
-    <section class="chapter" id="faq" aria-labelledby="faq-heading"><div class="shell faq-grid"><div><div class="section-kicker"><span></span>06 / QUESTIONS</div><h2 class="section-title" id="faq-heading">A few <span class="serif">answers.</span></h2></div><div class="faq-items">
-      <details><summary>Are these products part of one connected platform?</summary><p>No. This site is a collection of independent products and projects by the same builder. Integrations are described on each project page only where documented.</p></details>
-      <details><summary>Can I try everything in my browser?</summary><p>Not necessarily. Some projects have sites referenced in their README; others provide source code, research artifacts, or local setup instructions. Check each project's access links.</p></details>
-      <details><summary>Are all projects open-source or free?</summary><p>Publicly visible source is not the same as an open-source license. Licensing, hosting costs, and any price details differ by repository. Follow each source link for the authoritative terms.</p></details>
-      <details><summary>Where do the screenshots and visual assets come from?</summary><p>From public project repositories identified on the detail pages. When authentic media is not available, the site uses typography-led editorial visuals rather than fabricated product interfaces.</p></details>
-      <details><summary>Where can I find the original SparkWA documentation?</summary><p>The original guide is preserved at <a href="./sparkwa-docs.html">SparkWA documentation</a>, alongside its source repository and setup instructions.</p></details>
-    </div></div></section>
+
+    <!-- Prompt Examples -->
+    <section class="doc-section" id="examples">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">Real-World Workflows</div>
+          <h2 class="section-title">Example Prompts for Gemini Spark</h2>
+          <p class="section-desc">
+            Any natural language text sent from your authorized personal WhatsApp is delivered directly to Gemini Spark. Spark executes actions using Google Workspace APIs and streams answers back to chat.
+          </p>
+        </div>
+
+        <div class="prompt-grid">
+          <!-- Card 1: Calendar Event -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">CALENDAR</span>
+              <span class="prompt-action-tag">Google Calendar API</span>
+            </div>
+            <h3 class="prompt-card-title">Schedule Calendar Sync</h3>
+            <div class="prompt-user-bubble">
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy calendar sync prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Schedule a 30-minute sync with Alex tomorrow at 3:00 PM and invite alex@company.com</p>
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Checks your calendar for schedule collisions, books the event with a Google Meet link, sends calendar invitations, and returns meeting confirmation to WhatsApp.
+            </p>
+          </div>
+
+          <!-- Card 2: Morning Agenda -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">SCHEDULE</span>
+              <span class="prompt-action-tag">Calendar &amp; Tasks</span>
+            </div>
+            <h3 class="prompt-card-title">Morning Daily Agenda</h3>
+            <div class="prompt-user-bubble">
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy morning agenda prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">What meetings and tasks do I have scheduled for today and tomorrow morning?</p>
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Aggregates events from Google Calendar and to-dos from Google Tasks, organizes them into a chronological agenda, and delivers it to your chat.
+            </p>
+          </div>
+
+          <!-- Card 3: Reschedule -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">RESCHEDULE</span>
+              <span class="prompt-action-tag">Google Calendar API</span>
+            </div>
+            <h3 class="prompt-card-title">Reschedule Existing Meeting</h3>
+            <div class="prompt-user-bubble">
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy reschedule prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Move my 2:00 PM team review today to Thursday at 11:00 AM.</p>
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Locates the calendar entry, checks attendee availability, updates start/end timestamps, and dispatches automated update notices.
+            </p>
+          </div>
+
+          <!-- Card 4: Inbox Summary -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">GMAIL</span>
+              <span class="prompt-action-tag">Gmail ReadOnly API</span>
+            </div>
+            <h3 class="prompt-card-title">Inbox Priority Summary</h3>
+            <div class="prompt-user-bubble">
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy inbox summary prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Summarize my unread emails from the past 24 hours. Highlight any urgent emails from clients or management.</p>
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Scans incoming messages, filters newsletters and spam, produces bullet summaries for key threads, and flags urgent action items.
+            </p>
+          </div>
+
+          <!-- Card 5: Draft Email -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">DRAFTS</span>
+              <span class="prompt-action-tag">Gmail Compose API</span>
+            </div>
+            <h3 class="prompt-card-title">Draft Email Reply</h3>
+            <div class="prompt-user-bubble">
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy draft reply prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Draft a polite reply to Sarah's email regarding the product roadmap delay, confirming we will ship on Friday.</p>
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Drafts the response directly into your Gmail account, formats it appropriately, and provides a preview back to WhatsApp for your review.
+            </p>
+          </div>
+
+          <!-- Card 6: Sheets Entry -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">SHEETS</span>
+              <span class="prompt-action-tag">Google Sheets API</span>
+            </div>
+            <h3 class="prompt-card-title">Append Spreadsheet Row</h3>
+            <div class="prompt-user-bubble">
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy expense entry prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Add a row to the '2026 Expense Log' spreadsheet: Nov 3, Client Lunch, $64.20, Paid via Visa.</p>
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Accesses the spreadsheet in Google Drive, maps columns accurately, appends the entry, and reports the updated sheet total.
+            </p>
+          </div>
+
+          <!-- Card 7: Drive Search -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">DRIVE</span>
+              <span class="prompt-action-tag">Google Drive API</span>
+            </div>
+            <h3 class="prompt-card-title">Search Google Drive Files</h3>
+            <div class="prompt-user-bubble">
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy Drive search prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Find the latest 'Q4 Financial Review' presentation in my Google Drive and summarize key revenue milestones.</p>
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Locates the file in Google Drive, analyzes slide text and charts, and produces an executive briefing delivered directly to your chat.
+            </p>
+          </div>
+
+          <!-- Card 8: Safety Guardrail -->
+          <div class="prompt-card">
+            <div class="prompt-card-header">
+              <span class="prompt-category-badge">SAFETY</span>
+              <span class="prompt-action-tag">Human Confirmation</span>
+            </div>
+            <h3 class="prompt-card-title">Destructive Action Safety Guardrail</h3>
+            <div class="prompt-user-bubble">
+              <div class="prompt-bubble-top">
+                <span class="prompt-user-label">WhatsApp Prompt</span>
+                <button class="btn-copy-prompt" onclick="copyPromptCard(this)" aria-label="Copy announcement prompt">
+                  <span class="copy-pill-icon" aria-hidden="true">⎘</span>
+                  <span class="copy-pill-text">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-quote-text">Draft an announcement email to all team leads about Friday server maintenance.</p>
+            </div>
+            <div class="prompt-approval-box">
+              [APPROVAL REQUIRED]<br>
+              Task: 256c0c48<br>
+              Action: Send announcement email to team-all@company.com (18 recipients).<br>
+              Reply with your confirmation or cancellation.
+            </div>
+            <p class="prompt-execution">
+              <strong>Spark Action:</strong> Detects external high-impact action, pauses execution, and demands your confirmation before sending.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Documentation Guides & Reference Manuals -->
+    <section class="doc-section" id="guides">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">In-Depth Manuals</div>
+          <h2 class="section-title">Documentation Guides &amp; Reference Manuals</h2>
+          <p class="section-desc">
+            Explore dedicated technical reference manuals for installation, OAuth credential provisioning, prompt engineering, security architecture, and operational troubleshooting.
+          </p>
+        </div>
+
+        <div class="guides-grid">
+          <a href="https://github.com/krishujeniya/sparkwa/blob/main/docs/SPARK_SETUP.md" target="_blank" rel="noopener noreferrer" class="guide-card">
+            <div>
+              <div class="guide-card-header">
+                <span class="guide-badge">AGENT PROMPT</span>
+                <span class="guide-ext" aria-hidden="true">↗</span>
+              </div>
+              <h3 class="guide-card-title">Gemini Spark Setup Guide</h3>
+              <p class="guide-card-desc">Comprehensive instructions for Google Gemini Spark standing authorization, workspace tool bindings, and autonomous task loops.</p>
+            </div>
+            <div class="guide-card-footer">
+              <code>docs/SPARK_SETUP.md</code>
+              <span class="sr-only">(opens in a new tab)</span>
+            </div>
+          </a>
+
+          <a href="https://github.com/krishujeniya/sparkwa/blob/main/docs/GMAIL_OAUTH_SETUP.md" target="_blank" rel="noopener noreferrer" class="guide-card">
+            <div>
+              <div class="guide-card-header">
+                <span class="guide-badge">GOOGLE CLOUD</span>
+                <span class="guide-ext" aria-hidden="true">↗</span>
+              </div>
+              <h3 class="guide-card-title">Gmail OAuth 2.0 Credentials</h3>
+              <p class="guide-card-desc">Step-by-step walkthrough to create a Google Cloud Project, enable Gmail API scopes, and download desktop client credentials.</p>
+            </div>
+            <div class="guide-card-footer">
+              <code>docs/GMAIL_OAUTH_SETUP.md</code>
+              <span class="sr-only">(opens in a new tab)</span>
+            </div>
+          </a>
+
+          <a href="https://github.com/krishujeniya/sparkwa/blob/main/docs/VPS_INSTALL.md" target="_blank" rel="noopener noreferrer" class="guide-card">
+            <div>
+              <div class="guide-card-header">
+                <span class="guide-badge">DEPLOYMENT</span>
+                <span class="guide-ext" aria-hidden="true">↗</span>
+              </div>
+              <h3 class="guide-card-title">VPS Installation &amp; Service</h3>
+              <p class="guide-card-desc">Production deployment guide covering systemd sandboxing, APT repository integration, automated updates, and log inspection.</p>
+            </div>
+            <div class="guide-card-footer">
+              <code>docs/VPS_INSTALL.md</code>
+              <span class="sr-only">(opens in a new tab)</span>
+            </div>
+          </a>
+
+          <a href="https://github.com/krishujeniya/sparkwa/blob/main/docs/SECURITY.md" target="_blank" rel="noopener noreferrer" class="guide-card">
+            <div>
+              <div class="guide-card-header">
+                <span class="guide-badge">HARDENING</span>
+                <span class="guide-ext" aria-hidden="true">↗</span>
+              </div>
+              <h3 class="guide-card-title">Security &amp; Privacy Model</h3>
+              <p class="guide-card-desc">Deep dive into fail-closed allowlisting, cryptographic token isolation, credential permission boundaries, and zero-shell guarantees.</p>
+            </div>
+            <div class="guide-card-footer">
+              <code>docs/SECURITY.md</code>
+              <span class="sr-only">(opens in a new tab)</span>
+            </div>
+          </a>
+
+          <a href="https://github.com/krishujeniya/sparkwa/blob/main/docs/TROUBLESHOOTING.md" target="_blank" rel="noopener noreferrer" class="guide-card">
+            <div>
+              <div class="guide-card-header">
+                <span class="guide-badge">OPERATIONS</span>
+                <span class="guide-ext" aria-hidden="true">↗</span>
+              </div>
+              <h3 class="guide-card-title">Diagnostics &amp; Troubleshooting</h3>
+              <p class="guide-card-desc">Solutions for QR code pairing timeout, Gmail OAuth token expiration, SQLite queue recovery, and WhatsApp connection reconnects.</p>
+            </div>
+            <div class="guide-card-footer">
+              <code>docs/TROUBLESHOOTING.md</code>
+              <span class="sr-only">(opens in a new tab)</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Security & Privacy -->
+    <section class="doc-section" id="security">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">Enterprise Hardening</div>
+          <h2 class="section-title">Security &amp; Privacy Architecture</h2>
+          <p class="section-desc">
+            SparkWA is engineered for fail-closed, multi-tenant safety. Your server is completely isolated.
+          </p>
+        </div>
+
+        <div class="sec-grid">
+          <div class="sec-card">
+            <h3>[SHIELD] Strict Allowlist Only</h3>
+            <p>SparkWA enforces strict fail-closed phone authorization. Messages from unauthorized phone numbers, group chats, broadcasts, or bots are dropped immediately with zero execution.</p>
+          </div>
+
+          <div class="sec-card">
+            <h3>[LOCK] Zero Shell Execution</h3>
+            <p>SparkWA contains zero shell evaluation (no <code>sh -c</code> or <code>exec.Command</code> on user input). All tasks are purely routed via structured Google API requests.</p>
+          </div>
+
+          <div class="sec-card">
+            <h3>[BOX] Systemd Linux Sandboxing</h3>
+            <p>Runs under strict Linux sandboxing: <code>ProtectSystem=strict</code>, <code>ProtectHome=yes</code>, <code>NoNewPrivileges=yes</code>, and <code>PrivateTmp=yes</code>.</p>
+          </div>
+
+          <div class="sec-card">
+            <h3>[EYE] Total Privacy Masking</h3>
+            <p>Phone numbers, email addresses, and command contents are scrubbed from TUI screens and daemon logs, preventing unauthorized shoulder-surfing on shared VPS terminals.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="doc-section" id="faq">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">Answers</div>
+          <h2 class="section-title">Frequently Asked Questions</h2>
+        </div>
+
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>Do I need to leave my laptop on?</summary>
+            <p>No. SparkWA runs 24/7 in the background on your Linux VPS (or Raspberry Pi). Your laptop can be closed or turned off.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>Does SparkWA require Docker, Node.js, Python, or Chromium?</summary>
+            <p>No. SparkWA is written in pure Go and compiled into a single static binary. It has zero external software dependencies.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>How much RAM does it need?</summary>
+            <p>SparkWA uses approximately 28 MB to 35 MB of RAM at idle. It runs reliably on the smallest 512 MB or 1 GB VPS instances.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>What happens if my VPS reboots?</summary>
+            <p>The systemd service unit automatically starts SparkWA on boot, reconnects WhatsApp and Gmail, and recovers any pending tasks from the embedded SQLite database.</p>
+          </details>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer class="footer" id="site-footer"></footer>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-credits">
+        <strong>SparkWA</strong> — Open-source WhatsApp to Google Gemini Spark Bridge. Built by <strong>Krish Ujeniya</strong>.
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/krishujeniya/sparkwa" target="_blank" rel="noopener noreferrer">GitHub <span class="sr-only">(opens in a new tab)</span></a>
+        <a href="https://github.com/krishujeniya/sparkwa/releases" target="_blank" rel="noopener noreferrer">Releases <span class="sr-only">(opens in a new tab)</span></a>
+        <a href="https://github.com/krishujeniya/sparkwa/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License <span class="sr-only">(opens in a new tab)</span></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Element -->
+  <div class="toast" id="toast" role="status" aria-live="polite"><span class="toast-icon" aria-hidden="true">✓</span><span id="toastMsg">Copied to clipboard</span></div>
+
+  <!-- Interactive Scripts -->
+  <script>
+    // Generic Safe Clipboard Writer
+    function copyToClipboard(text, onSuccess, onFailure) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+          fallbackCopy(text, onSuccess, onFailure);
+        });
+      } else {
+        fallbackCopy(text, onSuccess, onFailure);
+      }
+    }
+
+    function fallbackCopy(text, onSuccess, onFailure) {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        textArea.setAttribute('readonly', '');
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        if (successful) onSuccess();
+        else onFailure();
+      } catch (err) {
+        onFailure();
+      }
+    }
+
+    // Copy by Element ID
+    function copySnippet(elementId, btn) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = (el.innerText || el.textContent || '').trim();
+
+      copyToClipboard(text, () => {
+        showToast('Copied to clipboard');
+        if (btn) {
+          const original = btn.innerHTML;
+          btn.innerHTML = '<span>COPIED! ✓</span>';
+          setTimeout(() => {
+            btn.innerHTML = original;
+          }, 2000);
+        }
+      }, () => {
+        showToast('Failed to copy');
+      });
+    }
+
+    // Direct String Copy (Commands)
+    function copyDirectText(text, btn) {
+      copyToClipboard(text, () => {
+        showToast('Copied: ' + text);
+        if (btn) {
+          const icon = btn.querySelector('.cmd-pill-icon');
+          if (icon) {
+            const original = icon.textContent;
+            icon.textContent = '✓';
+            setTimeout(() => {
+              icon.textContent = original;
+            }, 1800);
+          }
+        }
+      }, () => {
+        showToast('Failed to copy');
+      });
+    }
+
+    // Copy Prompt Card Bubble
+    function copyPromptCard(btn) {
+      const bubble = btn.closest('.prompt-user-bubble');
+      if (!bubble) return;
+      const textEl = bubble.querySelector('.prompt-quote-text');
+      const text = (textEl ? textEl.innerText || textEl.textContent : '').trim();
+
+      copyToClipboard(text, () => {
+        showToast('Prompt copied to clipboard');
+        if (btn) {
+          const label = btn.querySelector('.copy-pill-text');
+          const icon = btn.querySelector('.copy-pill-icon');
+          if (label) label.textContent = 'Copied! ✓';
+          if (icon) icon.textContent = '';
+          setTimeout(() => {
+            if (label) label.textContent = 'Copy';
+            if (icon) icon.textContent = '⎘';
+          }, 2000);
+        }
+      }, () => {
+        showToast('Failed to copy prompt');
+      });
+    }
+
+    // Toggle Architecture Diagram Display View (Visual vs ASCII)
+    function toggleArchView(view) {
+      const visual = document.getElementById('archVisual');
+      const ascii = document.getElementById('archAscii');
+      const btnVisual = document.getElementById('btnArchVisual');
+      const btnAscii = document.getElementById('btnArchAscii');
+
+      if (view === 'ascii') {
+        visual.style.display = 'none';
+        ascii.style.display = 'block';
+        btnVisual.classList.remove('active');
+        btnVisual.setAttribute('aria-selected', 'false');
+        btnVisual.setAttribute('tabindex', '-1');
+        btnAscii.classList.add('active');
+        btnAscii.setAttribute('aria-selected', 'true');
+        btnAscii.setAttribute('tabindex', '0');
+      } else {
+        visual.style.display = 'flex';
+        ascii.style.display = 'none';
+        btnVisual.classList.add('active');
+        btnVisual.setAttribute('aria-selected', 'true');
+        btnVisual.setAttribute('tabindex', '0');
+        btnAscii.classList.remove('active');
+        btnAscii.setAttribute('aria-selected', 'false');
+        btnAscii.setAttribute('tabindex', '-1');
+      }
+    }
+
+    // WAI-ARIA Keyboard Navigation for Architecture Tabs (Arrow Keys)
+    (function initArchTabsKeyboard() {
+      const tablist = document.querySelector('.arch-toggle[role="tablist"]');
+      if (!tablist) return;
+      const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+
+      tablist.addEventListener('keydown', (e) => {
+        const currentIdx = tabs.indexOf(document.activeElement);
+        if (currentIdx === -1) return;
+
+        let nextIdx = -1;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          nextIdx = (currentIdx + 1) % tabs.length;
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          nextIdx = (currentIdx - 1 + tabs.length) % tabs.length;
+        } else if (e.key === 'Home') {
+          nextIdx = 0;
+        } else if (e.key === 'End') {
+          nextIdx = tabs.length - 1;
+        }
+
+        if (nextIdx !== -1) {
+          e.preventDefault();
+          tabs[nextIdx].focus();
+          tabs[nextIdx].click();
+        }
+      });
+    })();
+
+    // Responsive Mobile Menu Drawer
+    (function initMobileMenu() {
+      const menuBtn = document.getElementById('mobileMenuBtn');
+      const navLinks = document.getElementById('navLinks');
+      if (!menuBtn || !navLinks) return;
+
+      function closeMenu() {
+        navLinks.classList.remove('is-open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      }
+
+      function toggleMenu() {
+        const isOpen = navLinks.classList.toggle('is-open');
+        menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      }
+
+      menuBtn.addEventListener('click', toggleMenu);
+
+      // Close menu when a link inside it is clicked
+      navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', closeMenu);
+      });
+
+      // Close menu on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navLinks.classList.contains('is-open')) {
+          closeMenu();
+          menuBtn.focus();
+        }
+      });
+    })();
+
+    // Toast Notification (Apple Floating Dynamic Island HUD)
+    let toastTimeout = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      if (!toast) return;
+      if (toastMsg) toastMsg.textContent = msg;
+      else toast.textContent = msg;
+
+      toast.classList.add('show');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2400);
+    }
+
+    // Theme Toggle (Pure Monochrome Dark/Light)
+    const themeBtn = document.getElementById('themeBtn');
+    const themeLabel = document.getElementById('themeLabel');
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      try {
+        localStorage.setItem('sparkwa_theme', theme);
+      } catch (e) {}
+
+      if (themeLabel) {
+        themeLabel.textContent = theme === 'light' ? 'DARK MODE' : 'LIGHT MODE';
+      }
+      if (themeBtn) {
+        themeBtn.setAttribute('aria-pressed', theme === 'light' ? 'true' : 'false');
+        themeBtn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+      }
+    }
+
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+        setTheme(current === 'dark' ? 'light' : 'dark');
+      });
+
+      // Synchronize theme button label with initial theme set in <head>
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      setTheme(currentTheme);
+    }
+  </script>
 </body>
 </html>
